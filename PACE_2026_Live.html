@@ -366,18 +366,48 @@ function getWeekEndDate(weekNum){
 async function fetchSheet(sheetName){
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
   const resp = await fetch(url);
-  if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  if(!resp.ok) throw new Error(`HTTP ${resp.status} for sheet "${sheetName}"`);
   const text = await resp.text();
   const json = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1));
   return gvizToArray(json);
 }
 
 function gvizToArray(json){
-  const cols = json.table.cols.map(c => c.label || c.id);
-  const rows = (json.table.rows || []).map(r =>
-    Object.fromEntries(cols.map((c,i) => [c, r.c[i] ? (r.c[i].v ?? '') : '']))
-  );
+  // Make column keys unique: duplicate "Home Team" becomes "Home Team", "Home Team_1", "Home Team_2"
+  const rawCols = json.table.cols.map(c => c.label || c.id);
+  const seen = {};
+  const cols = rawCols.map(c => {
+    if(seen[c] === undefined){ seen[c] = 0; return c; }
+    seen[c]++; return c + '_' + seen[c];
+  });
+  const rows = (json.table.rows || []).map(r => {
+    const obj = { _raw: r.c }; // preserve raw array for index-based access
+    cols.forEach((c,i) => { obj[c] = r.c[i] ? (r.c[i].v ?? '') : ''; });
+    return obj;
+  });
   return {cols, rows};
+}
+
+// ══ FIXTURES PARSER — reads by column INDEX, not name ═════════════
+// Sheet layout: Week(0) | DateRange(1) | EndDate(2) | H1(3) | A1(4) | H2(5) | A2(6) | H3(7) | A3(8) | Bye(9) | Status(10)
+function parseFixtureRow(row){
+  const raw = row._raw || [];
+  const cell = (i) => (raw[i] && raw[i].v !== null && raw[i].v !== undefined) ? String(raw[i].v).trim() : '';
+  const wk = parseInt(cell(0)) || 0;
+  return {
+    week:      wk,
+    dateRange: cell(1),
+    home1: cell(3), away1: cell(4),
+    home2: cell(5), away2: cell(6),
+    home3: cell(7), away3: cell(8),
+    bye:   cell(9),
+    status: cell(10),
+    matches: [
+      { home: cell(3), away: cell(4) },
+      { home: cell(5), away: cell(6) },
+      { home: cell(7), away: cell(8) },
+    ].filter(m => m.home && m.away),
+  };
 }
 
 // ══ COUNTDOWN TIMER ════════════════════════════════════════════════
@@ -536,22 +566,20 @@ function renderMatchAndKPI(results, kpiData){
 
 // ══ RENDER THIS WEEK FIXTURES (OVERVIEW) ════════════════════════
 function renderFixturesSummary(fixtureRows){
-  const wkRow = fixtureRows.find(r => +r['Week'] === currentWeek);
-  document.getElementById('fx-head').textContent = `Week ${currentWeek} Fixtures`;
-  if(!wkRow){ document.getElementById('fx-body').innerHTML = '<div class="error-msg">No fixture data found.</div>'; return; }
-  const matches = [
-    {h: wkRow['Home Team']||wkRow['Home Team_0'], a: wkRow['Away Team']||wkRow['Away Team_0']},
-    {h: wkRow['Home Team_1']||wkRow['Home Team.1'], a: wkRow['Away Team_1']||wkRow['Away Team.1']},
-    {h: wkRow['Home Team_2']||wkRow['Home Team.2'], a: wkRow['Away Team_2']||wkRow['Away Team.2']},
-  ].filter(m => m.h && m.h.toString().trim());
-  const bye = wkRow['Bye Team']||wkRow['Bye']||'';
-  document.getElementById('fx-body').innerHTML = matches.map(m=>`
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:7px;border:1px solid rgba(255,255,255,0.06);">
-      <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:var(--gold2)">${TEAM_ICONS[m.h]||'⚽'} ${m.h}</span>
+  document.getElementById('fx-head').textContent = `Week ${currentWeek} — All Fixtures`;
+  const parsed = fixtureRows.map(parseFixtureRow).find(f => f.week === currentWeek);
+  if(!parsed || !parsed.matches.length){
+    document.getElementById('fx-body').innerHTML = '<div class="error-msg">No fixtures found for Week ' + currentWeek + '. Check that sheet "2_Fixtures" is shared publicly.</div>';
+    return;
+  }
+  document.getElementById('fx-body').innerHTML =
+    parsed.matches.map((m,i) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;border:1px solid rgba(255,255,255,0.07);">
+      <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:var(--gold2)">${TEAM_ICONS[m.home]||'⚽'} ${m.home}</span>
       <span style="background:rgba(242,181,58,0.15);border:1px solid rgba(242,181,58,0.3);border-radius:5px;padding:2px 8px;font-family:'Oswald',sans-serif;font-size:10px;font-weight:700;color:var(--gold)">VS</span>
-      <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:var(--cyan)">${TEAM_ICONS[m.a]||'⚽'} ${m.a}</span>
+      <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:var(--cyan)">${TEAM_ICONS[m.away]||'⚽'} ${m.away}</span>
     </div>`).join('')
-  + (bye ? `<div style="text-align:center;font-size:11px;color:var(--red);font-style:italic;margin-top:6px;">🛌 ${bye} — Bye Week (Resting)</div>` : '');
+    + (parsed.bye ? `<div style="text-align:center;font-size:11px;color:var(--red);font-style:italic;margin-top:6px;">🛌 ${parsed.bye} — Bye Week (Resting)</div>` : '');
 }
 
 // ══ RENDER FORM GUIDE ════════════════════════════════════════════
@@ -587,15 +615,14 @@ function renderForm(results, leagueRows){
 
 // ══ RENDER CURRENT MATCHES TAB ═══════════════════════════════════
 function renderCurrentMatches(results, kpiData, fixtureRows){
-  const wkRow = fixtureRows.find(r => +r['Week'] === currentWeek);
+  const parsed = fixtureRows.map(parseFixtureRow).find(f => f.week === currentWeek);
   const wkResults = results.filter(r => +r['Week No.']===currentWeek || +r['Week']===currentWeek);
-  if(!wkRow){ document.getElementById('current-matches-body').innerHTML='<div class="error-msg">No fixture data for current week.</div>'; return; }
-  const matchDefs = [
-    {h:wkRow['Home Team']||wkRow['Home Team_0'], a:wkRow['Away Team']||wkRow['Away Team_0']},
-    {h:wkRow['Home Team_1']||wkRow['Home Team.1'], a:wkRow['Away Team_1']||wkRow['Away Team.1']},
-    {h:wkRow['Home Team_2']||wkRow['Home Team.2'], a:wkRow['Away Team_2']||wkRow['Away Team.2']},
-  ].filter(m=>m.h&&m.h.toString().trim());
-  const bye = wkRow['Bye Team']||'';
+  if(!parsed || !parsed.matches.length){
+    document.getElementById('current-matches-body').innerHTML='<div class="error-msg">No fixture data for Week '+currentWeek+'. Make sure the Google Sheet is set to "Anyone with the link can view".</div>';
+    return;
+  }
+  const matchDefs = parsed.matches.map(m => ({h: m.home, a: m.away}));
+  const bye = parsed.bye;
   const kpiCols = [
     ['RT Goal  (H/A/D)','RT Goal (H/A/D)','RT Goal'],
     ['NCR Goal  (H/A/D)','NCR Goal (H/A/D)','NCR Goal'],
@@ -660,27 +687,26 @@ function renderCurrentMatches(results, kpiData, fixtureRows){
 
 // ══ RENDER FULL SCHEDULE ════════════════════════════════════════
 function renderSchedule(fixtureRows){
+  const parsed = fixtureRows.map(parseFixtureRow).filter(f => f.week > 0);
   document.getElementById('schedule-body').innerHTML = `
     <table class="schedule-table">
       <thead><tr><th>Wk</th><th>Dates</th><th>Match 1</th><th>Match 2</th><th>Match 3</th><th>Bye</th><th>Status</th></tr></thead>
-      <tbody>${fixtureRows.filter(r=>r['Week']).map(r=>{
-        const wk = +r['Week'];
-        const isCurrent = wk === currentWeek;
-        const status = r['Status']||r['status']||'Upcoming';
-        const spCls = status.toLowerCase().includes('complet')?'sp-done':status.toLowerCase().includes('active')||isCurrent?'sp-active':'sp-upcoming';
-        const spTxt = isCurrent?'● LIVE':status;
-        const h1=r['Home Team']||r['Home Team_0']||'',a1=r['Away Team']||r['Away Team_0']||'';
-        const h2=r['Home Team_1']||r['Home Team.1']||'',a2=r['Away Team_1']||r['Away Team.1']||'';
-        const h3=r['Home Team_2']||r['Home Team.2']||'',a3=r['Away Team_2']||r['Away Team.2']||'';
-        const bye=r['Bye Team']||r['Bye']||'';
-        const rowCls=isCurrent?'current-wk':status.toLowerCase().includes('complet')?'completed':'';
+      <tbody>${parsed.map(f => {
+        const isCurrent = f.week === currentWeek;
+        const status = f.status || 'Upcoming';
+        const spCls = status.toLowerCase().includes('complet') ? 'sp-done'
+                    : (status.toLowerCase().includes('active') || isCurrent) ? 'sp-active'
+                    : 'sp-upcoming';
+        const spTxt = isCurrent ? '● LIVE' : status;
+        const rowCls = isCurrent ? 'current-wk' : status.toLowerCase().includes('complet') ? 'completed' : '';
+        const fp = (h,a) => h ? `<div class="fixture-pair"><span class="fp-home">${h}</span><span class="fp-vs">vs</span><span class="fp-away">${a}</span></div>` : '';
         return `<tr class="${rowCls}">
-          <td class="wk-num">${wk}</td>
-          <td style="font-size:11px;color:var(--dim)">${r['Date Range']||''}</td>
-          <td><div class="fixture-pair"><span class="fp-home">${h1}</span><span class="fp-vs">vs</span><span class="fp-away">${a1}</span></div></td>
-          <td><div class="fixture-pair"><span class="fp-home">${h2}</span><span class="fp-vs">vs</span><span class="fp-away">${a2}</span></div></td>
-          <td><div class="fixture-pair"><span class="fp-home">${h3}</span><span class="fp-vs">vs</span><span class="fp-away">${a3}</span></div></td>
-          <td class="bye-tag">${bye?'🛌 '+bye:''}</td>
+          <td class="wk-num">${f.week}</td>
+          <td style="font-size:11px;color:var(--dim)">${f.dateRange}</td>
+          <td>${fp(f.home1,f.away1)}</td>
+          <td>${fp(f.home2,f.away2)}</td>
+          <td>${fp(f.home3,f.away3)}</td>
+          <td class="bye-tag">${f.bye ? '🛌 '+f.bye : ''}</td>
           <td><span class="status-pill ${spCls}">${spTxt}</span></td>
         </tr>`;
       }).join('')}</tbody>
@@ -726,11 +752,12 @@ async function loadAll(){
       fetchSheet(SHEETS.kpi),
       fetchSheet(SHEETS.revival),
     ]);
-    const leagueRows  = leagueData.rows.filter(r=>r['Team']||r['Pos']);
-    const resultsRows = resultsData.rows.filter(r=>r['Home Team']||r['Home Team']!==undefined);
-    const fixtureRows = fixtureData.rows.filter(r=>r['Week']);
-    const kpiRows     = kpiData.rows.filter(r=>r['Week']&&r['Team Name']);
-    const revivalRows = revivalData.rows.filter(r=>r['Team']||r['Branch ID']);
+    const leagueRows  = leagueData.rows.filter(r => r['Team'] || r['Pos']);
+    const resultsRows = resultsData.rows.filter(r => r['Home Team'] !== undefined);
+    // Pass ALL fixture rows (incl. header noise) — parseFixtureRow filters by week > 0
+    const fixtureRows = fixtureData.rows;
+    const kpiRows     = kpiData.rows.filter(r => r['Week'] && r['Team Name']);
+    const revivalRows = revivalData.rows.filter(r => r['Team'] || r['Branch ID']);
     renderLeague(leagueRows);
     renderMatchAndKPI(resultsRows, kpiRows);
     renderFixturesSummary(fixtureRows);
