@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PACE 2026 — Live Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── VARIABLES ───────────────────────────────────────────────────── */
+:root{
+  --navy:#061425; --navy2:#0A2238; --card:#0E2F4D; --card2:#0B2640;
+  --gold:#F2B53A; --gold2:#FFD673; --cyan:#39C7E8; --green:#2ECC71;
+  --purple:#9B7BD8; --red:#E96A6A; --orange:#E8A23F;
+  --line:rgba(255,255,255,0.10); --txt:#EAF2FA; --dim:#9FB6CA;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;color:var(--txt);min-height:100vh;
+  background:radial-gradient(ellipse at 15% 0%,rgba(46,204,113,0.15),transparent 45%),
+             radial-gradient(ellipse at 100% 100%,rgba(57,199,232,0.10),transparent 50%),
+             linear-gradient(160deg,var(--navy) 0%,var(--navy2) 55%,#07304a 100%);
+  padding:16px;}
+.wrap{max-width:1400px;margin:0 auto;}
+
+/* ── STATUS BAR ─────────────────────────────────────────────────── */
+.status-bar{
+  display:flex;align-items:center;gap:12px;
+  background:rgba(0,0,0,0.25);border:1px solid var(--line);
+  border-radius:10px;padding:8px 16px;margin-bottom:14px;font-size:11.5px;
+}
+.pulse{width:8px;height:8px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 8px var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.status-bar .msg{color:var(--dim);}
+.status-bar .msg b{color:var(--green);}
+.status-bar .msg.err b{color:var(--red);}
+.refresh-info{margin-left:auto;color:var(--dim);font-size:10.5px;}
+.refresh-btn{
+  background:rgba(242,181,58,0.15);border:1px solid rgba(242,181,58,0.3);
+  color:var(--gold);font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:.06em;
+  text-transform:uppercase;padding:4px 12px;border-radius:6px;cursor:pointer;
+  transition:all .2s;
+}
+.refresh-btn:hover{background:rgba(242,181,58,0.25);}
+
+/* ── HEADER ─────────────────────────────────────────────────────── */
+.header{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;margin-bottom:16px;}
+.crest{
+  width:76px;height:86px;flex-shrink:0;
+  background:linear-gradient(160deg,#1c3f5e,#0a1f33);
+  clip-path:polygon(50% 0%,100% 18%,100% 60%,50% 100%,0% 60%,0% 18%);
+  border:2px solid var(--gold);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  box-shadow:0 0 22px rgba(242,181,58,0.3);
+}
+.crest b{font-family:'Oswald',sans-serif;font-size:13px;color:var(--gold2);}
+.crest span{font-family:'Oswald',sans-serif;font-size:16px;font-weight:700;}
+.title-block .eyebrow{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:.1em;color:var(--gold2);text-transform:uppercase;}
+.title-block h1{font-family:'Oswald',sans-serif;font-weight:700;font-size:clamp(18px,2.4vw,26px);line-height:1.1;text-transform:uppercase;margin-top:2px;}
+.title-block h1 span{color:var(--cyan);font-weight:500;}
+.badges{display:flex;gap:8px;flex-wrap:wrap;}
+.bdg{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:6px 12px;text-align:center;min-width:72px;}
+.bdg .ic{font-size:15px;}
+.bdg .lb{font-family:'Oswald',sans-serif;font-size:9px;letter-spacing:.05em;color:var(--dim);text-transform:uppercase;margin-top:1px;}
+.bdg.hi .lb{color:var(--green);font-weight:700;}
+.bdg .val{font-family:'Oswald',sans-serif;font-size:13px;font-weight:700;color:var(--gold2);}
+
+/* ── KPI PILLS ──────────────────────────────────────────────────── */
+.kpi-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.kpi-pill{font-family:'Oswald',sans-serif;font-size:9.5px;letter-spacing:.04em;text-transform:uppercase;padding:3px 10px;border-radius:10px;border:1px solid;}
+
+/* ── TABS ───────────────────────────────────────────────────────── */
+.tabs{display:flex;gap:4px;margin-bottom:14px;border-bottom:1px solid var(--line);padding-bottom:0;}
+.tab{
+  font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:.06em;text-transform:uppercase;
+  padding:9px 18px;border-radius:8px 8px 0 0;cursor:pointer;
+  border:1px solid transparent;border-bottom:none;color:var(--dim);
+  transition:all .2s;background:transparent;
+}
+.tab:hover{color:var(--txt);background:rgba(255,255,255,0.04);}
+.tab.active{
+  color:var(--gold2);background:var(--card);
+  border-color:var(--line);border-bottom:1px solid var(--card);
+  margin-bottom:-1px;
+}
+.tab .badge-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-left:6px;box-shadow:0 0 6px var(--green);}
+
+/* ── PANEL ──────────────────────────────────────────────────────── */
+.panel{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+.ph{background:linear-gradient(90deg,var(--gold),#C9881F);color:#1a1100;font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;}
+.ph.alt{background:linear-gradient(90deg,#0E2F4D,#1a4a73);color:var(--cyan);}
+.ph.grn{background:linear-gradient(90deg,#0d3a1c,#1a5c2c);color:var(--green);}
+.pb{padding:12px 14px 14px;}
+
+/* ── LEAGUE TABLE ───────────────────────────────────────────────── */
+table{width:100%;border-collapse:collapse;font-size:11.5px;}
+thead th{font-family:'Oswald',sans-serif;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--dim);text-align:center;padding:6px 3px;border-bottom:1px solid var(--line);}
+thead th:nth-child(2){text-align:left;}
+tbody td{padding:6px 3px;text-align:center;color:var(--txt);}
+tbody td:nth-child(2){text-align:left;font-weight:600;font-family:'Oswald',sans-serif;font-size:11.5px;}
+tbody tr{border-bottom:1px solid rgba(255,255,255,0.04);}
+tbody tr:nth-child(1){background:rgba(46,204,113,0.15);}
+tbody tr:nth-child(2){background:rgba(57,199,232,0.09);}
+tbody tr:nth-child(3){background:rgba(242,181,58,0.09);}
+.sw{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:6px;vertical-align:1px;}
+.pos{color:var(--dim);font-family:'Oswald',sans-serif;}
+.pts{font-weight:800;color:var(--gold2);font-size:13px;}
+.gd-pos{color:var(--green);}
+.gd-neg{color:var(--red);}
+
+/* ── MATCH CARD ─────────────────────────────────────────────────── */
+.match-card{background:linear-gradient(180deg,rgba(255,255,255,0.04),transparent),var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+.match-header{background:linear-gradient(90deg,rgba(242,181,58,0.15),rgba(57,199,232,0.10));padding:8px 14px;display:flex;align-items:center;justify-content:space-between;}
+.match-wk{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold2);}
+.match-status{font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:2px 10px;border-radius:8px;}
+.match-status.live{background:rgba(46,204,113,0.2);color:var(--green);border:1px solid rgba(46,204,113,0.3);}
+.match-status.done{background:rgba(255,255,255,0.06);color:var(--dim);}
+.match-body{padding:14px;}
+.vs-grid{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin-bottom:12px;}
+.vs-team{text-align:center;}
+.shield{width:46px;height:46px;margin:0 auto 5px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:20px;border:2px solid var(--gold);background:linear-gradient(160deg,#16314d,#0a1d30);}
+.shield.away{border-color:var(--cyan);}
+.vs-team .nm{font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;text-transform:uppercase;}
+.vs-mid{font-family:'Oswald',sans-serif;font-weight:700;color:var(--gold2);font-size:12px;text-align:center;}
+.score-row{display:flex;justify-content:center;align-items:center;gap:12px;margin-bottom:8px;}
+.score-n{font-family:'Oswald',sans-serif;font-weight:700;font-size:40px;line-height:1;}
+.score-dash{font-family:'Oswald',sans-serif;font-size:20px;color:var(--dim);}
+
+/* ── GOAL TRACKER ───────────────────────────────────────────────── */
+.goal-item{margin-bottom:10px;}
+.goal-item:last-child{margin-bottom:0;}
+.goal-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;}
+.goal-lbl{font-size:10.5px;font-weight:600;}
+.goal-chip{font-family:'Oswald',sans-serif;font-size:9px;font-weight:700;letter-spacing:.04em;padding:2px 7px;border-radius:8px;text-transform:uppercase;flex-shrink:0;}
+.gc-h{background:var(--gold);color:#1a1100;}
+.gc-a{background:var(--cyan);color:#0a1f33;}
+.gc-d{background:#555;color:#fff;}
+.gc-p{background:rgba(255,255,255,0.1);color:var(--dim);}
+.bar-wrap{display:flex;align-items:center;gap:5px;}
+.bval{font-family:'Oswald',sans-serif;font-size:10px;color:var(--dim);width:30px;}
+.bval.r{text-align:right;}
+.btrack{flex:1;height:7px;border-radius:4px;background:rgba(255,255,255,0.08);overflow:hidden;display:flex;}
+.bf-h{height:100%;border-radius:4px 0 0 4px;transition:width .5s ease;}
+.bf-a{height:100%;border-radius:0 4px 4px 0;transition:width .5s ease;}
+
+/* ── CURRENT MATCHES TAB ────────────────────────────────────────── */
+.current-matches-grid{display:flex;flex-direction:column;gap:14px;}
+.cm-card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+.cm-header{background:linear-gradient(90deg,rgba(242,181,58,0.12),rgba(57,199,232,0.08));padding:10px 14px;display:flex;align-items:center;justify-content:space-between;}
+.cm-teams{font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;text-transform:uppercase;}
+.cm-teams .home{color:var(--gold2);}
+.cm-teams .vs{color:var(--dim);margin:0 8px;font-size:12px;}
+.cm-teams .away{color:var(--cyan);}
+.cm-score{font-family:'Oswald',sans-serif;font-weight:700;font-size:22px;}
+.cm-body{padding:12px 14px;}
+.cm-kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+.cm-kpi{background:rgba(255,255,255,0.04);border-radius:8px;padding:8px;border:1px solid var(--line);text-align:center;}
+.cm-kpi .ck-lbl{font-size:9.5px;color:var(--dim);font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px;}
+.cm-kpi .ck-h{font-weight:700;font-size:13px;}
+.cm-kpi .ck-a{font-size:12px;color:var(--dim);}
+.cm-kpi .ck-chip{font-family:'Oswald',sans-serif;font-size:9px;font-weight:700;padding:1px 6px;border-radius:5px;text-transform:uppercase;margin-top:3px;display:inline-block;}
+.bye-card{background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.12);border-radius:12px;padding:16px;text-align:center;color:var(--dim);font-family:'Oswald',sans-serif;letter-spacing:.04em;text-transform:uppercase;font-size:12px;}
+
+/* ── SCHEDULE TAB ───────────────────────────────────────────────── */
+.schedule-table{width:100%;border-collapse:collapse;font-size:12px;}
+.schedule-table thead th{font-family:'Oswald',sans-serif;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--dim);padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;}
+.schedule-table tbody td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:middle;}
+.schedule-table tbody tr.current-wk{background:rgba(242,181,58,0.08);border-left:3px solid var(--gold);}
+.schedule-table tbody tr.completed{opacity:.65;}
+.wk-num{font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:var(--gold2);}
+.fixture-pair{display:flex;gap:6px;align-items:center;}
+.fp-home{font-weight:600;color:var(--txt);}
+.fp-vs{color:var(--dim);font-size:10px;font-family:'Oswald',sans-serif;}
+.fp-away{color:var(--cyan);}
+.status-pill{font-family:'Oswald',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 10px;border-radius:8px;}
+.sp-done{background:rgba(46,204,113,0.15);color:var(--green);border:1px solid rgba(46,204,113,0.3);}
+.sp-active{background:rgba(242,181,58,0.15);color:var(--gold);border:1px solid rgba(242,181,58,0.3);}
+.sp-upcoming{background:rgba(255,255,255,0.06);color:var(--dim);border:1px solid rgba(255,255,255,0.1);}
+.bye-tag{font-size:10px;color:var(--red);font-style:italic;}
+
+/* ── COUNTDOWN ──────────────────────────────────────────────────── */
+.countdown-bar{
+  background:rgba(57,199,232,0.07);border:1px solid rgba(57,199,232,0.2);
+  border-radius:9px;padding:8px 14px;margin-bottom:12px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.cd-label{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);}
+.cd-val{font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;color:var(--cyan);}
+.cd-week{font-family:'Oswald',sans-serif;font-size:11px;color:var(--gold2);}
+
+/* ── GRIDS ──────────────────────────────────────────────────────── */
+.g2{display:grid;grid-template-columns:1.1fr 1fr;gap:14px;margin-bottom:14px;}
+.g3{display:grid;grid-template-columns:1.15fr 0.95fr 1fr;gap:14px;margin-bottom:14px;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* ── LOADING ────────────────────────────────────────────────────── */
+.loading{text-align:center;padding:40px;color:var(--dim);font-family:'Oswald',sans-serif;letter-spacing:.06em;text-transform:uppercase;}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid rgba(57,199,232,0.3);border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite;margin-right:10px;vertical-align:-4px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.error-msg{background:rgba(233,106,106,0.1);border:1px solid rgba(233,106,106,0.3);border-radius:9px;padding:12px 16px;color:var(--red);font-size:12.5px;margin:10px 0;}
+
+footer{text-align:center;color:var(--dim);font-size:10px;margin-top:18px;font-family:'Oswald',sans-serif;letter-spacing:.05em;text-transform:uppercase;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+  <div class="pulse" id="pulse-dot"></div>
+  <span class="msg" id="status-msg"><b>Connecting to Google Sheets…</b></span>
+  <span class="refresh-info" id="next-refresh">Auto-refresh every 5 min</span>
+  <button class="refresh-btn" onclick="loadAll()">↻ Refresh Now</button>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="crest"><b>PACE</b><span>2026</span></div>
+  <div class="title-block">
+    <div class="eyebrow">1 Jul – 30 Sep 2026 · AAE vs BEC · Double Round-Robin · Live from Google Sheets</div>
+    <h1>PACE 2026: <span>Performance And Customer Excellence</span></h1>
+  </div>
+  <div class="badges">
+    <div class="bdg"><div class="ic">📅</div><div class="lb">Match Week</div><div class="val" id="badge-week">—</div></div>
+    <div class="bdg"><div class="ic">⚽</div><div class="lb">5 KPIs</div><div class="val">5</div></div>
+    <div class="bdg"><div class="ic">🏆</div><div class="lb">42 Matches</div><div class="val">42</div></div>
+    <div class="bdg hi"><div class="ic">✅</div><div class="lb">7 Teams</div><div class="val">7</div></div>
+  </div>
+</div>
+
+<!-- KPI PILLS -->
+<div class="kpi-row">
+  <span class="kpi-pill" style="color:#F2B53A;border-color:rgba(242,181,58,0.4);">⚽ KPI 1 · Retail Remittance Txn %</span>
+  <span class="kpi-pill" style="color:#2ECC71;border-color:rgba(46,204,113,0.4);">⚽ KPI 2 · New Customer Registration %</span>
+  <span class="kpi-pill" style="color:#39C7E8;border-color:rgba(57,199,232,0.4);">⚽ KPI 3 · Inactive Customer Revival %</span>
+  <span class="kpi-pill" style="color:#E96A6A;border-color:rgba(233,106,106,0.4);">⚽ KPI 4 · INR Transaction %</span>
+  <span class="kpi-pill" style="color:#9B7BD8;border-color:rgba(155,123,216,0.4);">⚽ KPI 5 · EGP Transaction %</span>
+  <span class="kpi-pill" style="color:var(--dim);border-color:rgba(255,255,255,0.12);margin-left:auto;">Win=3pts · Draw=1pt · Loss=0pts</span>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('overview')">📊 Overview<span class="badge-dot"></span></div>
+  <div class="tab" onclick="switchTab('current')">⚽ Current Matches<span class="badge-dot"></span></div>
+  <div class="tab" onclick="switchTab('schedule')">📅 Full Schedule</div>
+  <div class="tab" onclick="switchTab('revival')">🔄 Revival Tracker</div>
+</div>
+
+<!-- ══ TAB: OVERVIEW ══════════════════════════════════════════════ -->
+<div class="tab-content active" id="tab-overview">
+
+  <!-- countdown -->
+  <div class="countdown-bar">
+    <span class="cd-week" id="cd-week">MATCH WEEK —</span>
+    <span class="cd-label">WEEK ENDS IN:</span>
+    <span class="cd-val" id="cd-val">calculating…</span>
+  </div>
+
+  <!-- TOP ROW: League Table | MOTW | KPI Tracker -->
+  <div class="g3">
+    <!-- League Table -->
+    <div class="panel">
+      <div class="ph" id="lt-head">League Table</div>
+      <div class="pb">
+        <div id="lt-body"><div class="loading"><span class="spinner"></span>Loading…</div></div>
+      </div>
+    </div>
+
+    <!-- Match of the Week -->
+    <div class="panel">
+      <div class="ph">Featured Match</div>
+      <div class="pb" id="motw-body"><div class="loading"><span class="spinner"></span>Loading…</div></div>
+    </div>
+
+    <!-- KPI Tracker -->
+    <div class="panel">
+      <div class="ph alt">KPI Goal Tracker — Live</div>
+      <div class="pb" id="kpi-body"><div class="loading"><span class="spinner"></span>Loading…</div></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM ROW: This Week Fixtures | Awards -->
+  <div class="g2">
+    <div class="panel">
+      <div class="ph alt" id="fx-head">This Week's Fixtures</div>
+      <div class="pb" id="fx-body"><div class="loading"><span class="spinner"></span>Loading…</div></div>
+    </div>
+    <div class="panel">
+      <div class="ph grn">Team Standings — Form Guide</div>
+      <div class="pb" id="form-body"><div class="loading"><span class="spinner"></span>Loading…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB: CURRENT MATCHES ═══════════════════════════════════════ -->
+<div class="tab-content" id="tab-current">
+  <div id="current-matches-body"><div class="loading"><span class="spinner"></span>Loading current week matches…</div></div>
+</div>
+
+<!-- ══ TAB: FULL SCHEDULE ══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-schedule">
+  <div class="panel">
+    <div class="ph">Full Match Schedule — All 14 Weeks</div>
+    <div class="pb">
+      <div id="schedule-body"><div class="loading"><span class="spinner"></span>Loading schedule…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB: REVIVAL TRACKER ════════════════════════════════════════ -->
+<div class="tab-content" id="tab-revival">
+  <div class="panel">
+    <div class="ph grn">Inactive Customer Revival Tracker</div>
+    <div class="pb" id="revival-body"><div class="loading"><span class="spinner"></span>Loading…</div></div>
+  </div>
+</div>
+
+<footer>PACE 2026 · Performance And Customer Excellence · AAE & BEC · Live Data via Google Sheets · Auto-refresh every 5 min</footer>
+</div>
+
+<script>
+// ══ CONFIG ════════════════════════════════════════════════════════
+const SHEET_ID   = '1557FClr0EfYrz2e7N0sSljRZE9ZujqiOckARLx8Jw_4';
+const REFRESH_MS = 5 * 60 * 1000; // 5 minutes
+const CAMPAIGN_START = new Date('2026-07-01');
+const CAMPAIGN_END   = new Date('2026-09-30');
+
+// Sheet tab names — must match exactly what's in your Google Sheet
+const SHEETS = {
+  league:   '5_League_Table',
+  results:  '4_Match_Results',
+  fixtures: '2_Fixtures',
+  kpi:      '3_Weekly_KPI_Data',
+  revival:  '8_Revival_Tracker',
+};
+
+const TEAM_COLORS = ['#2ECC71','#39C7E8','#F2B53A','#E96A6A','#9B7BD8','#5FD0A0','#E8A23F'];
+const TEAM_ICONS  = {
+  'Money Masters':'💰','Cash Kings':'👑','Revenue Titans':'⚡',
+  'Profit Pioneers':'🌟','Growth Giants':'🌱','Remittance Royals':'💎','Victory Strikers':'🔥'
+};
+const KPI_DEFS = [
+  {key:'RT', label:'Retail Txn %',   color:'#F2B53A'},
+  {key:'NCR',label:'NCR %',          color:'#2ECC71'},
+  {key:'Rev',label:'Revival %',      color:'#39C7E8'},
+  {key:'INR',label:'INR Txn %',      color:'#E96A6A'},
+  {key:'EGP',label:'EGP Txn %',      color:'#9B7BD8'},
+];
+
+// ══ CURRENT WEEK DETECTION ════════════════════════════════════════
+function getCurrentWeek(){
+  const now = new Date();
+  if(now < CAMPAIGN_START) return 1;
+  if(now > CAMPAIGN_END)   return 14;
+  const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+  const elapsed   = now - CAMPAIGN_START;
+  return Math.min(14, Math.floor(elapsed / msPerWeek) + 1);
+}
+
+function getWeekEndDate(weekNum){
+  const ms = CAMPAIGN_START.getTime() + (weekNum * 7 - 1) * 86400000;
+  return new Date(ms);
+}
+
+// ══ GOOGLE SHEETS FETCH ═══════════════════════════════════════════
+async function fetchSheet(sheetName){
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+  const resp = await fetch(url);
+  if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  const text = await resp.text();
+  const json = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1));
+  return gvizToArray(json);
+}
+
+function gvizToArray(json){
+  const cols = json.table.cols.map(c => c.label || c.id);
+  const rows = (json.table.rows || []).map(r =>
+    Object.fromEntries(cols.map((c,i) => [c, r.c[i] ? (r.c[i].v ?? '') : '']))
+  );
+  return {cols, rows};
+}
+
+// ══ COUNTDOWN TIMER ════════════════════════════════════════════════
+let currentWeek = getCurrentWeek();
+function updateCountdown(){
+  const end = getWeekEndDate(currentWeek);
+  end.setHours(23,59,59);
+  const now = new Date();
+  const diff = end - now;
+  document.getElementById('cd-week').textContent = `MATCH WEEK ${currentWeek}`;
+  document.getElementById('badge-week').textContent = currentWeek;
+  if(diff <= 0){
+    document.getElementById('cd-val').textContent = 'FINAL WHISTLE!';
+    return;
+  }
+  const d = Math.floor(diff/86400000);
+  const h = Math.floor((diff%86400000)/3600000);
+  const m = Math.floor((diff%3600000)/60000);
+  const s = Math.floor((diff%60000)/1000);
+  document.getElementById('cd-val').textContent = `${d}d ${h}h ${m}m ${s}s`;
+}
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+// ══ TAB SWITCHING ════════════════════════════════════════════════
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    const names = ['overview','current','schedule','revival'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+}
+
+// ══ RENDER LEAGUE TABLE ══════════════════════════════════════════
+function renderLeague(rows){
+  const valid = rows.filter(r => r['Team'] || r['Pos']);
+  if(!valid.length){ document.getElementById('lt-body').innerHTML = '<div class="error-msg">No league data in sheet yet.</div>'; return; }
+  const sorted = valid.sort((a,b) => (+b['Pts']||0) - (+a['Pts']||0) || ((+b['GF']||0)-(+b['GA']||0)) - ((+a['GF']||0)-(+a['GA']||0)));
+  document.getElementById('lt-head').textContent = `League Table — Week ${currentWeek}`;
+  document.getElementById('lt-body').innerHTML = `
+    <table>
+      <thead><tr><th>Pos</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead>
+      <tbody>${sorted.map((r,i)=>{
+        const gd = (+r['GF']||0)-(+r['GA']||0);
+        return `<tr>
+          <td class="pos">${i+1}</td>
+          <td><span class="sw" style="background:${TEAM_COLORS[i%7]}"></span>${r['Team']||r['Area']||''}</td>
+          <td>${r['P']||0}</td><td>${r['W']||0}</td><td>${r['D']||0}</td><td>${r['L']||0}</td>
+          <td>${r['GF']||0}</td><td>${r['GA']||0}</td>
+          <td class="${gd>0?'gd-pos':gd<0?'gd-neg':''}">${gd>=0?'+':''}${gd}</td>
+          <td class="pts">${r['Pts']||0}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+}
+
+// ══ RENDER MATCH OF THE WEEK & KPI TRACKER ═══════════════════════
+function renderMatchAndKPI(results, kpiData){
+  // Get current week's matches
+  const wkMatches = results.filter(r => +r['Week No.'] === currentWeek || +r['Week'] === currentWeek);
+  // Featured match = first of this week
+  const match = wkMatches[0];
+  if(!match){
+    document.getElementById('motw-body').innerHTML = '<div class="error-msg">No match data for current week yet.</div>';
+    document.getElementById('kpi-body').innerHTML = '';
+    return;
+  }
+  const homeTeam = match['Home Team'] || '';
+  const awayTeam = match['Away Team'] || '';
+  // Parse KPI goals
+  const kpiCols = [
+    ['RT Goal  (H/A/D)','RT Goal (H/A/D)','RT Goal'],
+    ['NCR Goal  (H/A/D)','NCR Goal (H/A/D)','NCR Goal'],
+    ['Revival Goal  (H/A/D)','Revival Goal (H/A/D)','Revival Goal'],
+    ['INR Goal  (H/A/D)','INR Goal (H/A/D)','INR Goal'],
+    ['EGP Goal  (H/A/D)','EGP Goal (H/A/D)','EGP Goal'],
+  ];
+  const kpiResults = kpiCols.map(variants => {
+    for(const v of variants){ if(match[v] !== undefined && match[v] !== '') return match[v]; }
+    return '';
+  });
+  let hGoals = 0, aGoals = 0;
+  kpiResults.forEach(v => { if(v==='H') hGoals++; else if(v==='A') aGoals++; });
+  // Get KPI % values
+  const wk = currentWeek;
+  function getKPI(team, colVariants){
+    const row = kpiData.find(r => (+r['Week']===wk) && (r['Team Name']||'').trim() === team.trim());
+    if(!row) return null;
+    for(const v of colVariants){ if(row[v] !== undefined && row[v] !== '') return parseFloat(row[v]); }
+    return null;
+  }
+  const achCols = [
+    ['Retail Txn  Achiev %','Retail Txn Achiev %'],
+    ['NCR Achiev %'],
+    ['Revival Achiev %'],
+    ['INR Txn  Achiev %','INR Txn Achiev %'],
+    ['EGP Txn  Achiev %','EGP Txn Achiev %'],
+  ];
+  const homeKPIs = achCols.map(v => getKPI(homeTeam, v));
+  const awayKPIs = achCols.map(v => getKPI(awayTeam, v));
+  // MOTW
+  const hIcon = TEAM_ICONS[homeTeam]||'⚽';
+  const aIcon = TEAM_ICONS[awayTeam]||'⚽';
+  const hasData = kpiResults.some(v => v !== '');
+  document.getElementById('motw-body').innerHTML = `
+    <div class="vs-grid">
+      <div class="vs-team">
+        <div class="shield">${hIcon}</div>
+        <div class="nm" style="color:var(--gold2)">${homeTeam}</div>
+      </div>
+      <div class="vs-mid">VS</div>
+      <div class="vs-team">
+        <div class="shield away">${aIcon}</div>
+        <div class="nm" style="color:var(--cyan)">${awayTeam}</div>
+      </div>
+    </div>
+    <div class="score-row">
+      <span class="score-n" style="color:var(--gold2)">${hGoals}</span>
+      <span class="score-dash">—</span>
+      <span class="score-n" style="color:var(--cyan)">${aGoals}</span>
+    </div>
+    <div style="text-align:center;font-family:'Oswald',sans-serif;font-size:11px;color:var(--dim);">
+      ${hasData ? (hGoals>aGoals?'<span style="color:var(--gold2)">'+homeTeam+' LEADING</span>':hGoals<aGoals?'<span style="color:var(--cyan)">'+awayTeam+' LEADING</span>':'<span style="color:var(--dim)">LEVEL — DRAW</span>'):'Awaiting KPI data entry'}
+    </div>`;
+  // KPI Tracker
+  document.getElementById('kpi-body').innerHTML = KPI_DEFS.map((kpi,i) => {
+    const hv = homeKPIs[i] !== null ? Math.round(homeKPIs[i]*100) : null;
+    const av = awayKPIs[i] !== null ? Math.round(awayKPIs[i]*100) : null;
+    const res = kpiResults[i];
+    let chipCls='gc-p', chipTxt='Pending';
+    if(res==='H'){ chipCls='gc-h'; chipTxt='HOME GOAL ⚽'; }
+    else if(res==='A'){ chipCls='gc-a'; chipTxt='AWAY GOAL ⚽'; }
+    else if(res==='D'){ chipCls='gc-d'; chipTxt='DRAW'; }
+    const hvLabel = hv !== null ? hv+'%' : '—';
+    const avLabel = av !== null ? av+'%' : '—';
+    const total = (hv||0)+(av||0);
+    const hw = total ? Math.round((hv||0)/total*100) : 50;
+    const aw = 100-hw;
+    return `<div class="goal-item">
+      <div class="goal-top">
+        <span class="goal-lbl" style="color:${kpi.color}">${kpi.label}</span>
+        <span class="goal-chip ${chipCls}">${chipTxt}</span>
+      </div>
+      <div class="bar-wrap">
+        <span class="bval r">${hvLabel}</span>
+        <div class="btrack">
+          <div class="bf-h" style="width:${hw}%;background:${kpi.color}"></div>
+          <div class="bf-a" style="width:${aw}%;background:#1a7a99"></div>
+        </div>
+        <span class="bval">${avLabel}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══ RENDER THIS WEEK FIXTURES (OVERVIEW) ════════════════════════
+function renderFixturesSummary(fixtureRows){
+  const wkRow = fixtureRows.find(r => +r['Week'] === currentWeek);
+  document.getElementById('fx-head').textContent = `Week ${currentWeek} Fixtures`;
+  if(!wkRow){ document.getElementById('fx-body').innerHTML = '<div class="error-msg">No fixture data found.</div>'; return; }
+  const matches = [
+    {h: wkRow['Home Team']||wkRow['Home Team_0'], a: wkRow['Away Team']||wkRow['Away Team_0']},
+    {h: wkRow['Home Team_1']||wkRow['Home Team.1'], a: wkRow['Away Team_1']||wkRow['Away Team.1']},
+    {h: wkRow['Home Team_2']||wkRow['Home Team.2'], a: wkRow['Away Team_2']||wkRow['Away Team.2']},
+  ].filter(m => m.h && m.h.toString().trim());
+  const bye = wkRow['Bye Team']||wkRow['Bye']||'';
+  document.getElementById('fx-body').innerHTML = matches.map(m=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:7px;border:1px solid rgba(255,255,255,0.06);">
+      <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:var(--gold2)">${TEAM_ICONS[m.h]||'⚽'} ${m.h}</span>
+      <span style="background:rgba(242,181,58,0.15);border:1px solid rgba(242,181,58,0.3);border-radius:5px;padding:2px 8px;font-family:'Oswald',sans-serif;font-size:10px;font-weight:700;color:var(--gold)">VS</span>
+      <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:var(--cyan)">${TEAM_ICONS[m.a]||'⚽'} ${m.a}</span>
+    </div>`).join('')
+  + (bye ? `<div style="text-align:center;font-size:11px;color:var(--red);font-style:italic;margin-top:6px;">🛌 ${bye} — Bye Week (Resting)</div>` : '');
+}
+
+// ══ RENDER FORM GUIDE ════════════════════════════════════════════
+function renderForm(results, leagueRows){
+  const teamForm = {};
+  results.forEach(r => {
+    const wk = +r['Week No.']||+r['Week']||0;
+    const home = r['Home Team']||'', away = r['Away Team']||'';
+    const hPts = +r['Home Pts']||0, aPts = +r['Away Pts']||0;
+    if(!home) return;
+    if(!teamForm[home]) teamForm[home]=[];
+    if(!teamForm[away]) teamForm[away]=[];
+    if(hPts===3) teamForm[home].push('W');
+    else if(hPts===1) teamForm[home].push('D');
+    else if(r['Result']) teamForm[home].push('L');
+    if(aPts===3) teamForm[away].push('W');
+    else if(aPts===1) teamForm[away].push('D');
+    else if(r['Result']) teamForm[away].push('L');
+  });
+  const teams = leagueRows.filter(r=>r['Team']).sort((a,b)=>(+b['Pts']||0)-(+a['Pts']||0));
+  document.getElementById('form-body').innerHTML = teams.map((t,i)=>{
+    const form = (teamForm[t['Team']]||[]).slice(-5);
+    const icon = TEAM_ICONS[t['Team']]||'⚽';
+    return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+      <span style="font-family:'Oswald',sans-serif;font-size:10px;color:var(--dim);width:16px;text-align:center;">${i+1}</span>
+      <span style="font-size:13px">${icon}</span>
+      <span style="font-family:'Oswald',sans-serif;font-weight:600;font-size:12px;flex:1">${t['Team']}</span>
+      <span style="font-family:'Oswald',sans-serif;font-weight:800;font-size:13px;color:var(--gold2);width:24px;text-align:right">${t['Pts']||0}</span>
+      <div style="display:flex;gap:3px;">${form.map(f=>`<span style="width:17px;height:17px;border-radius:3px;font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;font-family:'Oswald',sans-serif;background:${f==='W'?'#2E8B57':f==='D'?'#7A7A52':'#C0392B'};color:#fff">${f}</span>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══ RENDER CURRENT MATCHES TAB ═══════════════════════════════════
+function renderCurrentMatches(results, kpiData, fixtureRows){
+  const wkRow = fixtureRows.find(r => +r['Week'] === currentWeek);
+  const wkResults = results.filter(r => +r['Week No.']===currentWeek || +r['Week']===currentWeek);
+  if(!wkRow){ document.getElementById('current-matches-body').innerHTML='<div class="error-msg">No fixture data for current week.</div>'; return; }
+  const matchDefs = [
+    {h:wkRow['Home Team']||wkRow['Home Team_0'], a:wkRow['Away Team']||wkRow['Away Team_0']},
+    {h:wkRow['Home Team_1']||wkRow['Home Team.1'], a:wkRow['Away Team_1']||wkRow['Away Team.1']},
+    {h:wkRow['Home Team_2']||wkRow['Home Team.2'], a:wkRow['Away Team_2']||wkRow['Away Team.2']},
+  ].filter(m=>m.h&&m.h.toString().trim());
+  const bye = wkRow['Bye Team']||'';
+  const kpiCols = [
+    ['RT Goal  (H/A/D)','RT Goal (H/A/D)','RT Goal'],
+    ['NCR Goal  (H/A/D)','NCR Goal (H/A/D)','NCR Goal'],
+    ['Revival Goal  (H/A/D)','Revival Goal (H/A/D)','Revival Goal'],
+    ['INR Goal  (H/A/D)','INR Goal (H/A/D)','INR Goal'],
+    ['EGP Goal  (H/A/D)','EGP Goal (H/A/D)','EGP Goal'],
+  ];
+  const achCols=[['Retail Txn  Achiev %'],['NCR Achiev %'],['Revival Achiev %'],['INR Txn  Achiev %'],['EGP Txn  Achiev %']];
+  function getKPIPct(team,colVariants){
+    const row=kpiData.find(r=>(+r['Week']===currentWeek)&&(r['Team Name']||'').trim()===team.trim());
+    if(!row)return null;
+    for(const v of colVariants){if(row[v]!==undefined&&row[v]!=='')return parseFloat(row[v]);}
+    return null;
+  }
+  const html = matchDefs.map(m => {
+    const matchRes = wkResults.find(r=>(r['Home Team']||'').trim()===m.h.trim()&&(r['Away Team']||'').trim()===m.a.trim());
+    const kpiVals = kpiCols.map(variants=>{
+      if(!matchRes)return '';
+      for(const v of variants){if(matchRes[v]!==undefined&&matchRes[v]!=='')return matchRes[v];}
+      return '';
+    });
+    let hg=0,ag=0;
+    kpiVals.forEach(v=>{if(v==='H')hg++;else if(v==='A')ag++;});
+    const homeKPIs=achCols.map(v=>getKPIPct(m.h,v));
+    const awayKPIs=achCols.map(v=>getKPIPct(m.a,v));
+    const hasResult=kpiVals.some(v=>v!=='');
+    return `<div class="cm-card">
+      <div class="cm-header">
+        <div class="cm-teams">
+          <span class="home">${TEAM_ICONS[m.h]||'⚽'} ${m.h}</span>
+          <span class="vs">VS</span>
+          <span class="away">${TEAM_ICONS[m.a]||'⚽'} ${m.a}</span>
+        </div>
+        ${hasResult?`<div class="cm-score" style="color:var(--gold2)">${hg} — <span style="color:var(--cyan)">${ag}</span></div>`:'<div style="font-family:Oswald,sans-serif;font-size:11px;color:var(--dim);letter-spacing:.04em;text-transform:uppercase;">Awaiting Results</div>'}
+      </div>
+      <div class="cm-body">
+        <div class="cm-kpi-grid">
+          ${KPI_DEFS.map((kpi,i)=>{
+            const res=kpiVals[i];
+            const hv=homeKPIs[i]!==null?Math.round(homeKPIs[i]*100):null;
+            const av=awayKPIs[i]!==null?Math.round(awayKPIs[i]*100):null;
+            let chipStyle='background:rgba(255,255,255,0.08);color:var(--dim)',chipTxt='—';
+            if(res==='H'){chipStyle='background:rgba(242,181,58,0.2);color:var(--gold)';chipTxt='HOME ⚽';}
+            else if(res==='A'){chipStyle='background:rgba(57,199,232,0.2);color:var(--cyan)';chipTxt='AWAY ⚽';}
+            else if(res==='D'){chipStyle='background:rgba(255,255,255,0.1);color:#aaa';chipTxt='DRAW';}
+            return `<div class="cm-kpi" style="border-top:2px solid ${kpi.color}">
+              <div class="ck-lbl">${kpi.label}</div>
+              <div class="ck-h" style="color:${kpi.color}">${hv!==null?hv+'%':'—'}</div>
+              <div class="ck-a">${av!==null?av+'%':'—'}</div>
+              <span class="ck-chip" style="${chipStyle}">${chipTxt}</span>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('current-matches-body').innerHTML =
+    `<div style="font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:.05em;text-transform:uppercase;color:var(--gold2);margin-bottom:12px;">⚽ MATCH WEEK ${currentWeek} — ${wkRow['Date Range']||''}</div>`
+    + html
+    + (bye?`<div class="bye-card">🛌 ${bye} — Bye Week · Resting this match week</div>`:'');
+}
+
+// ══ RENDER FULL SCHEDULE ════════════════════════════════════════
+function renderSchedule(fixtureRows){
+  document.getElementById('schedule-body').innerHTML = `
+    <table class="schedule-table">
+      <thead><tr><th>Wk</th><th>Dates</th><th>Match 1</th><th>Match 2</th><th>Match 3</th><th>Bye</th><th>Status</th></tr></thead>
+      <tbody>${fixtureRows.filter(r=>r['Week']).map(r=>{
+        const wk = +r['Week'];
+        const isCurrent = wk === currentWeek;
+        const status = r['Status']||r['status']||'Upcoming';
+        const spCls = status.toLowerCase().includes('complet')?'sp-done':status.toLowerCase().includes('active')||isCurrent?'sp-active':'sp-upcoming';
+        const spTxt = isCurrent?'● LIVE':status;
+        const h1=r['Home Team']||r['Home Team_0']||'',a1=r['Away Team']||r['Away Team_0']||'';
+        const h2=r['Home Team_1']||r['Home Team.1']||'',a2=r['Away Team_1']||r['Away Team.1']||'';
+        const h3=r['Home Team_2']||r['Home Team.2']||'',a3=r['Away Team_2']||r['Away Team.2']||'';
+        const bye=r['Bye Team']||r['Bye']||'';
+        const rowCls=isCurrent?'current-wk':status.toLowerCase().includes('complet')?'completed':'';
+        return `<tr class="${rowCls}">
+          <td class="wk-num">${wk}</td>
+          <td style="font-size:11px;color:var(--dim)">${r['Date Range']||''}</td>
+          <td><div class="fixture-pair"><span class="fp-home">${h1}</span><span class="fp-vs">vs</span><span class="fp-away">${a1}</span></div></td>
+          <td><div class="fixture-pair"><span class="fp-home">${h2}</span><span class="fp-vs">vs</span><span class="fp-away">${a2}</span></div></td>
+          <td><div class="fixture-pair"><span class="fp-home">${h3}</span><span class="fp-vs">vs</span><span class="fp-away">${a3}</span></div></td>
+          <td class="bye-tag">${bye?'🛌 '+bye:''}</td>
+          <td><span class="status-pill ${spCls}">${spTxt}</span></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+}
+
+// ══ RENDER REVIVAL TRACKER ═══════════════════════════════════════
+function renderRevival(rows){
+  const valid = rows.filter(r=>r['Team']||r['Branch ID']);
+  document.getElementById('revival-body').innerHTML = `
+    <table>
+      <thead><tr><th>Team</th><th>Branch</th><th>Assigned</th><th>Target (20%)</th><th>Revived</th><th>Achievement</th><th>Sep Push</th></tr></thead>
+      <tbody>${valid.map(r=>{
+        const pct = parseFloat(r['Achievement %']||0);
+        const pctDisp = isNaN(pct) ? '—' : (pct*100).toFixed(1)+'%';
+        const isGood = pct >= 1;
+        return `<tr>
+          <td style="text-align:left;font-family:'Oswald',sans-serif;font-size:11px">${r['Team']||''}</td>
+          <td style="text-align:left;font-size:11px">${r['Branch Name']||''}</td>
+          <td>${r['Records Assigned']||0}</td>
+          <td style="color:var(--gold2)">${r['Target 20%']||400}</td>
+          <td style="color:${isGood?'var(--green)':'var(--red)'};font-weight:700">${r['Revived MTD']||r['Revival Actual']||0}</td>
+          <td style="color:${isGood?'var(--green)':'var(--red)'};font-weight:700">${pctDisp}</td>
+          <td style="color:var(--purple)">${r['Sep Push Records']||0}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+}
+
+// ══ MAIN LOAD ════════════════════════════════════════════════════
+let refreshTimer = null;
+async function loadAll(){
+  currentWeek = getCurrentWeek();
+  updateCountdown();
+  document.getElementById('pulse-dot').style.background='var(--gold)';
+  document.getElementById('pulse-dot').style.boxShadow='0 0 8px var(--gold)';
+  setStatus('Fetching data from Google Sheets…', false);
+  try{
+    const [leagueData, resultsData, fixtureData, kpiData, revivalData] = await Promise.all([
+      fetchSheet(SHEETS.league),
+      fetchSheet(SHEETS.results),
+      fetchSheet(SHEETS.fixtures),
+      fetchSheet(SHEETS.kpi),
+      fetchSheet(SHEETS.revival),
+    ]);
+    const leagueRows  = leagueData.rows.filter(r=>r['Team']||r['Pos']);
+    const resultsRows = resultsData.rows.filter(r=>r['Home Team']||r['Home Team']!==undefined);
+    const fixtureRows = fixtureData.rows.filter(r=>r['Week']);
+    const kpiRows     = kpiData.rows.filter(r=>r['Week']&&r['Team Name']);
+    const revivalRows = revivalData.rows.filter(r=>r['Team']||r['Branch ID']);
+    renderLeague(leagueRows);
+    renderMatchAndKPI(resultsRows, kpiRows);
+    renderFixturesSummary(fixtureRows);
+    renderForm(resultsRows, leagueRows);
+    renderCurrentMatches(resultsRows, kpiRows, fixtureRows);
+    renderSchedule(fixtureRows);
+    renderRevival(revivalRows);
+    const now = new Date();
+    setStatus(`Last updated: ${now.toLocaleTimeString()} — <b>Google Sheets connected</b>`, false);
+    document.getElementById('pulse-dot').style.background='var(--green)';
+    document.getElementById('pulse-dot').style.boxShadow='0 0 8px var(--green)';
+    scheduleNextRefresh();
+  } catch(err){
+    setStatus(`Connection error: ${err.message} — Check sharing settings (Anyone with link → Viewer)`, true);
+    document.getElementById('pulse-dot').style.background='var(--red)';
+    document.getElementById('pulse-dot').style.boxShadow='0 0 8px var(--red)';
+    console.error(err);
+    scheduleNextRefresh();
+  }
+}
+
+function setStatus(msg, isErr){
+  const el = document.getElementById('status-msg');
+  el.className = isErr ? 'msg err' : 'msg';
+  el.innerHTML = isErr ? `<b>⚠ ${msg}</b>` : msg;
+}
+
+function scheduleNextRefresh(){
+  if(refreshTimer) clearTimeout(refreshTimer);
+  let secs = REFRESH_MS / 1000;
+  const ri = document.getElementById('next-refresh');
+  const countdown = setInterval(()=>{
+    secs--;
+    const m = Math.floor(secs/60), s = secs%60;
+    ri.textContent = `Next refresh in ${m}:${String(s).padStart(2,'0')}`;
+    if(secs <= 0){ clearInterval(countdown); }
+  }, 1000);
+  refreshTimer = setTimeout(()=>{ clearInterval(countdown); loadAll(); }, REFRESH_MS);
+}
+
+// Start
+loadAll();
+</script>
+</body>
+</html>
