@@ -461,7 +461,6 @@ const SHEETS = {
   results:  '4_Match_Results',
   fixtures: '2_Fixtures',
   kpi:      '3_Weekly_KPI_Data',
-  revival:  '8_Revival_Tracker',
 };
 
 const TEAM_COLORS = ['#2ECC71','#39C7E8','#F2B53A','#E96A6A','#9B7BD8','#5FD0A0','#E8A23F'];
@@ -497,14 +496,40 @@ function getCurrentWeek(){
   const now = new Date();
   if(now < CAMPAIGN_START) return 1;
   if(now > CAMPAIGN_END)   return 14;
-  const msPerWeek = 7 * 24 * 60 * 60 * 1000;
-  const elapsed   = now - CAMPAIGN_START;
-  return Math.min(14, Math.floor(elapsed / msPerWeek) + 1);
+  return Math.min(14, Math.floor((now - CAMPAIGN_START) / (7*24*60*60*1000)) + 1);
+}
+function getWeekEndDate(weekNum){
+  return new Date(CAMPAIGN_START.getTime() + (weekNum * 7 - 1) * 86400000);
 }
 
-function getWeekEndDate(weekNum){
-  const ms = CAMPAIGN_START.getTime() + (weekNum * 7 - 1) * 86400000;
-  return new Date(ms);
+// Read current week from A3/B3 of 2_Fixtures sheet:
+//   A3 = date the user types (e.g. 7/23/2026)
+//   B3 = formula: =MAX(1,MIN(14,CEILING((A3-DATE(2026,7,1)+1)/7,1)))
+// In gviz: fixture data rows (A5:A18) have week numbers 1-14 in col-A.
+//          The control row (A3) has a DATE in col-A and week number in col-B.
+// We detect the control row: col-A is a date (not integer 1-14), col-B is 1-14.
+function extractWeekFromFixtures(fixtureData){
+  for(const row of (fixtureData.rows || [])){
+    const raw = row._raw || [];
+    if(!raw[0] || !raw[1]) continue;
+    const v0 = raw[0].v;  // col A value
+    const v1 = raw[1].v;  // col B value
+    // col B must be a week number 1-14
+    if(typeof v1 !== 'number' || v1 < 1 || v1 > 14) continue;
+    // col A must be a date — dates in gviz come as serial (large number) or "Date(...)" string
+    // Fixture data rows have col A = integer 1-14
+    const aIsSmallInt = typeof v0 === 'number' && v0 >= 1 && v0 <= 14;
+    const aIsDate     = !aIsSmallInt && (
+                          (typeof v0 === 'number' && v0 > 14) ||       // serial date
+                          (typeof v0 === 'string' && (v0.includes('Date(') || v0.includes('/')))
+                        );
+    if(aIsDate){
+      const wk = Math.round(v1);
+      console.log(`📅 Current week from fixtures A3/B3: ${wk}`);
+      return wk;
+    }
+  }
+  return null; // A3 blank → fall back to real date
 }
 
 // ══ GOOGLE SHEETS FETCH ═══════════════════════════════════════════
@@ -871,21 +896,26 @@ function renderSchedule(fixtureRows){
 // ══ MAIN LOAD ════════════════════════════════════════════════════
 let refreshTimer = null;
 async function loadAll(){
-  currentWeek = getCurrentWeek();
-  updateCountdown();
   document.getElementById('pulse-dot').style.background='var(--gold)';
   document.getElementById('pulse-dot').style.boxShadow='0 0 8px var(--gold)';
-  setStatus('Fetching data from Google Sheets…', false);
+  setStatus('Connecting to Google Sheets…', false);
   try{
-    const [leagueData, resultsData, fixtureData, kpiData] = await Promise.all([
+    // Step 1: fetch fixtures first — reads A3/B3 to get current week
+    const fixtureData = await fetchSheet(SHEETS.fixtures);
+    const weekFromSheet = extractWeekFromFixtures(fixtureData);
+    currentWeek = weekFromSheet !== null ? weekFromSheet : getCurrentWeek();
+    updateCountdown();
+    setStatus(`📅 Week ${currentWeek} — loading data…`, false);
+
+    // Step 2: fetch remaining sheets in parallel
+    const [leagueData, resultsData, kpiData] = await Promise.all([
       fetchSheet(SHEETS.league),
       fetchSheet(SHEETS.results),
-      fetchSheet(SHEETS.fixtures),
       fetchSheet(SHEETS.kpi),
     ]);
     const leagueRows  = leagueData.rows.filter(r => r['Team'] || r['Pos']);
     const resultsRows = resultsData.rows.filter(r => r['Home Team'] !== undefined);
-    const fixtureRows = fixtureData.rows;
+    const fixtureRows = fixtureData.rows;  // reuse already-fetched fixture data
     const kpiRows     = kpiData.rows.filter(r => r['Week'] && r['Team Name']);
     renderLeague(leagueRows, resultsRows);
     renderPrevWeekResults(resultsRows, kpiRows);
@@ -893,15 +923,16 @@ async function loadAll(){
     renderCurrentMatches(resultsRows, kpiRows, fixtureRows);
     renderSchedule(fixtureRows);
     const now = new Date();
-    setStatus(`Last updated: ${now.toLocaleTimeString()} — <b>Google Sheets connected</b>`, false);
+    const src = weekFromSheet !== null ? 'from fixtures A3/B3' : 'from today\'s date';
+    setStatus(`Updated: ${now.toLocaleTimeString()} — <b>Week ${currentWeek} (${src})</b>`, false);
     document.getElementById('pulse-dot').style.background='var(--green)';
     document.getElementById('pulse-dot').style.boxShadow='0 0 8px var(--green)';
     scheduleNextRefresh();
   } catch(err){
     const isNetwork = err.message.startsWith('HTTP') || err.message.includes('fetch');
     const msg = isNetwork
-      ? `Google Sheets connection failed (${err.message}) — make sure sharing is set to "Anyone with the link → Viewer"`
-      : `Script error: ${err.message} — check browser console (F12) for details`;
+      ? `Connection failed (${err.message}) — check sheet is set to "Anyone with link → Viewer"`
+      : `Script error: ${err.message} — open browser console (F12) for details`;
     setStatus(msg, true);
     document.getElementById('pulse-dot').style.background='var(--red)';
     document.getElementById('pulse-dot').style.boxShadow='0 0 8px var(--red)';
