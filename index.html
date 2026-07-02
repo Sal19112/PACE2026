@@ -758,22 +758,55 @@ function getKPIPct(kpiData, week, team, colVariants){
   return null;
 }
 
+// Read the week number from a Match Results row, tolerating different header
+// labels ("Week No.", "Week", "Match Week"…) and value formats (a bare number,
+// a "Week 3" string, etc.). Returns NaN when no week can be determined.
+function rowWeek(r){
+  const variants = ['Week No.','Week No','Week Number','Match Week','MatchWeek','Week','Wk','WK','week','wk'];
+  for(const v of variants){
+    const val = r[v];
+    if(val === undefined || val === null || val === '') continue;
+    if(typeof val === 'number') return Math.round(val);
+    const m = String(val).match(/\d+/);
+    if(m) return parseInt(m[0], 10);
+  }
+  return NaN;
+}
+
 // ══ RENDER PREVIOUS WEEK RESULTS (clickable) ═════════════════════
 let _kpiData = [];  // stored for click handler
 function renderPrevWeekResults(results, kpiData){
   _kpiData = kpiData;
-  const prevWk = currentWeek - 1;
+
+  const kpiEmpty = () => {
+    document.getElementById('kpi-body').innerHTML  = '<div style="text-align:center;padding:20px;color:var(--dim);font-size:12px;">Click a match result to see KPI breakdown.</div>';
+    document.getElementById('kpi-head').textContent = 'KPI Goals — Click a Match to View';
+  };
+
+  // Target: last week = current week − 1.
+  let prevWk = currentWeek - 1;
+  let prevResults = results.filter(r => rowWeek(r) === prevWk);
+
+  // Fallback: if last week has no results yet (or the sheet's week numbering
+  // lags the detected current week), show the most recent completed week that
+  // actually has results in the Match Results sheet.
+  if(!prevResults.length){
+    const completed = [...new Set(results.map(rowWeek))].filter(w => !isNaN(w) && w >= 1 && w < currentWeek);
+    if(completed.length){
+      prevWk = Math.max(...completed);
+      prevResults = results.filter(r => rowWeek(r) === prevWk);
+    }
+  }
+
   document.getElementById('prev-head').textContent = prevWk < 1 ? 'Previous Week Results' : `Week ${prevWk} — Results`;
   if(prevWk < 1){
     document.getElementById('prev-body').innerHTML = '<div style="text-align:center;padding:20px;color:var(--dim);font-size:12px;">Campaign just started — no previous week yet.</div>';
-    document.getElementById('kpi-body').innerHTML  = '<div style="text-align:center;padding:20px;color:var(--dim);font-size:12px;">Click a match result to see KPI breakdown.</div>';
-    document.getElementById('kpi-head').textContent = 'KPI Goals — Click a Match to View';
+    kpiEmpty();
     return;
   }
-  const prevResults = results.filter(r => +r['Week No.']===prevWk || +r['Week']===prevWk);
   if(!prevResults.length){
     document.getElementById('prev-body').innerHTML = `<div class="error-msg">No results found for Week ${prevWk} yet.</div>`;
-    document.getElementById('kpi-body').innerHTML  = '<div style="text-align:center;padding:20px;color:var(--dim);font-size:12px;">Click a match result to see KPI breakdown.</div>';
+    kpiEmpty();
     return;
   }
   document.getElementById('kpi-body').innerHTML = '<div style="text-align:center;padding:24px 10px;color:var(--dim);font-size:12px;line-height:1.6;">👆 Click a match card<br>to see the full KPI goal breakdown</div>';
@@ -877,7 +910,7 @@ function renderFixturesSummary(fixtureRows){
 // ══ RENDER CURRENT MATCHES TAB ═══════════════════════════════════
 function renderCurrentMatches(results, kpiData, fixtureRows){
   const parsed = fixtureRows.map(parseFixtureRow).find(f => f.week === currentWeek);
-  const wkResults = results.filter(r => +r['Week No.']===currentWeek || +r['Week']===currentWeek);
+  const wkResults = results.filter(r => rowWeek(r) === currentWeek);
   if(!parsed || !parsed.matches.length){
     document.getElementById('current-matches-body').innerHTML='<div class="error-msg">No fixture data for Week '+currentWeek+'. Make sure the Google Sheet is set to "Anyone with the link can view".</div>';
     return;
