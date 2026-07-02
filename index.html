@@ -243,6 +243,10 @@ footer::after{content:' ⚽';opacity:.5;}
   .tabs{gap:2px;}
   .tab{font-size:10px;padding:7px 10px;}
   .g2,.g3{grid-template-columns:1fr;gap:10px;margin-bottom:10px;}
+  .rk-2col{grid-template-columns:1fr!important;gap:10px;margin-bottom:10px;}
+  /* Format & Structure: stack label above value so long text isn't cramped */
+  .fmt-list > div{flex-direction:column;gap:2px;}
+  .fmt-list > div > span:first-child{min-width:0!important;font-size:11px;letter-spacing:.03em;text-transform:uppercase;}
   .cm-kpi-grid{grid-template-columns:repeat(3,1fr);}
   .cm-scoreboard{gap:8px;padding:14px 10px 12px;}
   .cm-crest{width:52px;height:52px;border-radius:13px;}
@@ -398,7 +402,7 @@ footer::after{content:' ⚽';opacity:.5;}
   </div>
 
   <!-- MATCH SCORING RULES -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+  <div class="rk-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
     <div class="panel">
       <div class="ph">🏆 Match Scoring Rules</div>
       <div class="pb">
@@ -430,7 +434,7 @@ footer::after{content:' ⚽';opacity:.5;}
     <div class="panel">
       <div class="ph alt">📅 Format & Structure</div>
       <div class="pb">
-        <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;">
+        <div class="fmt-list" style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;">
           <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);">
             <span style="color:var(--gold2);font-family:'Oswald',sans-serif;font-weight:700;min-width:140px;">Campaign Period</span>
             <span style="color:var(--txt);">1 July – 30 September 2026</span>
@@ -465,7 +469,7 @@ footer::after{content:' ⚽';opacity:.5;}
   </div>
 
   <!-- AWARDS & ROLES -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+  <div class="rk-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
     <div class="panel">
       <div class="ph grn">🏅 Awards Structure</div>
       <div class="pb">
