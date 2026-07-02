@@ -247,7 +247,7 @@ footer{text-align:center;color:var(--dim);font-size:10px;margin-top:18px;font-fa
 
   <!-- TOP ROW: League Table | MOTW | KPI Tracker -->
   <div class="g3">
-    <!-- League Table -->
+    <!-- League Table + Form combined -->
     <div class="panel">
       <div class="ph" id="lt-head">League Table</div>
       <div class="pb">
@@ -255,28 +255,24 @@ footer{text-align:center;color:var(--dim);font-size:10px;margin-top:18px;font-fa
       </div>
     </div>
 
-    <!-- Match of the Week -->
+    <!-- Previous Week Results (clickable) -->
     <div class="panel">
-      <div class="ph">Featured Match</div>
-      <div class="pb" id="motw-body"><div class="loading"><span class="spinner"></span>Loading…</div></div>
+      <div class="ph alt" id="prev-head">Previous Week Results</div>
+      <div class="pb" id="prev-body"><div class="loading"><span class="spinner"></span>Loading…</div></div>
     </div>
 
     <!-- KPI Tracker -->
     <div class="panel">
-      <div class="ph alt">KPI Goal Tracker — Live</div>
+      <div class="ph alt" id="kpi-head">KPI Goals — Click a Match to View</div>
       <div class="pb" id="kpi-body"><div class="loading"><span class="spinner"></span>Loading…</div></div>
     </div>
   </div>
 
-  <!-- BOTTOM ROW: This Week Fixtures | Awards -->
-  <div class="g2">
+  <!-- BOTTOM ROW: Fixtures full width -->
+  <div style="margin-bottom:14px;">
     <div class="panel">
       <div class="ph alt" id="fx-head">This Week's Fixtures</div>
       <div class="pb" id="fx-body"><div class="loading"><span class="spinner"></span>Loading…</div></div>
-    </div>
-    <div class="panel">
-      <div class="ph grn">Team Standings — Form Guide</div>
-      <div class="pb" id="form-body"><div class="loading"><span class="spinner"></span>Loading…</div></div>
     </div>
   </div>
 </div>
@@ -570,126 +566,166 @@ function switchTab(name){
   document.getElementById('tab-'+name).classList.add('active');
 }
 
-// ══ RENDER LEAGUE TABLE ══════════════════════════════════════════
-function renderLeague(rows){
+// ══ RENDER LEAGUE TABLE WITH FORM ════════════════════════════════
+function renderLeague(rows, results){
   const valid = rows.filter(r => r['Team'] || r['Pos']);
   if(!valid.length){ document.getElementById('lt-body').innerHTML = '<div class="error-msg">No league data in sheet yet.</div>'; return; }
-  const sorted = valid.sort((a,b) => (+b['Pts']||0) - (+a['Pts']||0) || ((+b['GF']||0)-(+b['GA']||0)) - ((+a['GF']||0)-(+a['GA']||0)));
+  const sorted = [...valid].sort((a,b) => (+b['Pts']||0) - (+a['Pts']||0) || ((+b['GF']||0)-(+b['GA']||0)) - ((+a['GF']||0)-(+a['GA']||0)));
   document.getElementById('lt-head').textContent = `League Table — Week ${currentWeek}`;
+  // Build form map from results
+  const formMap = {};
+  (results||[]).forEach(r => {
+    const home = (r['Home Team']||'').trim(), away = (r['Away Team']||'').trim();
+    const hPts = +r['Home Pts']||0, aPts = +r['Away Pts']||0;
+    if(!home) return;
+    if(!formMap[home]) formMap[home]=[];
+    if(!formMap[away]) formMap[away]=[];
+    const res = r['Result']||'';
+    if(hPts===3||res.toLowerCase().includes('home')){ formMap[home].push('W'); formMap[away].push('L'); }
+    else if(aPts===3||res.toLowerCase().includes('away')){ formMap[away].push('W'); formMap[home].push('L'); }
+    else if(hPts===1||res.toLowerCase().includes('draw')){ formMap[home].push('D'); formMap[away].push('D'); }
+  });
+  const formBadge = f => `<span style="width:16px;height:16px;border-radius:3px;font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;font-family:'Oswald',sans-serif;background:${f==='W'?'#2E8B57':f==='D'?'#7A7A52':'#C0392B'};color:#fff">${f}</span>`;
   document.getElementById('lt-body').innerHTML = `
     <table>
-      <thead><tr><th>Pos</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead>
+      <thead><tr><th>Pos</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th><th>Form</th></tr></thead>
       <tbody>${sorted.map((r,i)=>{
         const gd = (+r['GF']||0)-(+r['GA']||0);
+        const form = (formMap[(r['Team']||'').trim()]||[]).slice(-5);
         return `<tr>
           <td class="pos">${i+1}</td>
           <td><span class="sw" style="background:${TEAM_COLORS[i%7]}"></span>${r['Team']||r['Area']||''}</td>
           <td>${r['P']||0}</td><td>${r['W']||0}</td><td>${r['D']||0}</td><td>${r['L']||0}</td>
-          <td>${r['GF']||0}</td><td>${r['GA']||0}</td>
           <td class="${gd>0?'gd-pos':gd<0?'gd-neg':''}">${gd>=0?'+':''}${gd}</td>
           <td class="pts">${r['Pts']||0}</td>
+          <td><div style="display:flex;gap:2px;">${form.map(formBadge).join('')}</div></td>
         </tr>`;
       }).join('')}</tbody>
     </table>`;
 }
 
-// ══ RENDER MATCH OF THE WEEK & KPI TRACKER ═══════════════════════
-function renderMatchAndKPI(results, kpiData){
-  // Get current week's matches
-  const wkMatches = results.filter(r => +r['Week No.'] === currentWeek || +r['Week'] === currentWeek);
-  // Featured match = first of this week
-  const match = wkMatches[0];
-  if(!match){
-    document.getElementById('motw-body').innerHTML = '<div class="error-msg">No match data for current week yet.</div>';
-    document.getElementById('kpi-body').innerHTML = '';
+// shared KPI column variants
+const KPI_GOAL_COLS = [
+  ['RT Goal  (H/A/D)','RT Goal (H/A/D)','RT Goal'],
+  ['NCR Goal  (H/A/D)','NCR Goal (H/A/D)','NCR Goal'],
+  ['Revival Goal  (H/A/D)','Revival Goal (H/A/D)','Revival Goal'],
+  ['INR Goal  (H/A/D)','INR Goal (H/A/D)','INR Goal'],
+  ['EGP Goal  (H/A/D)','EGP Goal (H/A/D)','EGP Goal'],
+];
+const KPI_ACH_COLS = [
+  ['Retail Txn  Achiev %','Retail Txn Achiev %'],
+  ['NCR Achiev %'],
+  ['Revival Achiev %'],
+  ['INR Txn  Achiev %','INR Txn Achiev %'],
+  ['EGP Txn  Achiev %','EGP Txn Achiev %'],
+];
+function getKPIGoal(match, colVariants){
+  for(const v of colVariants){ if(match[v] !== undefined && match[v] !== '') return String(match[v]).trim(); }
+  return '';
+}
+function getKPIPct(kpiData, week, team, colVariants){
+  const row = kpiData.find(r => (+r['Week']===week) && (r['Team Name']||'').trim() === team.trim());
+  if(!row) return null;
+  for(const v of colVariants){ if(row[v] !== undefined && row[v] !== '') return parseFloat(row[v]); }
+  return null;
+}
+
+// ══ RENDER PREVIOUS WEEK RESULTS (clickable) ═════════════════════
+let _kpiData = [];  // stored for click handler
+function renderPrevWeekResults(results, kpiData){
+  _kpiData = kpiData;
+  const prevWk = currentWeek - 1;
+  document.getElementById('prev-head').textContent = prevWk < 1 ? 'Previous Week Results' : `Week ${prevWk} — Results`;
+  if(prevWk < 1){
+    document.getElementById('prev-body').innerHTML = '<div style="text-align:center;padding:20px;color:var(--dim);font-size:12px;">Campaign just started — no previous week yet.</div>';
+    document.getElementById('kpi-body').innerHTML  = '<div style="text-align:center;padding:20px;color:var(--dim);font-size:12px;">Click a match result to see KPI breakdown.</div>';
+    document.getElementById('kpi-head').textContent = 'KPI Goals — Click a Match to View';
     return;
   }
-  const homeTeam = match['Home Team'] || '';
-  const awayTeam = match['Away Team'] || '';
-  // Parse KPI goals
-  const kpiCols = [
-    ['RT Goal  (H/A/D)','RT Goal (H/A/D)','RT Goal'],
-    ['NCR Goal  (H/A/D)','NCR Goal (H/A/D)','NCR Goal'],
-    ['Revival Goal  (H/A/D)','Revival Goal (H/A/D)','Revival Goal'],
-    ['INR Goal  (H/A/D)','INR Goal (H/A/D)','INR Goal'],
-    ['EGP Goal  (H/A/D)','EGP Goal (H/A/D)','EGP Goal'],
-  ];
-  const kpiResults = kpiCols.map(variants => {
-    for(const v of variants){ if(match[v] !== undefined && match[v] !== '') return match[v]; }
-    return '';
-  });
-  let hGoals = 0, aGoals = 0;
-  kpiResults.forEach(v => { if(v==='H') hGoals++; else if(v==='A') aGoals++; });
-  // Get KPI % values
-  const wk = currentWeek;
-  function getKPI(team, colVariants){
-    const row = kpiData.find(r => (+r['Week']===wk) && (r['Team Name']||'').trim() === team.trim());
-    if(!row) return null;
-    for(const v of colVariants){ if(row[v] !== undefined && row[v] !== '') return parseFloat(row[v]); }
-    return null;
+  const prevResults = results.filter(r => +r['Week No.']===prevWk || +r['Week']===prevWk);
+  if(!prevResults.length){
+    document.getElementById('prev-body').innerHTML = `<div class="error-msg">No results found for Week ${prevWk} yet.</div>`;
+    document.getElementById('kpi-body').innerHTML  = '<div style="text-align:center;padding:20px;color:var(--dim);font-size:12px;">Click a match result to see KPI breakdown.</div>';
+    return;
   }
-  const achCols = [
-    ['Retail Txn  Achiev %','Retail Txn Achiev %'],
-    ['NCR Achiev %'],
-    ['Revival Achiev %'],
-    ['INR Txn  Achiev %','INR Txn Achiev %'],
-    ['EGP Txn  Achiev %','EGP Txn Achiev %'],
-  ];
-  const homeKPIs = achCols.map(v => getKPI(homeTeam, v));
-  const awayKPIs = achCols.map(v => getKPI(awayTeam, v));
-  // MOTW
-  const hIcon = TEAM_ICONS[homeTeam]||'⚽';
-  const aIcon = TEAM_ICONS[awayTeam]||'⚽';
-  const hasData = kpiResults.some(v => v !== '');
-  document.getElementById('motw-body').innerHTML = `
-    <div class="vs-grid">
-      <div class="vs-team">
-        <div class="shield">${hIcon}</div>
-        <div class="nm" style="color:var(--gold2)">${homeTeam}</div>
+  document.getElementById('kpi-body').innerHTML = '<div style="text-align:center;padding:24px 10px;color:var(--dim);font-size:12px;line-height:1.6;">👆 Click a match card<br>to see the full KPI goal breakdown</div>';
+  document.getElementById('kpi-head').textContent = 'KPI Goals — Click a Match';
+  document.getElementById('prev-body').innerHTML = prevResults.map((m, idx) => {
+    const home = (m['Home Team']||'').trim(), away = (m['Away Team']||'').trim();
+    const kpiVals = KPI_GOAL_COLS.map(v => getKPIGoal(m, v));
+    let hg=0, ag=0;
+    kpiVals.forEach(v => { if(v==='H') hg++; else if(v==='A') ag++; });
+    const hWon = hg > ag, aWon = ag > hg, draw = hg===ag;
+    const result = hWon ? `<span style="color:var(--green);font-weight:700">${home} WIN</span>`
+                 : aWon ? `<span style="color:var(--green);font-weight:700">${away} WIN</span>`
+                 : `<span style="color:var(--dim)">DRAW</span>`;
+    return `
+    <div class="prev-match-card" onclick="showKPIDetail(${idx})" data-idx="${idx}"
+      style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:11px 13px;margin-bottom:9px;cursor:pointer;transition:border-color .2s,background .2s;"
+      onmouseover="this.style.borderColor='rgba(242,181,58,0.4)';this.style.background='rgba(242,181,58,0.05)'"
+      onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.background='rgba(255,255,255,0.03)'">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
+        <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--gold2)">${TEAM_ICONS[home]||'⚽'} ${home}</span>
+        <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:20px;color:var(--txt)">${hg} — ${ag}</span>
+        <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--cyan)">${away} ${TEAM_ICONS[away]||'⚽'}</span>
       </div>
-      <div class="vs-mid">VS</div>
-      <div class="vs-team">
-        <div class="shield away">${aIcon}</div>
-        <div class="nm" style="color:var(--cyan)">${awayTeam}</div>
-      </div>
-    </div>
-    <div class="score-row">
-      <span class="score-n" style="color:var(--gold2)">${hGoals}</span>
-      <span class="score-dash">—</span>
-      <span class="score-n" style="color:var(--cyan)">${aGoals}</span>
-    </div>
-    <div style="text-align:center;font-family:'Oswald',sans-serif;font-size:11px;color:var(--dim);">
-      ${hasData ? (hGoals>aGoals?'<span style="color:var(--gold2)">'+homeTeam+' LEADING</span>':hGoals<aGoals?'<span style="color:var(--cyan)">'+awayTeam+' LEADING</span>':'<span style="color:var(--dim)">LEVEL — DRAW</span>'):'Awaiting KPI data entry'}
-    </div>`;
-  // KPI Tracker
-  document.getElementById('kpi-body').innerHTML = KPI_DEFS.map((kpi,i) => {
-    const hv = homeKPIs[i] !== null ? Math.round(homeKPIs[i]*100) : null;
-    const av = awayKPIs[i] !== null ? Math.round(awayKPIs[i]*100) : null;
-    const res = kpiResults[i];
-    let chipCls='gc-p', chipTxt='Pending';
-    if(res==='H'){ chipCls='gc-h'; chipTxt='HOME GOAL ⚽'; }
-    else if(res==='A'){ chipCls='gc-a'; chipTxt='AWAY GOAL ⚽'; }
-    else if(res==='D'){ chipCls='gc-d'; chipTxt='DRAW'; }
-    const hvLabel = hv !== null ? hv+'%' : '—';
-    const avLabel = av !== null ? av+'%' : '—';
-    const total = (hv||0)+(av||0);
-    const hw = total ? Math.round((hv||0)/total*100) : 50;
-    const aw = 100-hw;
-    return `<div class="goal-item">
-      <div class="goal-top">
-        <span class="goal-lbl" style="color:${kpi.color}">${kpi.label}</span>
-        <span class="goal-chip ${chipCls}">${chipTxt}</span>
-      </div>
-      <div class="bar-wrap">
-        <span class="bval r">${hvLabel}</span>
-        <div class="btrack">
-          <div class="bf-h" style="width:${hw}%;background:${kpi.color}"></div>
-          <div class="bf-a" style="width:${aw}%;background:#1a7a99"></div>
-        </div>
-        <span class="bval">${avLabel}</span>
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;gap:4px;">${kpiVals.map((v,i)=>`<span style="width:18px;height:18px;border-radius:4px;font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;background:${v==='H'?KPI_DEFS[i].color:v==='A'?'#1a7a99':v==='D'?'#555':'rgba(255,255,255,0.08)'};color:${v?'#fff':'var(--dim)'}">${v||'?'}</span>`).join('')}</div>
+        <span style="font-size:10.5px;">${result}</span>
+        <span style="font-size:10px;color:var(--dim);font-style:italic;">tap for KPIs →</span>
       </div>
     </div>`;
   }).join('');
+  // store for click handler
+  window._prevResults = prevResults;
+  window._prevWk = prevWk;
+}
+
+function showKPIDetail(idx){
+  // highlight selected card
+  document.querySelectorAll('.prev-match-card').forEach((c,i) => {
+    c.style.borderColor = i===idx ? 'var(--gold)' : 'rgba(255,255,255,0.08)';
+    c.style.background  = i===idx ? 'rgba(242,181,58,0.08)' : 'rgba(255,255,255,0.03)';
+  });
+  const m = window._prevResults[idx];
+  const home = (m['Home Team']||'').trim(), away = (m['Away Team']||'').trim();
+  const kpiVals = KPI_GOAL_COLS.map(v => getKPIGoal(m, v));
+  let hg=0, ag=0;
+  kpiVals.forEach(v=>{ if(v==='H') hg++; else if(v==='A') ag++; });
+  document.getElementById('kpi-head').textContent = `${home} ${hg}–${ag} ${away}`;
+  document.getElementById('kpi-body').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--line);">
+      <span style="font-family:'Oswald',sans-serif;font-size:11px;font-weight:700;color:var(--gold2)">${TEAM_ICONS[home]||'⚽'} ${home}</span>
+      <span style="font-family:'Oswald',sans-serif;font-size:11px;color:var(--dim)">Week ${window._prevWk} Result</span>
+      <span style="font-family:'Oswald',sans-serif;font-size:11px;font-weight:700;color:var(--cyan)">${away} ${TEAM_ICONS[away]||'⚽'}</span>
+    </div>
+    ${KPI_DEFS.map((kpi,i) => {
+      const res = kpiVals[i];
+      const hv  = getKPIPct(_kpiData, window._prevWk, home, KPI_ACH_COLS[i]);
+      const av  = getKPIPct(_kpiData, window._prevWk, away, KPI_ACH_COLS[i]);
+      const hvPct = hv !== null ? Math.round(hv*100) : null;
+      const avPct = av !== null ? Math.round(av*100) : null;
+      let chipCls='gc-p', chipTxt='No data';
+      if(res==='H'){ chipCls='gc-h'; chipTxt='HOME ⚽'; }
+      else if(res==='A'){ chipCls='gc-a'; chipTxt='AWAY ⚽'; }
+      else if(res==='D'){ chipCls='gc-d'; chipTxt='DRAW'; }
+      const total = (hvPct||0)+(avPct||0);
+      const hw = total ? Math.round((hvPct||0)/total*100) : 50;
+      return `<div class="goal-item">
+        <div class="goal-top">
+          <span class="goal-lbl" style="color:${kpi.color}">${kpi.label}</span>
+          <span class="goal-chip ${chipCls}">${chipTxt}</span>
+        </div>
+        <div class="bar-wrap">
+          <span class="bval r">${hvPct!==null?hvPct+'%':'—'}</span>
+          <div class="btrack">
+            <div class="bf-h" style="width:${hw}%;background:${kpi.color}"></div>
+            <div class="bf-a" style="width:${100-hw}%;background:#1a7a99"></div>
+          </div>
+          <span class="bval">${avPct!==null?avPct+'%':'—'}</span>
+        </div>
+      </div>`;
+    }).join('')}`;
 }
 
 // ══ RENDER THIS WEEK FIXTURES (OVERVIEW) ════════════════════════
@@ -708,37 +744,6 @@ function renderFixturesSummary(fixtureRows){
       <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:var(--cyan)">${TEAM_ICONS[m.away]||'⚽'} ${m.away}</span>
     </div>`).join('')
     + (parsed.bye ? `<div style="text-align:center;font-size:11px;color:var(--red);font-style:italic;margin-top:6px;">🛌 ${parsed.bye} — Bye Week (Resting)</div>` : '');
-}
-
-// ══ RENDER FORM GUIDE ════════════════════════════════════════════
-function renderForm(results, leagueRows){
-  const teamForm = {};
-  results.forEach(r => {
-    const wk = +r['Week No.']||+r['Week']||0;
-    const home = r['Home Team']||'', away = r['Away Team']||'';
-    const hPts = +r['Home Pts']||0, aPts = +r['Away Pts']||0;
-    if(!home) return;
-    if(!teamForm[home]) teamForm[home]=[];
-    if(!teamForm[away]) teamForm[away]=[];
-    if(hPts===3) teamForm[home].push('W');
-    else if(hPts===1) teamForm[home].push('D');
-    else if(r['Result']) teamForm[home].push('L');
-    if(aPts===3) teamForm[away].push('W');
-    else if(aPts===1) teamForm[away].push('D');
-    else if(r['Result']) teamForm[away].push('L');
-  });
-  const teams = leagueRows.filter(r=>r['Team']).sort((a,b)=>(+b['Pts']||0)-(+a['Pts']||0));
-  document.getElementById('form-body').innerHTML = teams.map((t,i)=>{
-    const form = (teamForm[t['Team']]||[]).slice(-5);
-    const icon = TEAM_ICONS[t['Team']]||'⚽';
-    return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-      <span style="font-family:'Oswald',sans-serif;font-size:10px;color:var(--dim);width:16px;text-align:center;">${i+1}</span>
-      <span style="font-size:13px">${icon}</span>
-      <span style="font-family:'Oswald',sans-serif;font-weight:600;font-size:12px;flex:1">${t['Team']}</span>
-      <span style="font-family:'Oswald',sans-serif;font-weight:800;font-size:13px;color:var(--gold2);width:24px;text-align:right">${t['Pts']||0}</span>
-      <div style="display:flex;gap:3px;">${form.map(f=>`<span style="width:17px;height:17px;border-radius:3px;font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;font-family:'Oswald',sans-serif;background:${f==='W'?'#2E8B57':f==='D'?'#7A7A52':'#C0392B'};color:#fff">${f}</span>`).join('')}</div>
-    </div>`;
-  }).join('');
 }
 
 // ══ RENDER CURRENT MATCHES TAB ═══════════════════════════════════
@@ -861,10 +866,9 @@ async function loadAll(){
     const resultsRows = resultsData.rows.filter(r => r['Home Team'] !== undefined);
     const fixtureRows = fixtureData.rows;
     const kpiRows     = kpiData.rows.filter(r => r['Week'] && r['Team Name']);
-    renderLeague(leagueRows);
-    renderMatchAndKPI(resultsRows, kpiRows);
+    renderLeague(leagueRows, resultsRows);
+    renderPrevWeekResults(resultsRows, kpiRows);
     renderFixturesSummary(fixtureRows);
-    renderForm(resultsRows, leagueRows);
     renderCurrentMatches(resultsRows, kpiRows, fixtureRows);
     renderSchedule(fixtureRows);
     const now = new Date();
