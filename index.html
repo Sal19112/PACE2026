@@ -533,33 +533,10 @@ function getWeekEndDate(weekNum){
 // In gviz: fixture data rows (A5:A18) have week numbers 1-14 in col-A.
 //          The control row (A3) has a DATE in col-A and week number in col-B.
 // We detect the control row: col-A is a date (not integer 1-14), col-B is 1-14.
-function extractWeekFromFixtures(fixtureData){
-  for(const row of (fixtureData.rows || [])){
-    const raw = row._raw || [];
-    if(!raw[0] || !raw[1]) continue;
-    const v0 = raw[0].v;  // col A value
-    const v1 = raw[1].v;  // col B value
-    // col B must be a week number 1-14
-    if(typeof v1 !== 'number' || v1 < 1 || v1 > 14) continue;
-    // col A must be a date — dates in gviz come as serial (large number) or "Date(...)" string
-    // Fixture data rows have col A = integer 1-14
-    const aIsSmallInt = typeof v0 === 'number' && v0 >= 1 && v0 <= 14;
-    const aIsDate     = !aIsSmallInt && (
-                          (typeof v0 === 'number' && v0 > 14) ||       // serial date
-                          (typeof v0 === 'string' && (v0.includes('Date(') || v0.includes('/')))
-                        );
-    if(aIsDate){
-      const wk = Math.round(v1);
-      console.log(`📅 Current week from fixtures A3/B3: ${wk}`);
-      return wk;
-    }
-  }
-  return null; // A3 blank → fall back to real date
-}
-
 // ══ GOOGLE SHEETS FETCH ═══════════════════════════════════════════
-async function fetchSheet(sheetName){
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+async function fetchSheet(sheetName, range=''){
+  let url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+  if(range) url += `&range=${encodeURIComponent(range)}`;
   const resp = await fetch(url);
   if(!resp.ok) throw new Error(`HTTP ${resp.status} for sheet "${sheetName}"`);
   const text = await resp.text();
@@ -567,20 +544,100 @@ async function fetchSheet(sheetName){
   return gvizToArray(json);
 }
 
+// Directly read cell B3 of the fixtures sheet — no header parsing needed
+async function fetchWeekFromB3(){
+  try{
+    const data = await fetchSheet(SHEETS.fixtures, 'B3');
+    const rows = data.rows || [];
+    if(rows.length > 0){
+      const raw = rows[0]._raw || [];
+      // When range=B3, gviz returns just that cell as the first col of first row
+      const cell = raw[0];
+      if(cell && cell.v !== null && cell.v !== undefined){
+        const wk = Math.round(Number(cell.v));
+        if(wk >= 1 && wk <= 14){
+          console.log(`📅 Week from B3 (direct): ${wk}`);
+          return wk;
+        }
+      }
+    }
+    // Also check cols label — sometimes gviz puts single-cell value in header
+    const cols = data.rawCols || [];
+    if(cols.length > 0){
+      const wk = Math.round(Number(cols[0]));
+      if(wk >= 1 && wk <= 14){
+        console.log(`📅 Week from B3 (col label): ${wk}`);
+        return wk;
+      }
+    }
+  } catch(e){
+    console.log('B3 fetch failed:', e.message);
+  }
+  return null;
+}
+
 function gvizToArray(json){
-  // Make column keys unique: duplicate "Home Team" becomes "Home Team", "Home Team_1", "Home Team_2"
-  const rawCols = json.table.cols.map(c => c.label || c.id);
+  const rawColObjs = json.table.cols || [];
+  const rawCols = rawColObjs.map(c => c.label || c.id || '');
   const seen = {};
   const cols = rawCols.map(c => {
     if(seen[c] === undefined){ seen[c] = 0; return c; }
     seen[c]++; return c + '_' + seen[c];
   });
   const rows = (json.table.rows || []).map(r => {
-    const obj = { _raw: r.c }; // preserve raw array for index-based access
-    cols.forEach((c,i) => { obj[c] = r.c[i] ? (r.c[i].v ?? '') : ''; });
+    const cells = r.c || [];
+    const obj = { _raw: cells };
+    cols.forEach((c,i) => { obj[c] = cells[i] ? (cells[i].v ?? '') : ''; });
     return obj;
   });
-  return {cols, rows};
+  // rawCols: original column label strings (used to detect A3/B3 as header)
+  return {cols, rawCols, rows};
+}
+
+// Read current week from A3/B3 of the 2_Fixtures sheet.
+// gviz behaviour varies: sometimes it uses the A3/B3 row as COLUMN HEADERS,
+// sometimes as a DATA ROW. We check both.
+function extractWeekFromFixtures(fixtureData){
+  // STRATEGY 1 — gviz used A3/B3 as the column header row
+  // → date appears in rawCols[0], week number in rawCols[1]
+  const rc = fixtureData.rawCols || [];
+  if(rc.length >= 2){
+    const c0 = String(rc[0]).trim();
+    const c1 = String(rc[1]).trim();
+    const wk1 = parseInt(c1);
+    if(!isNaN(wk1) && wk1 >= 1 && wk1 <= 14){
+      // c0 must look like a date, not a small integer week number
+      const c0int = parseInt(c0);
+      const c0IsDate = isNaN(c0int) || c0int > 14 ||
+                       c0.includes('/') || c0.includes('-') || c0.includes('Date(');
+      if(c0IsDate){
+        console.log(`📅 Week from gviz header row (A3/B3): ${wk1}`);
+        return wk1;
+      }
+    }
+  }
+
+  // STRATEGY 2 — A3/B3 appears as a data row
+  // → raw[0].v is a date, raw[1].v is the week number
+  for(const row of (fixtureData.rows || [])){
+    const raw = row._raw || [];
+    if(!raw[0] || !raw[1]) continue;
+    const v0 = raw[0].v;
+    const v1 = raw[1].v;
+    if(typeof v1 !== 'number' || v1 < 1 || v1 > 14) continue;
+    const v0str  = String(v0 ?? '');
+    const isDate = v0str.includes('Date(') || v0str.includes('/') ||
+                   (typeof v0 === 'number' && v0 > 14);
+    const isWkNo = typeof v0 === 'number' && v0 >= 1 && v0 <= 14;
+    if(isDate && !isWkNo){
+      const wk = Math.round(v1);
+      console.log(`📅 Week from data row (A3/B3): ${wk}`);
+      return wk;
+    }
+  }
+
+  console.log('No A3/B3 override found — falling back to real date');
+  return null;
 }
 
 // ══ FIXTURES PARSER — reads by column INDEX, not name ═════════════
@@ -925,22 +982,22 @@ async function loadAll(){
   document.getElementById('pulse-dot').style.boxShadow='0 0 8px var(--gold)';
   setStatus('Connecting to Google Sheets…', false);
   try{
-    // Step 1: fetch fixtures first — reads A3/B3 to get current week
-    const fixtureData = await fetchSheet(SHEETS.fixtures);
-    const weekFromSheet = extractWeekFromFixtures(fixtureData);
-    currentWeek = weekFromSheet !== null ? weekFromSheet : getCurrentWeek();
+    // Step 1: read B3 of fixtures sheet DIRECTLY to get current week
+    const weekFromB3 = await fetchWeekFromB3();
+    currentWeek = weekFromB3 !== null ? weekFromB3 : getCurrentWeek();
     updateCountdown();
     setStatus(`📅 Week ${currentWeek} — loading data…`, false);
 
-    // Step 2: fetch remaining sheets in parallel
-    const [leagueData, resultsData, kpiData] = await Promise.all([
+    // Step 2: fetch all sheets in parallel (fixtures already needed for display)
+    const [leagueData, resultsData, fixtureData, kpiData] = await Promise.all([
       fetchSheet(SHEETS.league),
       fetchSheet(SHEETS.results),
+      fetchSheet(SHEETS.fixtures),
       fetchSheet(SHEETS.kpi),
     ]);
     const leagueRows  = leagueData.rows.filter(r => r['Team'] || r['Pos']);
     const resultsRows = resultsData.rows.filter(r => r['Home Team'] !== undefined);
-    const fixtureRows = fixtureData.rows;  // reuse already-fetched fixture data
+    const fixtureRows = fixtureData.rows;
     const kpiRows     = kpiData.rows.filter(r => r['Week'] && r['Team Name']);
     renderLeague(leagueRows, resultsRows);
     renderPrevWeekResults(resultsRows, kpiRows);
@@ -948,7 +1005,7 @@ async function loadAll(){
     renderCurrentMatches(resultsRows, kpiRows, fixtureRows);
     renderSchedule(fixtureRows);
     const now = new Date();
-    const src = weekFromSheet !== null ? 'from fixtures A3/B3' : 'from today\'s date';
+    const src = weekFromB3 !== null ? 'A3/B3 fixtures sheet' : 'today\'s date';
     setStatus(`Updated: ${now.toLocaleTimeString()} — <b>Week ${currentWeek} (${src})</b>`, false);
     document.getElementById('pulse-dot').style.background='var(--green)';
     document.getElementById('pulse-dot').style.boxShadow='0 0 8px var(--green)';
