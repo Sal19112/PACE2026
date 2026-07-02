@@ -215,7 +215,7 @@ footer{text-align:center;color:var(--dim);font-size:10px;margin-top:18px;font-fa
 
 <!-- HEADER -->
 <div class="header">
-  <div class="crest"><b>PACE</b><span>2026</span></div>
+  <img src="logos/pace_2026_logo.png" alt="PACE 2026" style="width:82px;height:82px;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 0 12px rgba(242,181,58,0.4))">
   <div class="title-block">
     <h1>PACE 2026: <span>Performance And Customer Excellence</span></h1>
   </div>
@@ -459,10 +459,25 @@ const SHEETS = {
 };
 
 const TEAM_COLORS = ['#2ECC71','#39C7E8','#F2B53A','#E96A6A','#9B7BD8','#5FD0A0','#E8A23F'];
+const TEAM_LOGOS = {
+  'Money Masters':     'logos/money_masters.png',
+  'Cash Kings':        'logos/cash_kings.png',
+  'Revenue Titans':    'logos/revenue_titans.png',
+  'Profit Pioneers':   'logos/profit_pioneers.png',
+  'Growth Giants':     'logos/growth_giants.png',
+  'Remittance Royals': 'logos/remittance_royals.png',
+  'Victory Strikers':  'logos/victory_strikers.png',
+};
+// Fallback emoji if logo not found
 const TEAM_ICONS  = {
   'Money Masters':'💰','Cash Kings':'👑','Revenue Titans':'⚡',
   'Profit Pioneers':'🌟','Growth Giants':'🌱','Remittance Royals':'💎','Victory Strikers':'🔥'
 };
+function teamLogo(name, size=36, cls=''){
+  const src = TEAM_LOGOS[name];
+  if(src) return `<img src="${src}" alt="${name}" style="width:${size}px;height:${size}px;object-fit:contain;" class="${cls}" onerror="this.style.display='none';this.nextSibling.style.display='inline'"><span style="display:none;font-size:${Math.round(size*0.6)}px">${TEAM_ICONS[name]||'⚽'}</span>`;
+  return `<span style="font-size:${Math.round(size*0.6)}px">${TEAM_ICONS[name]||'⚽'}</span>`;
+}
 const KPI_DEFS = [
   {key:'RT', label:'Retail Txn %',   color:'#F2B53A'},
   {key:'NCR',label:'NCR %',          color:'#2ECC71'},
@@ -594,7 +609,7 @@ function renderLeague(rows, results){
         const form = (formMap[(r['Team']||'').trim()]||[]).slice(-5);
         return `<tr>
           <td class="pos">${i+1}</td>
-          <td><span class="sw" style="background:${TEAM_COLORS[i%7]}"></span>${r['Team']||r['Area']||''}</td>
+          <td><span class="sw" style="background:${TEAM_COLORS[i%7]}"></span>${teamLogo(r['Team']||r['Area']||'',20)} <span style="vertical-align:middle">${r['Team']||r['Area']||''}</span></td>
           <td>${r['P']||0}</td><td>${r['W']||0}</td><td>${r['D']||0}</td><td>${r['L']||0}</td>
           <td class="${gd>0?'gd-pos':gd<0?'gd-neg':''}">${gd>=0?'+':''}${gd}</td>
           <td class="pts">${r['Pts']||0}</td>
@@ -665,9 +680,9 @@ function renderPrevWeekResults(results, kpiData){
       onmouseover="this.style.borderColor='rgba(242,181,58,0.4)';this.style.background='rgba(242,181,58,0.05)'"
       onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.background='rgba(255,255,255,0.03)'">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
-        <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--gold2)">${TEAM_ICONS[home]||'⚽'} ${home}</span>
+        <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--gold2);display:flex;align-items:center;gap:6px">${teamLogo(home,28)} ${home}</span>
         <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:20px;color:var(--txt)">${hg} — ${ag}</span>
-        <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--cyan)">${away} ${TEAM_ICONS[away]||'⚽'}</span>
+        <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--cyan);display:flex;align-items:center;gap:6px">${away} ${teamLogo(away,28)}</span>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;">
         <div style="display:flex;gap:4px;">${kpiVals.map((v,i)=>`<span style="width:18px;height:18px;border-radius:4px;font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;background:${v==='H'?KPI_DEFS[i].color:v==='A'?'#1a7a99':v==='D'?'#555':'rgba(255,255,255,0.08)'};color:${v?'#fff':'var(--dim)'}">${v||'?'}</span>`).join('')}</div>
@@ -695,9 +710,9 @@ function showKPIDetail(idx){
   document.getElementById('kpi-head').textContent = `${home} ${hg}–${ag} ${away}`;
   document.getElementById('kpi-body').innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--line);">
-      <span style="font-family:'Oswald',sans-serif;font-size:11px;font-weight:700;color:var(--gold2)">${TEAM_ICONS[home]||'⚽'} ${home}</span>
+      <span style="font-family:'Oswald',sans-serif;font-size:11px;font-weight:700;color:var(--gold2);display:flex;align-items:center;gap:6px">${teamLogo(home,24)} ${home}</span>
       <span style="font-family:'Oswald',sans-serif;font-size:11px;color:var(--dim)">Week ${window._prevWk} Result</span>
-      <span style="font-family:'Oswald',sans-serif;font-size:11px;font-weight:700;color:var(--cyan)">${away} ${TEAM_ICONS[away]||'⚽'}</span>
+      <span style="font-family:'Oswald',sans-serif;font-size:11px;font-weight:700;color:var(--cyan);display:flex;align-items:center;gap:6px">${away} ${teamLogo(away,24)}</span>
     </div>
     ${KPI_DEFS.map((kpi,i) => {
       const res = kpiVals[i];
@@ -739,9 +754,9 @@ function renderFixturesSummary(fixtureRows){
   document.getElementById('fx-body').innerHTML =
     parsed.matches.map((m,i) => `
     <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;border:1px solid rgba(255,255,255,0.07);">
-      <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:var(--gold2)">${TEAM_ICONS[m.home]||'⚽'} ${m.home}</span>
+      <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:var(--gold2);display:flex;align-items:center;gap:8px">${teamLogo(m.home,32)} ${m.home}</span>
       <span style="background:rgba(242,181,58,0.15);border:1px solid rgba(242,181,58,0.3);border-radius:5px;padding:2px 8px;font-family:'Oswald',sans-serif;font-size:10px;font-weight:700;color:var(--gold)">VS</span>
-      <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:var(--cyan)">${TEAM_ICONS[m.away]||'⚽'} ${m.away}</span>
+      <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:var(--cyan);display:flex;align-items:center;gap:8px">${teamLogo(m.away,32)} ${m.away}</span>
     </div>`).join('')
     + (parsed.bye ? `<div style="text-align:center;font-size:11px;color:var(--red);font-style:italic;margin-top:6px;">🛌 ${parsed.bye} — Bye Week (Resting)</div>` : '');
 }
@@ -785,9 +800,9 @@ function renderCurrentMatches(results, kpiData, fixtureRows){
     return `<div class="cm-card">
       <div class="cm-header">
         <div class="cm-teams">
-          <span class="home">${TEAM_ICONS[m.h]||'⚽'} ${m.h}</span>
+          <span class="home" style="display:inline-flex;align-items:center;gap:8px">${teamLogo(m.h,36)} ${m.h}</span>
           <span class="vs">VS</span>
-          <span class="away">${TEAM_ICONS[m.a]||'⚽'} ${m.a}</span>
+          <span class="away" style="display:inline-flex;align-items:center;gap:8px">${teamLogo(m.a,36)} ${m.a}</span>
         </div>
         ${hasResult?`<div class="cm-score" style="color:var(--gold2)">${hg} — <span style="color:var(--cyan)">${ag}</span></div>`:'<div style="font-family:Oswald,sans-serif;font-size:11px;color:var(--dim);letter-spacing:.04em;text-transform:uppercase;">Awaiting Results</div>'}
       </div>
