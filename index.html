@@ -176,6 +176,17 @@ tbody tr:nth-child(3){background:rgba(242,181,58,0.09);}
 .cm-tag{font-family:'Oswald',sans-serif;font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);}
 .cm-tag.live{color:var(--green);}
 .cm-body{padding:12px 14px;}
+/* ── Fixtures (overview) mini-scoreboards ── */
+.fx-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;}
+.fx-card{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:14px 10px;
+  background-image:radial-gradient(120% 80% at 50% -20%,rgba(59,217,126,0.12),transparent 60%),linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02));
+  border:1px solid var(--line);border-radius:12px;}
+.fx-card .cm-crest{width:52px;height:52px;border-radius:13px;}
+.fx-vs{font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--gold);letter-spacing:.06em;
+  background:rgba(242,181,58,0.14);border:1px solid rgba(242,181,58,0.32);border-radius:8px;padding:4px 9px;align-self:center;}
+.fx-bye{margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px;
+  background:rgba(233,106,106,0.10);border:1px dashed rgba(233,106,106,0.35);border-radius:12px;padding:11px 14px;
+  font-family:'Oswald',sans-serif;font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--red);}
 .cm-kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
 .cm-kpi{background:rgba(255,255,255,0.04);border-radius:8px;padding:7px;border:1px solid var(--line);text-align:center;}
 .cm-kpi .ck-lbl{font-size:9px;color:var(--dim);font-family:'Oswald',sans-serif;text-transform:uppercase;margin-bottom:4px;}
@@ -953,13 +964,13 @@ function renderFixturesSummary(fixtureRows){
     return;
   }
   document.getElementById('fx-body').innerHTML =
-    parsed.matches.map((m,i) => `
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;border:1px solid rgba(255,255,255,0.07);">
-      <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:var(--gold2);display:flex;align-items:center;gap:8px">${teamLogo(m.home,32)} ${m.home}</span>
-      <span style="background:rgba(242,181,58,0.15);border:1px solid rgba(242,181,58,0.3);border-radius:5px;padding:2px 8px;font-family:'Oswald',sans-serif;font-size:10px;font-weight:700;color:var(--gold)">VS</span>
-      <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:var(--cyan);display:flex;align-items:center;gap:8px">${teamLogo(m.away,32)} ${m.away}</span>
-    </div>`).join('')
-    + (parsed.bye ? `<div style="text-align:center;font-size:11px;color:var(--red);font-style:italic;margin-top:6px;">🛌 ${parsed.bye} — Bye Week (Resting)</div>` : '');
+    `<div class="fx-grid">` + parsed.matches.map(m => `
+      <div class="fx-card">
+        <div class="cm-side"><div class="cm-crest">${teamLogo(m.home,38)}</div><div class="cm-name">${m.home}</div></div>
+        <div class="fx-vs">VS</div>
+        <div class="cm-side"><div class="cm-crest away">${teamLogo(m.away,38)}</div><div class="cm-name">${m.away}</div></div>
+      </div>`).join('') + `</div>`
+    + (parsed.bye ? `<div class="fx-bye">🛌 ${parsed.bye} — Bye Week (Resting)</div>` : '');
 }
 
 // ══ RENDER CURRENT MATCHES TAB ═══════════════════════════════════
