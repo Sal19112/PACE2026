@@ -18,28 +18,45 @@ body{
   font-family:'Inter',sans-serif;color:var(--txt);min-height:100vh;padding:16px;
   position:relative;overflow-x:hidden;
   background:
-    radial-gradient(ellipse at 15% 0%,rgba(46,204,113,0.15),transparent 45%),
+    /* green grass glow at bottom */
+    radial-gradient(ellipse at 50% 110%, rgba(34,139,34,0.18), transparent 55%),
+    /* left grass glow */
+    radial-gradient(ellipse at -5% 60%, rgba(46,139,87,0.14), transparent 40%),
+    /* right grass glow */
+    radial-gradient(ellipse at 105% 60%, rgba(46,139,87,0.12), transparent 40%),
+    /* top cyan glow */
+    radial-gradient(ellipse at 15% 0%,rgba(46,204,113,0.13),transparent 45%),
     radial-gradient(ellipse at 100% 100%,rgba(57,199,232,0.10),transparent 50%),
-    linear-gradient(160deg,var(--navy) 0%,var(--navy2) 55%,#07304a 100%);
+    linear-gradient(160deg,var(--navy) 0%,#062014 40%,#07304a 100%);
 }
 
 /* ── FOOTBALL PITCH BACKGROUND ──────────────────────────────────── */
 body::before{
   content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background-image:
-    radial-gradient(circle at 50% 50%,transparent 140px,rgba(255,255,255,0.028) 141px,rgba(255,255,255,0.028) 143px,transparent 144px),
-    radial-gradient(circle at 50% 50%,rgba(255,255,255,0.04) 4px,transparent 5px),
-    linear-gradient(90deg,transparent 49.85%,rgba(255,255,255,0.025) 49.85%,rgba(255,255,255,0.025) 50.15%,transparent 50.15%),
-    radial-gradient(circle at 11% 50%,transparent 82px,rgba(255,255,255,0.022) 83px,rgba(255,255,255,0.022) 85px,transparent 86px),
-    radial-gradient(circle at 89% 50%,transparent 82px,rgba(255,255,255,0.022) 83px,rgba(255,255,255,0.022) 85px,transparent 86px),
-    linear-gradient(rgba(255,255,255,0.012) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,0.012) 1px,transparent 1px);
-  background-size:100% 100%,100% 100%,100% 100%,100% 100%,100% 100%,120px 120px,120px 120px;
+    /* grass stripe alternating bands */
+    repeating-linear-gradient(
+      180deg,
+      rgba(0,80,20,0.07) 0px, rgba(0,80,20,0.07) 60px,
+      rgba(0,60,10,0.04) 60px, rgba(0,60,10,0.04) 120px
+    ),
+    /* centre circle */
+    radial-gradient(circle at 50% 50%,transparent 138px,rgba(255,255,255,0.035) 139px,rgba(255,255,255,0.035) 142px,transparent 143px),
+    /* centre spot */
+    radial-gradient(circle at 50% 50%,rgba(255,255,255,0.06) 5px,transparent 6px),
+    /* halfway line */
+    linear-gradient(90deg,transparent 49.85%,rgba(255,255,255,0.03) 49.85%,rgba(255,255,255,0.03) 50.15%,transparent 50.15%),
+    /* left penalty arc */
+    radial-gradient(circle at 10% 50%,transparent 80px,rgba(255,255,255,0.025) 81px,rgba(255,255,255,0.025) 83px,transparent 84px),
+    /* right penalty arc */
+    radial-gradient(circle at 90% 50%,transparent 80px,rgba(255,255,255,0.025) 81px,rgba(255,255,255,0.025) 83px,transparent 84px);
+  background-size:100% 100%,100% 100%,100% 100%,100% 100%,100% 100%,100% 100%;
 }
-/* Goal posts + corner arcs as inline SVG data URI */
+
+/* Goal posts, corner arcs, penalty boxes, grass net pattern */
 body::after{
   content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3C!--outer boundary--%3E%3Crect x='6' y='6' width='calc(100%25-12px)' height='calc(100%25-12px)' fill='none' stroke='rgba(255,255,255,0.04)' stroke-width='1.5'/%3E%3C!--left goalpost--%3E%3Crect x='6' y='36%25' width='3' height='28%25' fill='rgba(255,255,255,0.07)' rx='1'/%3E%3Crect x='6' y='36%25' width='36' height='3' fill='rgba(255,255,255,0.07)' rx='1'/%3E%3Crect x='6' y='64%25' width='36' height='3' fill='rgba(255,255,255,0.07)' rx='1'/%3E%3Crect x='39' y='36%25' width='2' height='28%25' fill='rgba(255,255,255,0.04)' rx='1'/%3E%3C!--right goalpost--%3E%3Crect x='calc(100%25 - 9px)' y='36%25' width='3' height='28%25' fill='rgba(255,255,255,0.07)' rx='1'/%3E%3Crect x='calc(100%25 - 42px)' y='36%25' width='36' height='3' fill='rgba(255,255,255,0.07)' rx='1'/%3E%3Crect x='calc(100%25 - 42px)' y='64%25' width='36' height='3' fill='rgba(255,255,255,0.07)' rx='1'/%3E%3Crect x='calc(100%25 - 41px)' y='36%25' width='2' height='28%25' fill='rgba(255,255,255,0.04)' rx='1'/%3E%3C!--corner arcs--%3E%3Cpath d='M6,6 A22,22 0 0,1 28,6' fill='none' stroke='rgba(255,255,255,0.05)' stroke-width='1.5'/%3E%3Cpath d='M6,6 A22,22 0 0,0 6,28' fill='none' stroke='rgba(255,255,255,0.05)' stroke-width='1.5'/%3E%3Cpath d='M calc(100%25-6px),6 A22,22 0 0,0 calc(100%25-28px),6' fill='none' stroke='rgba(255,255,255,0.05)' stroke-width='1.5'/%3E%3Cpath d='M calc(100%25-6px),6 A22,22 0 0,1 calc(100%25-6px),28' fill='none' stroke='rgba(255,255,255,0.05)' stroke-width='1.5'/%3E%3Cpath d='M6,calc(100%25-6px) A22,22 0 0,0 28,calc(100%25-6px)' fill='none' stroke='rgba(255,255,255,0.05)' stroke-width='1.5'/%3E%3Cpath d='M6,calc(100%25-6px) A22,22 0 0,1 6,calc(100%25-28px)' fill='none' stroke='rgba(255,255,255,0.05)' stroke-width='1.5'/%3E%3C!--penalty boxes--%3E%3Crect x='6' y='28%25' width='80' height='44%25' fill='none' stroke='rgba(255,255,255,0.035)' stroke-width='1'/%3E%3Crect x='calc(100%25-86px)' y='28%25' width='80' height='44%25' fill='none' stroke='rgba(255,255,255,0.035)' stroke-width='1'/%3E%3C/svg%3E");
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3C!-- outer pitch boundary --%3E%3Crect x='5' y='5' width='calc(100%25 - 10px)' height='calc(100%25 - 10px)' fill='none' stroke='rgba(255,255,255,0.05)' stroke-width='1.5'/%3E%3C!-- LEFT GOALPOST --%3E%3Crect x='5' y='35%25' width='4' height='30%25' fill='rgba(255,255,255,0.10)' rx='1.5'/%3E%3Crect x='5' y='35%25' width='52' height='4' fill='rgba(255,255,255,0.10)' rx='1.5'/%3E%3Crect x='5' y='65%25' width='52' height='4' fill='rgba(255,255,255,0.10)' rx='1.5'/%3E%3Crect x='53' y='35%25' width='3' height='30%25' fill='rgba(255,255,255,0.06)' rx='1'/%3E%3C!-- goal net left --%3E%3Cline x1='9' y1='35%25' x2='56' y2='39%25' stroke='rgba(255,255,255,0.04)' stroke-width='1'/%3E%3Cline x1='9' y1='42%25' x2='56' y2='46%25' stroke='rgba(255,255,255,0.04)' stroke-width='1'/%3E%3Cline x1='9' y1='49%25' x2='56' y2='53%25' stroke='rgba(255,255,255,0.04)' stroke-width='1'/%3E%3Cline x1='9' y1='56%25' x2='56' y2='60%25' stroke='rgba(255,255,255,0.04)' stroke-width='1'/%3E%3Cline x1='9' y1='63%25' x2='56' y2='65%25' stroke='rgba(255,255,255,0.04)' stroke-width='1'/%3E%3C!-- vertical net lines left --%3E%3Cline x1='20' y1='35%25' x2='20' y2='65%25' stroke='rgba(255,255,255,0.03)' stroke-width='1'/%3E%3Cline x1='34' y1='35%25' x2='34' y2='65%25' stroke='rgba(255,255,255,0.03)' stroke-width='1'/%3E%3Cline x1='48' y1='35%25' x2='48' y2='65%25' stroke='rgba(255,255,255,0.03)' stroke-width='1'/%3E%3C!-- RIGHT GOALPOST --%3E%3Crect x='calc(100%25 - 9px)' y='35%25' width='4' height='30%25' fill='rgba(255,255,255,0.10)' rx='1.5'/%3E%3Crect x='calc(100%25 - 57px)' y='35%25' width='52' height='4' fill='rgba(255,255,255,0.10)' rx='1.5'/%3E%3Crect x='calc(100%25 - 57px)' y='65%25' width='52' height='4' fill='rgba(255,255,255,0.10)' rx='1.5'/%3E%3Crect x='calc(100%25 - 56px)' y='35%25' width='3' height='30%25' fill='rgba(255,255,255,0.06)' rx='1'/%3E%3C!-- goal net right --%3E%3Cline x1='calc(100%25 - 9px)' y1='35%25' x2='calc(100%25 - 56px)' y2='39%25' stroke='rgba(255,255,255,0.04)' stroke-width='1'/%3E%3Cline x1='calc(100%25 - 9px)' y1='42%25' x2='calc(100%25 - 56px)' y2='46%25' stroke='rgba(255,255,255,0.04)' stroke-width='1'/%3E%3Cline x1='calc(100%25 - 9px)' y1='49%25' x2='calc(100%25 - 56px)' y2='53%25' stroke='rgba(255,255,255,0.04)' stroke-width='1'/%3E%3Cline x1='calc(100%25 - 9px)' y1='56%25' x2='calc(100%25 - 56px)' y2='60%25' stroke='rgba(255,255,255,0.04)' stroke-width='1'/%3E%3Cline x1='calc(100%25 - 9px)' y1='63%25' x2='calc(100%25 - 56px)' y2='65%25' stroke='rgba(255,255,255,0.04)' stroke-width='1'/%3E%3C!-- CORNER ARCS --%3E%3Cpath d='M5,5 A26,26 0 0,1 31,5' fill='none' stroke='rgba(255,255,255,0.06)' stroke-width='1.5'/%3E%3Cpath d='M5,5 A26,26 0 0,0 5,31' fill='none' stroke='rgba(255,255,255,0.06)' stroke-width='1.5'/%3E%3Cpath d='M calc(100%25-5px),5 A26,26 0 0,0 calc(100%25-31px),5' fill='none' stroke='rgba(255,255,255,0.06)' stroke-width='1.5'/%3E%3Cpath d='M calc(100%25-5px),5 A26,26 0 0,1 calc(100%25-5px),31' fill='none' stroke='rgba(255,255,255,0.06)' stroke-width='1.5'/%3E%3Cpath d='M5,calc(100%25-5px) A26,26 0 0,0 31,calc(100%25-5px)' fill='none' stroke='rgba(255,255,255,0.06)' stroke-width='1.5'/%3E%3Cpath d='M5,calc(100%25-5px) A26,26 0 0,1 5,calc(100%25-31px)' fill='none' stroke='rgba(255,255,255,0.06)' stroke-width='1.5'/%3E%3Cpath d='M calc(100%25-5px),calc(100%25-5px) A26,26 0 0,0 calc(100%25-31px),calc(100%25-5px)' fill='none' stroke='rgba(255,255,255,0.06)' stroke-width='1.5'/%3E%3Cpath d='M calc(100%25-5px),calc(100%25-5px) A26,26 0 0,1 calc(100%25-5px),calc(100%25-31px)' fill='none' stroke='rgba(255,255,255,0.06)' stroke-width='1.5'/%3E%3C!-- PENALTY BOXES --%3E%3Crect x='5' y='26%25' width='110' height='48%25' fill='none' stroke='rgba(255,255,255,0.04)' stroke-width='1'/%3E%3Crect x='calc(100%25-115px)' y='26%25' width='110' height='48%25' fill='none' stroke='rgba(255,255,255,0.04)' stroke-width='1'/%3E%3C!-- 6-yard boxes --%3E%3Crect x='5' y='40%25' width='36' height='20%25' fill='none' stroke='rgba(255,255,255,0.03)' stroke-width='1'/%3E%3Crect x='calc(100%25-41px)' y='40%25' width='36' height='20%25' fill='none' stroke='rgba(255,255,255,0.03)' stroke-width='1'/%3E%3C!-- PENALTY SPOTS --%3E%3Ccircle cx='95' cy='50%25' r='3' fill='rgba(255,255,255,0.06)'/%3E%3Ccircle cx='calc(100%25-95px)' cy='50%25' r='3' fill='rgba(255,255,255,0.06)'/%3E%3C!-- FOOTBALL ⚽ watermark centre --%3E%3Ccircle cx='50%25' cy='50%25' r='28' fill='none' stroke='rgba(255,255,255,0.025)' stroke-width='1.5'/%3E%3Cpath d='M 50%25,22%25 L 57%25,35%25 L 71%25,35%25 L 65%25,47%25 L 70%25,60%25 L 57%25,55%25 L 50%25,65%25 L 43%25,55%25 L 30%25,60%25 L 35%25,47%25 L 29%25,35%25 L 43%25,35%25 Z' fill='rgba(255,255,255,0.018)' stroke='rgba(255,255,255,0.02)' stroke-width='1'/%3E%3C/svg%3E");
 }
 
 .wrap{max-width:1400px;margin:0 auto;position:relative;z-index:1;}
@@ -177,6 +194,14 @@ tbody tr:nth-child(3){background:rgba(242,181,58,0.09);}
 @keyframes spin{to{transform:rotate(360deg);}}
 .error-msg{background:rgba(233,106,106,0.1);border:1px solid rgba(233,106,106,0.3);border-radius:9px;padding:12px 16px;color:var(--red);font-size:12.5px;margin:10px 0;}
 footer{text-align:center;color:var(--dim);font-size:10px;margin-top:18px;font-family:'Oswald',sans-serif;letter-spacing:.05em;text-transform:uppercase;}
+footer::before{content:'⚽ ';opacity:.5;}
+footer::after{content:' ⚽';opacity:.5;}
+
+/* ── GRASS GLOW on panels ───────────────────────────────────────── */
+.panel{box-shadow:0 2px 18px rgba(0,80,20,0.18),0 1px 4px rgba(0,0,0,0.3);}
+.ph{position:relative;overflow:hidden;}
+.ph::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,0.07),transparent 60%);pointer-events:none;}
+.ph.grn{background:linear-gradient(90deg,#0a4a1c,#1a6e2c);box-shadow:0 0 14px rgba(26,110,44,0.3);}
 
 /* ════════════════════════════════════════════════════════════════
    MOBILE RESPONSIVE
