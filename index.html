@@ -155,11 +155,26 @@ tbody tr:nth-child(3){background:rgba(242,181,58,0.09);}
 .bf-h{height:100%;border-radius:4px 0 0 4px;transition:width .5s ease;}
 .bf-a{height:100%;border-radius:0 4px 4px 0;transition:width .5s ease;}
 .current-matches-grid{display:flex;flex-direction:column;gap:14px;}
-.cm-card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;}
-.cm-header{background:linear-gradient(90deg,rgba(242,181,58,0.12),rgba(57,199,232,0.08));padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
-.cm-teams{font-family:'Oswald',sans-serif;font-weight:700;font-size:14px;text-transform:uppercase;}
-.cm-teams .home{color:var(--gold2);}.cm-teams .vs{color:var(--dim);margin:0 6px;font-size:11px;}.cm-teams .away{color:var(--cyan);}
-.cm-score{font-family:'Oswald',sans-serif;font-weight:700;font-size:20px;}
+#current-matches-body{max-width:860px;margin:0 auto;}
+.cm-card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.25);}
+/* ── Football-style scoreboard header ── */
+.cm-scoreboard{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:18px 16px 16px;
+  background:radial-gradient(120% 80% at 50% -20%,rgba(46,204,113,0.12),transparent 60%),linear-gradient(90deg,rgba(242,181,58,0.10),rgba(57,199,232,0.08));
+  border-bottom:1px solid var(--line);position:relative;}
+.cm-side{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;}
+.cm-crest{width:64px;height:64px;display:flex;align-items:center;justify-content:center;border-radius:16px;
+  border:2px solid var(--gold);background:linear-gradient(160deg,#16314d,#0a1d30);box-shadow:0 4px 12px rgba(0,0,0,0.4);}
+.cm-crest.away{border-color:var(--cyan);}
+.cm-crest img{width:46px;height:46px;object-fit:contain;}
+.cm-name{font-family:'Oswald',sans-serif;font-weight:600;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--txt);line-height:1.15;max-width:120px;}
+.cm-mid{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:96px;}
+.cm-scoreline{display:inline-flex;align-items:center;gap:11px;background:rgba(0,0,0,0.4);border:1px solid var(--line);border-radius:11px;padding:7px 16px;font-family:'Oswald',sans-serif;font-weight:700;}
+.cm-sh{font-size:32px;color:var(--gold2);line-height:1;}
+.cm-sa{font-size:32px;color:var(--cyan);line-height:1;}
+.cm-sep{font-size:18px;color:var(--dim);}
+.cm-vs{font-family:'Oswald',sans-serif;font-weight:700;font-size:24px;color:var(--dim);letter-spacing:.08em;}
+.cm-tag{font-family:'Oswald',sans-serif;font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);}
+.cm-tag.live{color:var(--green);}
 .cm-body{padding:12px 14px;}
 .cm-kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
 .cm-kpi{background:rgba(255,255,255,0.04);border-radius:8px;padding:7px;border:1px solid var(--line);text-align:center;}
@@ -218,6 +233,11 @@ footer::after{content:' ⚽';opacity:.5;}
   .tab{font-size:10px;padding:7px 10px;}
   .g2,.g3{grid-template-columns:1fr;gap:10px;margin-bottom:10px;}
   .cm-kpi-grid{grid-template-columns:repeat(3,1fr);}
+  .cm-scoreboard{gap:8px;padding:14px 10px 12px;}
+  .cm-crest{width:52px;height:52px;border-radius:13px;}
+  .cm-crest img{width:38px;height:38px;}
+  .cm-sh,.cm-sa{font-size:26px;}
+  .cm-name{font-size:10px;}
   .score-n{font-size:28px!important;}
   #schedule-body{overflow-x:auto;}
   .schedule-table{min-width:580px;}
@@ -975,13 +995,20 @@ function renderCurrentMatches(results, kpiData, fixtureRows){
     const awayKPIs=achCols.map(v=>getKPIPct(m.a,v));
     const hasResult=kpiVals.some(v=>v!=='');
     return `<div class="cm-card">
-      <div class="cm-header">
-        <div class="cm-teams">
-          <span class="home" style="display:inline-flex;align-items:center;gap:8px">${teamLogo(m.h,36)} ${m.h}</span>
-          <span class="vs">VS</span>
-          <span class="away" style="display:inline-flex;align-items:center;gap:8px">${teamLogo(m.a,36)} ${m.a}</span>
+      <div class="cm-scoreboard">
+        <div class="cm-side">
+          <div class="cm-crest">${teamLogo(m.h,46)}</div>
+          <div class="cm-name">${m.h}</div>
         </div>
-        ${hasResult?`<div class="cm-score" style="color:var(--gold2)">${hg} — <span style="color:var(--cyan)">${ag}</span></div>`:'<div style="font-family:Oswald,sans-serif;font-size:11px;color:var(--dim);letter-spacing:.04em;text-transform:uppercase;">Awaiting Results</div>'}
+        <div class="cm-mid">
+          ${hasResult
+            ? `<div class="cm-scoreline"><span class="cm-sh">${hg}</span><span class="cm-sep">–</span><span class="cm-sa">${ag}</span></div><div class="cm-tag">Full Time</div>`
+            : `<div class="cm-vs">VS</div><div class="cm-tag live">● Awaiting Result</div>`}
+        </div>
+        <div class="cm-side">
+          <div class="cm-crest away">${teamLogo(m.a,46)}</div>
+          <div class="cm-name">${m.a}</div>
+        </div>
       </div>
       <div class="cm-body">
         <div class="cm-kpi-grid">
