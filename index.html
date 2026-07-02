@@ -755,7 +755,16 @@ function switchTab(name){
 function renderLeague(rows, results){
   const valid = rows.filter(r => r['Team'] || r['Pos']);
   if(!valid.length){ document.getElementById('lt-body').innerHTML = '<div class="error-msg">No league data in sheet yet.</div>'; return; }
-  const sorted = [...valid].sort((a,b) => (+b['Pts']||0) - (+a['Pts']||0) || ((+b['GF']||0)-(+b['GA']||0)) - ((+a['GF']||0)-(+a['GA']||0)));
+  // Win-Back bonus points: column J of 5_League_Table (header "Bonus"), added on
+  // top of match points to give each team's total standing points.
+  const bonusOf = r => {
+    let v = field(r,'bonus');
+    if(v==='' && r._raw && r._raw[9] && r._raw[9].v != null) v = r._raw[9].v;
+    const m = String(v).match(/-?\d+/);
+    return m ? parseInt(m[0],10) : 0;
+  };
+  const totalPts = r => (+r['Pts']||0) + bonusOf(r);
+  const sorted = [...valid].sort((a,b) => totalPts(b) - totalPts(a) || ((+b['GF']||0)-(+b['GA']||0)) - ((+a['GF']||0)-(+a['GA']||0)));
   document.getElementById('lt-head').textContent = `League Table — Week ${currentWeek}`;
   // Build form map from results
   const formMap = {};
@@ -773,16 +782,18 @@ function renderLeague(rows, results){
   const formBadge = f => `<span style="width:16px;height:16px;border-radius:3px;font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;font-family:'Oswald',sans-serif;background:${f==='W'?'#2E8B57':f==='D'?'#7A7A52':'#C0392B'};color:#fff">${f}</span>`;
   document.getElementById('lt-body').innerHTML = `
     <table>
-      <thead><tr><th>Pos</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th><th>Form</th></tr></thead>
+      <thead><tr><th>Pos</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th title="Customer Win-Back bonus points">Bns</th><th title="Total points incl. bonus">Pts</th><th>Form</th></tr></thead>
       <tbody>${sorted.map((r,i)=>{
         const gd = (+r['GF']||0)-(+r['GA']||0);
+        const bns = bonusOf(r);
         const form = (formMap[(r['Team']||'').trim()]||[]).slice(-5);
         return `<tr>
           <td class="pos">${i+1}</td>
           <td><span class="sw" style="background:${TEAM_COLORS[i%7]}"></span>${teamLogo(r['Team']||r['Area']||'',20)} <span style="vertical-align:middle">${r['Team']||r['Area']||''}</span></td>
           <td>${r['P']||0}</td><td>${r['W']||0}</td><td>${r['D']||0}</td><td>${r['L']||0}</td>
           <td class="${gd>0?'gd-pos':gd<0?'gd-neg':''}">${gd>=0?'+':''}${gd}</td>
-          <td class="pts">${r['Pts']||0}</td>
+          <td style="color:${bns>0?'var(--green)':'var(--dim)'};font-family:'Oswald',sans-serif;">${bns>0?'+'+bns:'0'}</td>
+          <td class="pts">${totalPts(r)}</td>
           <td><div style="display:flex;gap:2px;">${form.map(formBadge).join('')}</div></td>
         </tr>`;
       }).join('')}</tbody>
