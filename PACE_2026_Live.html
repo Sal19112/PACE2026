@@ -217,7 +217,6 @@ footer{text-align:center;color:var(--dim);font-size:10px;margin-top:18px;font-fa
 <div class="header">
   <div class="crest"><b>PACE</b><span>2026</span></div>
   <div class="title-block">
-    <div class="eyebrow">1 Jul – 30 Sep 2026 · AAE vs BEC · Double Round-Robin · Live from Google Sheets</div>
     <h1>PACE 2026: <span>Performance And Customer Excellence</span></h1>
   </div>
   <div class="badges">
@@ -228,22 +227,12 @@ footer{text-align:center;color:var(--dim);font-size:10px;margin-top:18px;font-fa
   </div>
 </div>
 
-<!-- KPI PILLS -->
-<div class="kpi-row">
-  <span class="kpi-pill" style="color:#F2B53A;border-color:rgba(242,181,58,0.4);">⚽ KPI 1 · Retail Remittance Txn %</span>
-  <span class="kpi-pill" style="color:#2ECC71;border-color:rgba(46,204,113,0.4);">⚽ KPI 2 · New Customer Registration %</span>
-  <span class="kpi-pill" style="color:#39C7E8;border-color:rgba(57,199,232,0.4);">⚽ KPI 3 · Inactive Customer Revival %</span>
-  <span class="kpi-pill" style="color:#E96A6A;border-color:rgba(233,106,106,0.4);">⚽ KPI 4 · INR Transaction %</span>
-  <span class="kpi-pill" style="color:#9B7BD8;border-color:rgba(155,123,216,0.4);">⚽ KPI 5 · EGP Transaction %</span>
-  <span class="kpi-pill" style="color:var(--dim);border-color:rgba(255,255,255,0.12);margin-left:auto;">Win=3pts · Draw=1pt · Loss=0pts</span>
-</div>
-
 <!-- TABS -->
 <div class="tabs">
   <div class="tab active" onclick="switchTab('overview')">📊 Overview<span class="badge-dot"></span></div>
   <div class="tab" onclick="switchTab('current')">⚽ Current Matches<span class="badge-dot"></span></div>
   <div class="tab" onclick="switchTab('schedule')">📅 Full Schedule</div>
-  <div class="tab" onclick="switchTab('revival')">🔄 Revival Tracker</div>
+  <div class="tab" onclick="switchTab('rules')">📋 Rules & KPIs</div>
 </div>
 
 <!-- ══ TAB: OVERVIEW ══════════════════════════════════════════════ -->
@@ -307,12 +296,151 @@ footer{text-align:center;color:var(--dim);font-size:10px;margin-top:18px;font-fa
   </div>
 </div>
 
-<!-- ══ TAB: REVIVAL TRACKER ════════════════════════════════════════ -->
-<div class="tab-content" id="tab-revival">
-  <div class="panel">
-    <div class="ph grn">Inactive Customer Revival Tracker</div>
-    <div class="pb" id="revival-body"><div class="loading"><span class="spinner"></span>Loading…</div></div>
+<!-- ══ TAB: RULES & KPIs ════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-rules">
+
+  <!-- KPI DEFINITIONS -->
+  <div class="panel" style="margin-bottom:14px;">
+    <div class="ph">⚽ The 5 KPIs — Goal Categories</div>
+    <div class="pb">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
+        <div style="background:rgba(242,181,58,0.07);border:1px solid rgba(242,181,58,0.25);border-top:3px solid #F2B53A;border-radius:10px;padding:14px;">
+          <div style="font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#F2B53A;margin-bottom:6px;">KPI 1</div>
+          <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;margin-bottom:6px;">Retail Remittance Transaction %</div>
+          <div style="font-size:12px;color:var(--dim);line-height:1.5;">Achievement % of branch retail remittance transaction target for the match week. The area with the higher achievement % wins this goal.</div>
+        </div>
+        <div style="background:rgba(46,204,113,0.07);border:1px solid rgba(46,204,113,0.25);border-top:3px solid #2ECC71;border-radius:10px;padding:14px;">
+          <div style="font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#2ECC71;margin-bottom:6px;">KPI 2</div>
+          <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;margin-bottom:6px;">New Customer Registration %</div>
+          <div style="font-size:12px;color:var(--dim);line-height:1.5;">Achievement % of new customer registration target. Counts verified new accounts opened during the match week. Higher % wins the goal.</div>
+        </div>
+        <div style="background:rgba(57,199,232,0.07);border:1px solid rgba(57,199,232,0.25);border-top:3px solid #39C7E8;border-radius:10px;padding:14px;">
+          <div style="font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#39C7E8;margin-bottom:6px;">KPI 3</div>
+          <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;margin-bottom:6px;">Inactive Customer Revival %</div>
+          <div style="font-size:12px;color:var(--dim);line-height:1.5;">% of assigned inactive customer records successfully reactivated. Each branch receives 2,000 records. Minimum target: 20% (400 customers). Sep push: +1,000 additional records.</div>
+        </div>
+        <div style="background:rgba(233,106,106,0.07);border:1px solid rgba(233,106,106,0.25);border-top:3px solid #E96A6A;border-radius:10px;padding:14px;">
+          <div style="font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#E96A6A;margin-bottom:6px;">KPI 4</div>
+          <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;margin-bottom:6px;">INR Transaction %</div>
+          <div style="font-size:12px;color:var(--dim);line-height:1.5;">Achievement % of INR corridor transaction target. Tracks volume of India-bound remittance transactions for the match week. Higher % wins.</div>
+        </div>
+        <div style="background:rgba(155,123,216,0.07);border:1px solid rgba(155,123,216,0.25);border-top:3px solid #9B7BD8;border-radius:10px;padding:14px;">
+          <div style="font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#9B7BD8;margin-bottom:6px;">KPI 5</div>
+          <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;margin-bottom:6px;">EGP Transaction %</div>
+          <div style="font-size:12px;color:var(--dim);line-height:1.5;">Achievement % of EGP corridor transaction target. Tracks Egypt-bound remittance transactions. Same structure as INR KPI. Higher % wins.</div>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <!-- MATCH SCORING RULES -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+    <div class="panel">
+      <div class="ph">🏆 Match Scoring Rules</div>
+      <div class="pb">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="background:rgba(46,204,113,0.08);border:1px solid rgba(46,204,113,0.2);border-radius:9px;padding:12px 14px;display:flex;align-items:center;gap:14px;">
+            <div style="font-family:'Oswald',sans-serif;font-size:28px;font-weight:700;color:#2ECC71;min-width:36px;">3</div>
+            <div><div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:14px;">WIN</div><div style="font-size:11.5px;color:var(--dim);margin-top:2px;">Team wins more KPI goals than opponent in the match week</div></div>
+          </div>
+          <div style="background:rgba(242,181,58,0.08);border:1px solid rgba(242,181,58,0.2);border-radius:9px;padding:12px 14px;display:flex;align-items:center;gap:14px;">
+            <div style="font-family:'Oswald',sans-serif;font-size:28px;font-weight:700;color:#F2B53A;min-width:36px;">1</div>
+            <div><div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:14px;">DRAW</div><div style="font-size:11.5px;color:var(--dim);margin-top:2px;">Both teams win an equal number of KPI goals</div></div>
+          </div>
+          <div style="background:rgba(233,106,106,0.08);border:1px solid rgba(233,106,106,0.2);border-radius:9px;padding:12px 14px;display:flex;align-items:center;gap:14px;">
+            <div style="font-family:'Oswald',sans-serif;font-size:28px;font-weight:700;color:#E96A6A;min-width:36px;">0</div>
+            <div><div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:14px;">LOSS</div><div style="font-size:11.5px;color:var(--dim);margin-top:2px;">Team wins fewer KPI goals than opponent</div></div>
+          </div>
+          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--line);border-radius:9px;padding:12px 14px;">
+            <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;">Goal Definition</div>
+            <div style="font-size:11.5px;color:var(--dim);line-height:1.6;">Each of the 5 KPIs is a separate "goal." The team with the higher achievement % in a KPI earns 1 goal. Max 5 goals per match. A KPI tie = no goal awarded to either team (recorded as Draw for that KPI).</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="ph alt">📅 Format & Structure</div>
+      <div class="pb">
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;">
+          <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);">
+            <span style="color:var(--gold2);font-family:'Oswald',sans-serif;font-weight:700;min-width:140px;">Campaign Period</span>
+            <span style="color:var(--txt);">1 July – 30 September 2026</span>
+          </div>
+          <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);">
+            <span style="color:var(--gold2);font-family:'Oswald',sans-serif;font-weight:700;min-width:140px;">Format</span>
+            <span style="color:var(--txt);">Double Round-Robin — each team plays every other team twice (home & away)</span>
+          </div>
+          <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);">
+            <span style="color:var(--gold2);font-family:'Oswald',sans-serif;font-weight:700;min-width:140px;">Total Match Weeks</span>
+            <span style="color:var(--txt);">14 weeks</span>
+          </div>
+          <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);">
+            <span style="color:var(--gold2);font-family:'Oswald',sans-serif;font-weight:700;min-width:140px;">Matches Per Week</span>
+            <span style="color:var(--txt);">3 matches (6 teams play, 1 team has bye week)</span>
+          </div>
+          <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);">
+            <span style="color:var(--gold2);font-family:'Oswald',sans-serif;font-weight:700;min-width:140px;">Total Fixtures</span>
+            <span style="color:var(--txt);">42 matches across the season</span>
+          </div>
+          <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);">
+            <span style="color:var(--gold2);font-family:'Oswald',sans-serif;font-weight:700;min-width:140px;">Teams</span>
+            <span style="color:var(--txt);">7 teams from AAE & BEC organisations</span>
+          </div>
+          <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);">
+            <span style="color:var(--gold2);font-family:'Oswald',sans-serif;font-weight:700;min-width:140px;">Prize Budget</span>
+            <span style="color:var(--gold2);font-weight:700;">KD 5,000</span>
+          </div>
+          <div style="display:flex;gap:10px;padding:9px 0;">
+            <span style="color:var(--gold2);font-family:'Oswald',sans-serif;font-weight:700;min-width:140px;">Bye Weeks</span>
+            <span style="color:var(--txt);">Each team rests for 2 match weeks across the season</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TARGET SLABS & ROLES -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+    <div class="panel">
+      <div class="ph grn">🎯 Target Slabs</div>
+      <div class="pb">
+        <div style="background:rgba(46,204,113,0.07);border:1px solid rgba(46,204,113,0.2);border-radius:9px;padding:12px 14px;margin-bottom:10px;">
+          <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:#2ECC71;margin-bottom:4px;">Slab 1 — Minimum Target</div>
+          <div style="font-size:12px;color:var(--dim);line-height:1.5;">~10% growth over the same period last year. This is the baseline each team must beat to be considered competitive in a KPI goal.</div>
+        </div>
+        <div style="background:rgba(155,123,216,0.07);border:1px solid rgba(155,123,216,0.2);border-radius:9px;padding:12px 14px;">
+          <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:#9B7BD8;margin-bottom:4px;">Slab 2 — Stretch Target</div>
+          <div style="font-size:12px;color:var(--dim);line-height:1.5;">~15% growth over the same period last year. Achieving Slab 2 signals exceptional performance and earns recognition in weekly announcements.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="ph alt">👥 Team Roles</div>
+      <div class="pb">
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="padding:9px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:3px solid var(--gold);">
+            <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--gold2);">Management Mentor</div>
+            <div style="font-size:11.5px;color:var(--dim);margin-top:3px;">Monitoring, guidance, review and management-level support — Head Office</div>
+          </div>
+          <div style="padding:9px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:3px solid var(--cyan);">
+            <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--cyan);">Area Manager / Team Coach</div>
+            <div style="font-size:11.5px;color:var(--dim);margin-top:3px;">Team ownership, target follow-up and performance correction — per team</div>
+          </div>
+          <div style="padding:9px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:3px solid var(--green);">
+            <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--green);">Captain</div>
+            <div style="font-size:11.5px;color:var(--dim);margin-top:3px;">Daily coordination, motivation and branch follow-up — 1 per team</div>
+          </div>
+          <div style="padding:9px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:3px solid var(--purple);">
+            <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--purple);">Vice Captain</div>
+            <div style="font-size:11.5px;color:var(--dim);margin-top:3px;">Backup coordination and execution support — 1 per team</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <footer>PACE 2026 · Performance And Customer Excellence · AAE & BEC · Live Data via Google Sheets · Auto-refresh every 5 min</footer>
@@ -435,7 +563,7 @@ updateCountdown();
 // ══ TAB SWITCHING ════════════════════════════════════════════════
 function switchTab(name){
   document.querySelectorAll('.tab').forEach((t,i) => {
-    const names = ['overview','current','schedule','revival'];
+    const names = ['overview','current','schedule','rules'];
     t.classList.toggle('active', names[i] === name);
   });
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -680,7 +808,7 @@ function renderCurrentMatches(results, kpiData, fixtureRows){
     </div>`;
   }).join('');
   document.getElementById('current-matches-body').innerHTML =
-    `<div style="font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:.05em;text-transform:uppercase;color:var(--gold2);margin-bottom:12px;">⚽ MATCH WEEK ${currentWeek} — ${wkRow['Date Range']||''}</div>`
+    `<div style="font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:.05em;text-transform:uppercase;color:var(--gold2);margin-bottom:12px;">⚽ MATCH WEEK ${currentWeek} — ${parsed.dateRange||''}</div>`
     + html
     + (bye?`<div class="bye-card">🛌 ${bye} — Bye Week · Resting this match week</div>`:'');
 }
@@ -714,28 +842,6 @@ function renderSchedule(fixtureRows){
 }
 
 // ══ RENDER REVIVAL TRACKER ═══════════════════════════════════════
-function renderRevival(rows){
-  const valid = rows.filter(r=>r['Team']||r['Branch ID']);
-  document.getElementById('revival-body').innerHTML = `
-    <table>
-      <thead><tr><th>Team</th><th>Branch</th><th>Assigned</th><th>Target (20%)</th><th>Revived</th><th>Achievement</th><th>Sep Push</th></tr></thead>
-      <tbody>${valid.map(r=>{
-        const pct = parseFloat(r['Achievement %']||0);
-        const pctDisp = isNaN(pct) ? '—' : (pct*100).toFixed(1)+'%';
-        const isGood = pct >= 1;
-        return `<tr>
-          <td style="text-align:left;font-family:'Oswald',sans-serif;font-size:11px">${r['Team']||''}</td>
-          <td style="text-align:left;font-size:11px">${r['Branch Name']||''}</td>
-          <td>${r['Records Assigned']||0}</td>
-          <td style="color:var(--gold2)">${r['Target 20%']||400}</td>
-          <td style="color:${isGood?'var(--green)':'var(--red)'};font-weight:700">${r['Revived MTD']||r['Revival Actual']||0}</td>
-          <td style="color:${isGood?'var(--green)':'var(--red)'};font-weight:700">${pctDisp}</td>
-          <td style="color:var(--purple)">${r['Sep Push Records']||0}</td>
-        </tr>`;
-      }).join('')}</tbody>
-    </table>`;
-}
-
 // ══ MAIN LOAD ════════════════════════════════════════════════════
 let refreshTimer = null;
 async function loadAll(){
@@ -745,36 +851,36 @@ async function loadAll(){
   document.getElementById('pulse-dot').style.boxShadow='0 0 8px var(--gold)';
   setStatus('Fetching data from Google Sheets…', false);
   try{
-    const [leagueData, resultsData, fixtureData, kpiData, revivalData] = await Promise.all([
+    const [leagueData, resultsData, fixtureData, kpiData] = await Promise.all([
       fetchSheet(SHEETS.league),
       fetchSheet(SHEETS.results),
       fetchSheet(SHEETS.fixtures),
       fetchSheet(SHEETS.kpi),
-      fetchSheet(SHEETS.revival),
     ]);
     const leagueRows  = leagueData.rows.filter(r => r['Team'] || r['Pos']);
     const resultsRows = resultsData.rows.filter(r => r['Home Team'] !== undefined);
-    // Pass ALL fixture rows (incl. header noise) — parseFixtureRow filters by week > 0
     const fixtureRows = fixtureData.rows;
     const kpiRows     = kpiData.rows.filter(r => r['Week'] && r['Team Name']);
-    const revivalRows = revivalData.rows.filter(r => r['Team'] || r['Branch ID']);
     renderLeague(leagueRows);
     renderMatchAndKPI(resultsRows, kpiRows);
     renderFixturesSummary(fixtureRows);
     renderForm(resultsRows, leagueRows);
     renderCurrentMatches(resultsRows, kpiRows, fixtureRows);
     renderSchedule(fixtureRows);
-    renderRevival(revivalRows);
     const now = new Date();
     setStatus(`Last updated: ${now.toLocaleTimeString()} — <b>Google Sheets connected</b>`, false);
     document.getElementById('pulse-dot').style.background='var(--green)';
     document.getElementById('pulse-dot').style.boxShadow='0 0 8px var(--green)';
     scheduleNextRefresh();
   } catch(err){
-    setStatus(`Connection error: ${err.message} — Check sharing settings (Anyone with link → Viewer)`, true);
+    const isNetwork = err.message.startsWith('HTTP') || err.message.includes('fetch');
+    const msg = isNetwork
+      ? `Google Sheets connection failed (${err.message}) — make sure sharing is set to "Anyone with the link → Viewer"`
+      : `Script error: ${err.message} — check browser console (F12) for details`;
+    setStatus(msg, true);
     document.getElementById('pulse-dot').style.background='var(--red)';
     document.getElementById('pulse-dot').style.boxShadow='0 0 8px var(--red)';
-    console.error(err);
+    console.error('PACE 2026 error:', err);
     scheduleNextRefresh();
   }
 }
