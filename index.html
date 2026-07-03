@@ -755,16 +755,16 @@ function switchTab(name){
 function renderLeague(rows, results){
   const valid = rows.filter(r => r['Team'] || r['Pos']);
   if(!valid.length){ document.getElementById('lt-body').innerHTML = '<div class="error-msg">No league data in sheet yet.</div>'; return; }
-  // Win-Back bonus points: column J of 5_League_Table (header "Bonus"), added on
-  // top of match points to give each team's total standing points.
+  // Win-Back bonus points: column J of 5_League_Table (header "Bonus"), shown for
+  // reference. The sheet's Pts column already includes the bonus (via formula),
+  // so it is used as-is — do NOT add the bonus again here.
   const bonusOf = r => {
     let v = field(r,'bonus');
     if(v==='' && r._raw && r._raw[9] && r._raw[9].v != null) v = r._raw[9].v;
     const m = String(v).match(/-?\d+/);
     return m ? parseInt(m[0],10) : 0;
   };
-  const totalPts = r => (+r['Pts']||0) + bonusOf(r);
-  const sorted = [...valid].sort((a,b) => totalPts(b) - totalPts(a) || ((+b['GF']||0)-(+b['GA']||0)) - ((+a['GF']||0)-(+a['GA']||0)));
+  const sorted = [...valid].sort((a,b) => (+b['Pts']||0) - (+a['Pts']||0) || ((+b['GF']||0)-(+b['GA']||0)) - ((+a['GF']||0)-(+a['GA']||0)));
   document.getElementById('lt-head').textContent = `League Table — Week ${currentWeek}`;
   // Build form map from results
   const formMap = {};
@@ -793,7 +793,7 @@ function renderLeague(rows, results){
           <td>${r['P']||0}</td><td>${r['W']||0}</td><td>${r['D']||0}</td><td>${r['L']||0}</td>
           <td class="${gd>0?'gd-pos':gd<0?'gd-neg':''}">${gd>=0?'+':''}${gd}</td>
           <td style="color:${bns>0?'var(--green)':'var(--dim)'};font-family:'Oswald',sans-serif;">${bns>0?'+'+bns:'0'}</td>
-          <td class="pts">${totalPts(r)}</td>
+          <td class="pts">${r['Pts']||0}</td>
           <td><div style="display:flex;gap:2px;">${form.map(formBadge).join('')}</div></td>
         </tr>`;
       }).join('')}</tbody>
