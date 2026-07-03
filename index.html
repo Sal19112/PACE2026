@@ -705,7 +705,11 @@ function extractWeekFromFixtures(fixtureData){
 function parseFixtureRow(row){
   const raw = row._raw || [];
   const cell = (i) => (raw[i] && raw[i].v !== null && raw[i].v !== undefined) ? String(raw[i].v).trim() : '';
-  const wk = parseInt(cell(0)) || 0;
+  // Only a clean 1–14 integer counts as a real fixture week. This rejects
+  // header/control rows above the data (e.g. a date like "7/23/2026" or a
+  // "Match 1" label), so only actual fixture rows (sheet row 5+) come through.
+  const wkStr = cell(0);
+  const wk = (/^\d{1,2}$/.test(wkStr) && +wkStr >= 1 && +wkStr <= 14) ? +wkStr : 0;
   return {
     week:      wk,
     dateRange: cell(1),
