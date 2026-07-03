@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>PACE 2026 — Live Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=Anton&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=Archivo+Black&display=swap" rel="stylesheet">
 <style>
 /* ── VARIABLES ───────────────────────────────────────────────────── */
 :root{
@@ -86,7 +86,7 @@ body::after{
 .crest b{font-family:'Oswald',sans-serif;font-size:13px;color:var(--gold2);}
 .crest span{font-family:'Oswald',sans-serif;font-size:16px;font-weight:700;}
 .title-block h1{display:flex;flex-direction:column;gap:3px;line-height:1;margin-top:2px;}
-.title-block .brand{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(24px,3.4vw,40px);letter-spacing:.03em;text-transform:uppercase;
+.title-block .brand{font-family:'Archivo Black','Anton',sans-serif;font-weight:400;font-size:clamp(20px,3vw,34px);letter-spacing:.01em;text-transform:uppercase;
   background:linear-gradient(92deg,#FFE7A6 0%,var(--gold2) 40%,var(--gold) 70%,#E0982A 100%);
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;
   filter:drop-shadow(0 2px 10px rgba(242,181,58,0.28));}
@@ -243,8 +243,8 @@ footer::after{content:' ⚽';opacity:.5;}
   .header{grid-template-columns:auto 1fr;gap:10px;}
   .header img{width:52px!important;height:52px!important;}
   .badges{display:none;}
-  .title-block .brand{font-size:22px;}
-  .title-block .sub{font-size:9.5px;letter-spacing:.12em;}
+  .title-block .brand{font-size:20px;}
+  .title-block .sub{font-size:9px;letter-spacing:.1em;}
   .tabs{gap:2px;}
   .tab{font-size:10px;padding:7px 10px;}
   .g2,.g3{grid-template-columns:1fr;gap:10px;margin-bottom:10px;}
@@ -268,7 +268,7 @@ footer::after{content:' ⚽';opacity:.5;}
 @media(max-width:420px){
   .tab{padding:6px 8px;font-size:9.5px;}
   .cm-kpi-grid{grid-template-columns:repeat(2,1fr);}
-  .title-block .brand{font-size:19px;}
+  .title-block .brand{font-size:16px;}
   .ph{font-size:11px;}
 }
 </style>
