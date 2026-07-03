@@ -198,19 +198,19 @@ tbody tr:nth-child(3){background:rgba(242,181,58,0.09);}
 .cm-kpi .ck-h{font-weight:700;font-size:12px;}.cm-kpi .ck-a{font-size:11px;color:var(--dim);}
 .cm-kpi .ck-chip{font-family:'Oswald',sans-serif;font-size:8px;font-weight:700;padding:1px 5px;border-radius:5px;text-transform:uppercase;margin-top:3px;display:inline-block;}
 .bye-card{background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.12);border-radius:12px;padding:16px;text-align:center;color:var(--dim);font-family:'Oswald',sans-serif;letter-spacing:.04em;text-transform:uppercase;font-size:12px;}
-.schedule-table{width:100%;border-collapse:collapse;font-size:12px;}
-.schedule-table thead th{font-family:'Oswald',sans-serif;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--dim);padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;}
-.schedule-table tbody td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:middle;}
+.schedule-table{width:100%;border-collapse:collapse;font-size:14px;}
+.schedule-table thead th{font-family:'Oswald',sans-serif;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--gold2);padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;}
+.schedule-table tbody td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:middle;}
 .schedule-table tbody tr.current-wk{background:rgba(242,181,58,0.08);border-left:3px solid var(--gold);}
 .schedule-table tbody tr.completed{opacity:.65;}
-.wk-num{font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:var(--gold2);}
+.wk-num{font-family:'Oswald',sans-serif;font-weight:700;font-size:16px;color:var(--gold2);}
 .fixture-pair{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
-.fp-home{font-weight:600;color:var(--txt);}.fp-vs{color:var(--dim);font-size:10px;font-family:'Oswald',sans-serif;}.fp-away{color:var(--cyan);}
-.status-pill{font-family:'Oswald',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 10px;border-radius:8px;}
+.fp-home{font-weight:700;font-size:14px;color:var(--txt);}.fp-vs{color:var(--dim);font-size:11px;font-family:'Oswald',sans-serif;}.fp-away{color:var(--cyan);font-weight:700;font-size:14px;}
+.status-pill{font-family:'Oswald',sans-serif;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:4px 11px;border-radius:8px;}
 .sp-done{background:rgba(46,204,113,0.15);color:var(--green);border:1px solid rgba(46,204,113,0.3);}
 .sp-active{background:rgba(242,181,58,0.15);color:var(--gold);border:1px solid rgba(242,181,58,0.3);}
 .sp-upcoming{background:rgba(255,255,255,0.06);color:var(--dim);border:1px solid rgba(255,255,255,0.1);}
-.bye-tag{font-size:10px;color:var(--red);font-style:italic;}
+.bye-tag{font-size:13px;font-weight:700;color:#F58C8C;font-family:'Oswald',sans-serif;letter-spacing:.02em;}
 .countdown-bar{background:rgba(57,199,232,0.07);border:1px solid rgba(57,199,232,0.2);
   border-radius:9px;padding:8px 14px;margin-bottom:12px;
   display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
@@ -1127,7 +1127,7 @@ function renderSchedule(fixtureRows){
         const fp = (h,a) => h ? `<div class="fixture-pair"><span class="fp-home">${h}</span><span class="fp-vs">vs</span><span class="fp-away">${a}</span></div>` : '';
         return `<tr class="${rowCls}">
           <td class="wk-num">${f.week}</td>
-          <td style="font-size:11px;color:var(--dim)">${f.dateRange}</td>
+          <td style="font-size:12.5px;font-weight:600;color:var(--txt)">${f.dateRange}</td>
           <td>${fp(f.home1,f.away1)}</td>
           <td>${fp(f.home2,f.away2)}</td>
           <td>${fp(f.home3,f.away3)}</td>
