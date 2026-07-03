@@ -192,11 +192,21 @@ tbody tr:nth-child(3){background:rgba(242,181,58,0.09);}
 .fx-bye{margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px;
   background:rgba(233,106,106,0.10);border:1px dashed rgba(233,106,106,0.35);border-radius:12px;padding:11px 14px;
   font-family:'Oswald',sans-serif;font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--red);}
-.cm-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
-.cm-kpi{background:rgba(255,255,255,0.04);border-radius:8px;padding:7px;border:1px solid var(--line);text-align:center;}
-.cm-kpi .ck-lbl{font-size:9px;color:var(--dim);font-family:'Oswald',sans-serif;text-transform:uppercase;margin-bottom:4px;}
-.cm-kpi .ck-h{font-weight:700;font-size:12px;}.cm-kpi .ck-a{font-size:11px;color:var(--dim);}
-.cm-kpi .ck-chip{font-family:'Oswald',sans-serif;font-size:8px;font-weight:700;padding:1px 5px;border-radius:5px;text-transform:uppercase;margin-top:3px;display:inline-block;}
+/* ── Football "Match Stats" style KPI comparison ── */
+.cm-stats{display:flex;flex-direction:column;gap:12px;}
+.cm-stats-head{display:flex;align-items:center;justify-content:space-between;gap:8px;font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--line);padding-bottom:7px;}
+.cm-stats-head .sh-h{color:var(--gold2);font-weight:700;max-width:42%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cm-stats-head .sh-a{color:var(--cyan);font-weight:700;max-width:42%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;}
+.cm-stats-head .sh-t{flex-shrink:0;}
+.stat-vals{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:5px;}
+.sv{font-family:'Oswald',sans-serif;font-weight:700;font-size:16px;min-width:46px;line-height:1;}
+.sv-h{color:var(--gold2);text-align:left;}
+.sv-a{color:var(--cyan);text-align:right;}
+.sv.dim{opacity:.4;font-weight:600;}
+.sv-lbl{flex:1;text-align:center;font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);}
+.stat-bar{display:flex;height:7px;border-radius:5px;overflow:hidden;background:rgba(255,255,255,0.07);}
+.sb-h{background:linear-gradient(90deg,#E0982A,#F2B53A);border-radius:5px 0 0 5px;transition:width .5s ease;}
+.sb-a{background:linear-gradient(90deg,#39C7E8,#1f8fb0);border-radius:0 5px 5px 0;transition:width .5s ease;}
 .bye-card{background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.12);border-radius:12px;padding:16px;text-align:center;color:var(--dim);font-family:'Oswald',sans-serif;letter-spacing:.04em;text-transform:uppercase;font-size:12px;}
 .schedule-table{width:100%;border-collapse:collapse;font-size:14px;}
 .schedule-table thead th{font-family:'Oswald',sans-serif;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--gold2);padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;}
@@ -1132,20 +1142,28 @@ function renderCurrentMatches(results, kpiData, fixtureRows){
         </div>
       </div>
       <div class="cm-body">
-        <div class="cm-kpi-grid">
+        <div class="cm-stats">
+          <div class="cm-stats-head"><span class="sh-h">${m.h}</span><span class="sh-t">⚽ Match Stats</span><span class="sh-a">${m.a}</span></div>
           ${KPI_DEFS.map((kpi,i)=>{
             const res=kpiVals[i];
             const hv=homeKPIs[i]!==null?Math.round(homeKPIs[i]*100):null;
             const av=awayKPIs[i]!==null?Math.round(awayKPIs[i]*100):null;
-            let chipStyle='background:rgba(255,255,255,0.08);color:var(--dim)',chipTxt='—';
-            if(res==='H'){chipStyle='background:rgba(242,181,58,0.2);color:var(--gold)';chipTxt='HOME ⚽';}
-            else if(res==='A'){chipStyle='background:rgba(57,199,232,0.2);color:var(--cyan)';chipTxt='AWAY ⚽';}
-            else if(res==='D'){chipStyle='background:rgba(255,255,255,0.1);color:#aaa';chipTxt='DRAW';}
-            return `<div class="cm-kpi" style="border-top:2px solid ${kpi.color}">
-              <div class="ck-lbl">${kpi.label}</div>
-              <div class="ck-h" style="color:${kpi.color}">${hv!==null?hv+'%':'—'}</div>
-              <div class="ck-a">${av!==null?av+'%':'—'}</div>
-              <span class="ck-chip" style="${chipStyle}">${chipTxt}</span>
+            const total=(hv||0)+(av||0);
+            const hw= total ? Math.round((hv||0)/total*100) : 50;
+            const hDim = res==='A' ? 'dim' : '';
+            const aDim = res==='H' ? 'dim' : '';
+            const hMark = res==='H' ? ' ⚽' : '';
+            const aMark = res==='A' ? '⚽ ' : '';
+            return `<div class="stat-row">
+              <div class="stat-vals">
+                <span class="sv sv-h ${hDim}">${hv!==null?hv+'%':'—'}${hMark}</span>
+                <span class="sv-lbl">${kpi.label}</span>
+                <span class="sv sv-a ${aDim}">${aMark}${av!==null?av+'%':'—'}</span>
+              </div>
+              <div class="stat-bar">
+                <div class="sb-h" style="width:${hw}%"></div>
+                <div class="sb-a" style="width:${100-hw}%"></div>
+              </div>
             </div>`;
           }).join('')}
         </div>
