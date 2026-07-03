@@ -726,6 +726,16 @@ function parseFixtureRow(row){
   };
 }
 
+// A row is a real fixture only if its week is 1–14 AND it involves recognised
+// teams — rejects header/control rows (e.g. "Match 1") that slip past the week
+// check. Team names are matched against the known team list.
+const KNOWN_TEAMS = new Set(Object.keys(TEAM_LOGOS).map(n => n.trim().toLowerCase()));
+function isRealFixture(f){
+  if(!(f.week >= 1 && f.week <= 14)) return false;
+  const known = t => t && KNOWN_TEAMS.has(String(t).trim().toLowerCase());
+  return f.matches.some(m => known(m.home) && known(m.away)) || known(f.bye);
+}
+
 // ══ COUNTDOWN TIMER ════════════════════════════════════════════════
 let currentWeek = getCurrentWeek();
 function updateCountdown(){
@@ -1019,7 +1029,7 @@ function showKPIDetail(idx){
 // ══ RENDER THIS WEEK FIXTURES (OVERVIEW) ════════════════════════
 function renderFixturesSummary(fixtureRows){
   document.getElementById('fx-head').textContent = `Week ${currentWeek} — All Fixtures`;
-  const parsed = fixtureRows.map(parseFixtureRow).find(f => f.week === currentWeek);
+  const parsed = fixtureRows.map(parseFixtureRow).find(f => f.week === currentWeek && isRealFixture(f));
   if(!parsed || !parsed.matches.length){
     document.getElementById('fx-body').innerHTML = '<div class="error-msg">No fixtures found for Week ' + currentWeek + '. Check that sheet "2_Fixtures" is shared publicly.</div>';
     return;
@@ -1036,7 +1046,7 @@ function renderFixturesSummary(fixtureRows){
 
 // ══ RENDER CURRENT MATCHES TAB ═══════════════════════════════════
 function renderCurrentMatches(results, kpiData, fixtureRows){
-  const parsed = fixtureRows.map(parseFixtureRow).find(f => f.week === currentWeek);
+  const parsed = fixtureRows.map(parseFixtureRow).find(f => f.week === currentWeek && isRealFixture(f));
   const wkResults = results.filter(r => rowWeek(r) === currentWeek);
   if(!parsed || !parsed.matches.length){
     document.getElementById('current-matches-body').innerHTML='<div class="error-msg">No fixture data for Week '+currentWeek+'. Make sure the Google Sheet is set to "Anyone with the link can view".</div>';
@@ -1101,7 +1111,7 @@ function renderCurrentMatches(results, kpiData, fixtureRows){
 
 // ══ RENDER FULL SCHEDULE ════════════════════════════════════════
 function renderSchedule(fixtureRows){
-  const parsed = fixtureRows.map(parseFixtureRow).filter(f => f.week > 0);
+  const parsed = fixtureRows.map(parseFixtureRow).filter(isRealFixture);
   document.getElementById('schedule-body').innerHTML = `
     <table class="schedule-table">
       <thead><tr><th>Wk</th><th>Dates</th><th>Match 1</th><th>Match 2</th><th>Match 3</th><th>Bye</th><th>Status</th></tr></thead>
