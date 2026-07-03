@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>PACE 2026 — Live Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=Anton&display=swap" rel="stylesheet">
 <style>
 /* ── VARIABLES ───────────────────────────────────────────────────── */
 :root{
@@ -85,8 +85,12 @@ body::after{
   align-items:center;justify-content:center;box-shadow:0 0 22px rgba(242,181,58,0.3);}
 .crest b{font-family:'Oswald',sans-serif;font-size:13px;color:var(--gold2);}
 .crest span{font-family:'Oswald',sans-serif;font-size:16px;font-weight:700;}
-.title-block h1{font-family:'Oswald',sans-serif;font-weight:700;font-size:clamp(16px,2.4vw,26px);line-height:1.1;text-transform:uppercase;margin-top:2px;}
-.title-block h1 span{color:var(--cyan);font-weight:500;}
+.title-block h1{display:flex;flex-direction:column;gap:3px;line-height:1;margin-top:2px;}
+.title-block .brand{font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(24px,3.4vw,40px);letter-spacing:.03em;text-transform:uppercase;
+  background:linear-gradient(92deg,#FFE7A6 0%,var(--gold2) 40%,var(--gold) 70%,#E0982A 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;
+  filter:drop-shadow(0 2px 10px rgba(242,181,58,0.28));}
+.title-block .sub{font-family:'Oswald',sans-serif;font-weight:600;font-size:clamp(9px,1.15vw,12.5px);letter-spacing:.18em;text-transform:uppercase;color:var(--cyan);}
 .badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
 .bdg{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:6px 12px;text-align:center;min-width:64px;}
 .bdg .ic{font-size:15px;}
@@ -239,7 +243,8 @@ footer::after{content:' ⚽';opacity:.5;}
   .header{grid-template-columns:auto 1fr;gap:10px;}
   .header img{width:52px!important;height:52px!important;}
   .badges{display:none;}
-  .title-block h1{font-size:14px;}
+  .title-block .brand{font-size:22px;}
+  .title-block .sub{font-size:9.5px;letter-spacing:.12em;}
   .tabs{gap:2px;}
   .tab{font-size:10px;padding:7px 10px;}
   .g2,.g3{grid-template-columns:1fr;gap:10px;margin-bottom:10px;}
@@ -263,7 +268,7 @@ footer::after{content:' ⚽';opacity:.5;}
 @media(max-width:420px){
   .tab{padding:6px 8px;font-size:9.5px;}
   .cm-kpi-grid{grid-template-columns:repeat(2,1fr);}
-  .title-block h1{font-size:12px;}
+  .title-block .brand{font-size:19px;}
   .ph{font-size:11px;}
 }
 </style>
@@ -283,11 +288,10 @@ footer::after{content:' ⚽';opacity:.5;}
 <div class="header">
   <img src="logos/pace_2026_logo.png" alt="PACE 2026" style="width:82px;height:82px;object-fit:contain;flex-shrink:0;border-radius:12px;filter:drop-shadow(0 0 12px rgba(242,181,58,0.4))">
   <div class="title-block">
-    <h1>PACE 2026: <span>Performance And Customer Excellence</span></h1>
+    <h1><span class="brand">PACE 2026</span><span class="sub">Performance And Customer Excellence</span></h1>
   </div>
   <div class="badges">
     <div class="bdg"><div class="ic">📅</div><div class="lb">Match Week</div><div class="val" id="badge-week">—</div></div>
-    <div class="bdg"><div class="ic">⚽</div><div class="lb">5 KPIs</div><div class="val">5</div></div>
     <div class="bdg"><div class="ic">🏆</div><div class="lb">42 Matches</div><div class="val">42</div></div>
     <div class="bdg hi"><div class="ic">✅</div><div class="lb">7 Teams</div><div class="val">7</div></div>
   </div>
