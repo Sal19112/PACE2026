@@ -304,7 +304,7 @@ footer::after{content:' ⚽';opacity:.5;}
   <div class="tab active" onclick="switchTab('overview')">📊 Overview<span class="badge-dot"></span></div>
   <div class="tab" onclick="switchTab('current')">⚽ Current Matches<span class="badge-dot"></span></div>
   <div class="tab" onclick="switchTab('schedule')">📅 Full Schedule</div>
-  <div class="tab" onclick="switchTab('rules')">📋 Rules & KPIs</div>
+  <div class="tab" onclick="switchTab('rules')">📋 Rules & Rewards</div>
 </div>
 
 <!-- ══ TAB: OVERVIEW ══════════════════════════════════════════════ -->
@@ -474,50 +474,97 @@ footer::after{content:' ⚽';opacity:.5;}
     </div>
   </div>
 
-  <!-- AWARDS & ROLES -->
-  <div class="rk-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
-    <div class="panel">
-      <div class="ph grn">🏅 Awards Structure</div>
-      <div class="pb">
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <div style="padding:9px 12px;background:rgba(46,204,113,0.06);border-radius:8px;border-left:3px solid var(--green);">
-            <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--green);">Branch Level</div>
-            <div style="font-size:11.5px;color:var(--dim);margin-top:3px;">Best performing branch per KPI.</div>
-          </div>
-          <div style="padding:9px 12px;background:rgba(57,199,232,0.06);border-radius:8px;border-left:3px solid var(--cyan);">
-            <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--cyan);">Individual Level</div>
-            <div style="font-size:11.5px;color:var(--dim);margin-top:3px;">Best individual staff member per KPI.</div>
-          </div>
-          <div style="padding:9px 12px;background:rgba(242,181,58,0.06);border-radius:8px;border-left:3px solid var(--gold);">
-            <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--gold2);">Weekly</div>
-            <div style="font-size:11.5px;color:var(--dim);margin-top:3px;">Surprise gifts, weekly winners and weekly achievement badges.</div>
-          </div>
-          <div style="padding:9px 12px;background:rgba(155,123,216,0.06);border-radius:8px;border-left:3px solid var(--purple);">
-            <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--purple);">Final</div>
-            <div style="font-size:11.5px;color:var(--dim);margin-top:3px;">Overall campaign winners announced at campaign end (branch + individual).</div>
-          </div>
-          <div style="font-size:10.5px;color:var(--dim);font-style:italic;padding:2px 4px;">Individual branch performer prize details — to be confirmed.</div>
+  <!-- REWARDS & PRIZES -->
+  <div class="panel" style="margin-bottom:14px;">
+    <div class="ph grn">🏆 Rewards & Prizes</div>
+    <div class="pb">
+      <!-- Season champion banner -->
+      <div style="background:linear-gradient(100deg,rgba(242,181,58,0.20),rgba(255,214,138,0.06));border:1px solid rgba(242,181,58,0.42);border-radius:12px;padding:15px 18px;margin-bottom:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <div style="font-size:34px;line-height:1;">🏆</div>
+        <div style="flex:1;min-width:200px;">
+          <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:15.5px;color:var(--gold2);">PACE League Champions — Season Trophy</div>
+          <div style="font-size:12px;color:var(--txt);margin-top:4px;line-height:1.5;">Awarded to the top team after the 14-week campaign.</div>
+        </div>
+        <div style="text-align:right;min-width:150px;">
+          <div style="font-family:'Anton',sans-serif;font-size:24px;color:var(--gold2);letter-spacing:.02em;">KD 1,250</div>
+          <div style="font-size:10.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;margin-top:2px;">+ Champions Trophy + certificates for all branches</div>
         </div>
       </div>
-    </div>
 
-    <div class="panel">
-      <div class="ph alt">👥 Team Structure</div>
-      <div class="pb">
-        <div style="font-size:11.5px;color:var(--dim);line-height:1.5;margin-bottom:10px;">7 area teams, each covering multiple branches. Every team is led by:</div>
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <div style="padding:9px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:3px solid var(--gold);">
-            <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--gold2);">Manager</div>
-            <div style="font-size:11.5px;color:var(--dim);margin-top:3px;">Team ownership, target follow-up and performance direction.</div>
+      <div style="font-size:11.5px;color:var(--dim);margin-bottom:10px;line-height:1.5;">Per-KPI awards — <b style="color:var(--gold2)">Branch:</b> Winner 125 KD · Runner-up 100 KD &nbsp;|&nbsp; <b style="color:var(--cyan)">Individual:</b> Winner 75 KD · Runner-up 50 KD. All winners &amp; runners-up receive a certificate.</div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;">
+        <!-- KPI 1 -->
+        <div style="background:rgba(255,255,255,0.03);border:1px solid var(--line);border-top:3px solid #F2B53A;border-radius:10px;padding:12px 13px;">
+          <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:#F2B53A;margin-bottom:8px;">KPI 1 — Retail Remittance</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="background:rgba(242,181,58,0.06);border-radius:7px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--gold2);">Branch</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇125 · 🥈100 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Highest growth % after 90 days</div></div>
+            <div style="background:rgba(57,199,232,0.06);border-radius:7px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--cyan);">Individual</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇75 · 🥈50 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Highest contribution % to branch retail remittance</div></div>
           </div>
-          <div style="padding:9px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:3px solid var(--green);">
-            <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--green);">Captain</div>
-            <div style="font-size:11.5px;color:var(--dim);margin-top:3px;">Daily coordination, motivation and branch follow-up.</div>
+        </div>
+        <!-- KPI 2 -->
+        <div style="background:rgba(255,255,255,0.03);border:1px solid var(--line);border-top:3px solid #2ECC71;border-radius:10px;padding:12px 13px;">
+          <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:#2ECC71;margin-bottom:8px;">KPI 2 — New Customer Registration</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="background:rgba(242,181,58,0.06);border-radius:7px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--gold2);">Branch</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇125 · 🥈100 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Highest growth % after 90 days</div></div>
+            <div style="background:rgba(57,199,232,0.06);border-radius:7px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--cyan);">Individual · Customer Catalyst</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇75 · 🥈50 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Most new customer registrations</div></div>
           </div>
-          <div style="padding:9px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:3px solid var(--purple);">
-            <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--purple);">Vice Captain</div>
-            <div style="font-size:11.5px;color:var(--dim);margin-top:3px;">Backup coordination and execution support.</div>
+        </div>
+        <!-- India / INR -->
+        <div style="background:rgba(255,255,255,0.03);border:1px solid var(--line);border-top:3px solid #39C7E8;border-radius:10px;padding:12px 13px;">
+          <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:#39C7E8;margin-bottom:8px;">INR Corridor Growth (India)</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="background:rgba(242,181,58,0.06);border-radius:7px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--gold2);">Branch</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇125 · 🥈100 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Highest growth % in INR transactions</div></div>
+            <div style="background:rgba(57,199,232,0.06);border-radius:7px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--cyan);">Individual</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇75 · 🥈50 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Most INR transactions</div></div>
           </div>
+        </div>
+        <!-- Egypt -->
+        <div style="background:rgba(255,255,255,0.03);border:1px solid var(--line);border-top:3px solid #9B7BD8;border-radius:10px;padding:12px 13px;">
+          <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:#B79CE6;margin-bottom:8px;">Egypt Corridor Growth</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="background:rgba(242,181,58,0.06);border-radius:7px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--gold2);">Branch</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇125 · 🥈100 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Highest growth % in Egypt transactions</div></div>
+            <div style="background:rgba(57,199,232,0.06);border-radius:7px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--cyan);">Individual</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇75 · 🥈50 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Most Egypt transactions</div></div>
+          </div>
+        </div>
+        <!-- Bonus KPI Revival -->
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(232,162,63,0.35);border-top:3px solid #E8A23F;border-radius:10px;padding:12px 13px;grid-column:1/-1;">
+          <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:#E8A23F;margin-bottom:8px;">🎁 Bonus KPI — Inactive Customer Revival</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:6px;">
+            <div style="background:rgba(242,181,58,0.06);border-radius:7px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--gold2);">Branch</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇125 · 🥈100 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Highest revival % (+ certificate)</div></div>
+            <div style="background:rgba(57,199,232,0.06);border-radius:7px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--cyan);">Individual</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇75 · 🥈50 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Highest revival % (+ certificate)</div></div>
+          </div>
+          <div style="font-size:10.5px;color:var(--gold2);font-family:'Oswald',sans-serif;letter-spacing:.04em;text-transform:uppercase;margin:10px 0 6px;">Bonus League Points</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <span style="font-size:10.5px;background:rgba(255,255,255,0.05);border:1px solid var(--line);border-radius:6px;padding:3px 8px;">0–4.99% = 0 pts</span>
+            <span style="font-size:10.5px;background:rgba(46,204,113,0.10);border:1px solid rgba(46,204,113,0.25);border-radius:6px;padding:3px 8px;">5–9.99% = 1 pt</span>
+            <span style="font-size:10.5px;background:rgba(46,204,113,0.14);border:1px solid rgba(46,204,113,0.3);border-radius:6px;padding:3px 8px;">10–14.99% = 2 pts</span>
+            <span style="font-size:10.5px;background:rgba(242,181,58,0.14);border:1px solid rgba(242,181,58,0.3);border-radius:6px;padding:3px 8px;">15–19.99% = 3 pts</span>
+            <span style="font-size:10.5px;background:rgba(242,181,58,0.22);border:1px solid rgba(242,181,58,0.45);border-radius:6px;padding:3px 8px;color:var(--gold2);font-weight:700;">20%+ = 5 pts</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;font-size:11.5px;color:var(--dim);line-height:1.6;">Plus <b style="color:var(--gold2)">weekly surprise gifts</b>, weekly winners and achievement badges throughout the campaign. Overall winners (branch + individual) announced at campaign end.</div>
+    </div>
+  </div>
+
+  <!-- TEAM STRUCTURE -->
+  <div class="panel" style="margin-bottom:14px;">
+    <div class="ph alt">👥 Team Structure</div>
+    <div class="pb">
+      <div style="font-size:11.5px;color:var(--dim);line-height:1.5;margin-bottom:10px;">7 area teams, each covering multiple branches. Every team is led by:</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;">
+        <div style="padding:9px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:3px solid var(--gold);">
+          <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--gold2);">Manager</div>
+          <div style="font-size:11.5px;color:var(--dim);margin-top:3px;">Team ownership, target follow-up and performance direction.</div>
+        </div>
+        <div style="padding:9px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:3px solid var(--green);">
+          <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--green);">Captain</div>
+          <div style="font-size:11.5px;color:var(--dim);margin-top:3px;">Daily coordination, motivation and branch follow-up.</div>
+        </div>
+        <div style="padding:9px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:3px solid var(--purple);">
+          <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--purple);">Vice Captain</div>
+          <div style="font-size:11.5px;color:var(--dim);margin-top:3px;">Backup coordination and execution support.</div>
         </div>
       </div>
     </div>
@@ -525,9 +572,9 @@ footer::after{content:' ⚽';opacity:.5;}
 
   <!-- BONUS TRACK -->
   <div class="panel">
-    <div class="ph" style="background:linear-gradient(90deg,#7A4FB0,#9B7BD8);color:#fff;">🎁 Bonus Track — Customer Win-Back</div>
+    <div class="ph" style="background:linear-gradient(90deg,#7A4FB0,#9B7BD8);color:#fff;">🎁 Bonus Track — Inactive Customer Revival (Win-Back)</div>
     <div class="pb">
-      <div style="font-size:12.5px;color:var(--txt);line-height:1.6;">Customer Win-Back is <b style="color:#B79CE6">tracked separately</b> and awarded as <b style="color:#B79CE6">bonus points at month-end</b>. It is <b>not</b> part of the core 4 KPIs and does not affect individual match results.</div>
+      <div style="font-size:12.5px;color:var(--txt);line-height:1.6;">Inactive Customer Revival is <b style="color:#B79CE6">tracked separately</b> and awarded as <b style="color:#B79CE6">bonus league points at month-end</b>, based on each team's revival % (see the points ladder under Rewards). It is <b>not</b> part of the core 4 match KPIs and does not affect individual match results — but it can move the league standings.</div>
     </div>
   </div>
 
