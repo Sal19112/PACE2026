@@ -766,18 +766,28 @@ function renderLeague(rows, results){
   };
   const sorted = [...valid].sort((a,b) => (+b['Pts']||0) - (+a['Pts']||0) || ((+b['GF']||0)-(+b['GA']||0)) - ((+a['GF']||0)-(+a['GA']||0)));
   document.getElementById('lt-head').textContent = `League Table — Week ${currentWeek}`;
-  // Build form map from results
+  // Build each team's recent form (W/L/D) from the Match Results sheet, ordered
+  // by week. Per-match points live in columns L (home) and M (away) — the team
+  // with more points won; equal points = draw. Falls back to a "Home/Away Pts"
+  // header if present.
+  const matchPts = (r, side, idx) => {
+    let v = field(r, side, 'point');
+    if(v==='') v = field(r, side, 'pts');
+    if(v==='' && r._raw && r._raw[idx] && r._raw[idx].v != null) v = r._raw[idx].v;
+    const m = String(v).match(/-?\d+/);
+    return m ? parseInt(m[0], 10) : null;
+  };
   const formMap = {};
-  (results||[]).forEach(r => {
+  [...(results||[])].sort((a,b) => (rowWeek(a)||0) - (rowWeek(b)||0)).forEach(r => {
     const home = homeTeam(r), away = awayTeam(r);
-    const hPts = +field(r,'home','pts')||0, aPts = +field(r,'away','pts')||0;
-    if(!home) return;
+    if(!home || !away) return;
+    const hp = matchPts(r,'home',11), ap = matchPts(r,'away',12);  // L = index 11, M = index 12
+    if(hp === null || ap === null) return;  // match not played / no points yet
     if(!formMap[home]) formMap[home]=[];
     if(!formMap[away]) formMap[away]=[];
-    const res = String(field(r,'result')||'');
-    if(hPts===3||res.toLowerCase().includes('home')){ formMap[home].push('W'); formMap[away].push('L'); }
-    else if(aPts===3||res.toLowerCase().includes('away')){ formMap[away].push('W'); formMap[home].push('L'); }
-    else if(hPts===1||res.toLowerCase().includes('draw')){ formMap[home].push('D'); formMap[away].push('D'); }
+    if(hp > ap){ formMap[home].push('W'); formMap[away].push('L'); }
+    else if(ap > hp){ formMap[away].push('W'); formMap[home].push('L'); }
+    else { formMap[home].push('D'); formMap[away].push('D'); }
   });
   const formBadge = f => `<span style="width:16px;height:16px;border-radius:3px;font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;font-family:'Oswald',sans-serif;background:${f==='W'?'#2E8B57':f==='D'?'#7A7A52':'#C0392B'};color:#fff">${f}</span>`;
   document.getElementById('lt-body').innerHTML = `
