@@ -816,21 +816,30 @@ const KPI_GOAL_COLS = [
   ['INR Goal  (H/A/D)','INR Goal (H/A/D)','INR Goal'],
   ['EGP Goal  (H/A/D)','EGP Goal (H/A/D)','EGP Goal'],
 ];
-const KPI_ACH_COLS = [
-  ['Retail Txn  Achiev %','Retail Txn Achiev %'],
-  ['NCR Achiev %'],
-  ['INR Txn  Achiev %','INR Txn Achiev %'],
-  ['EGP Txn  Achiev %','EGP Txn Achiev %'],
+// Achievement-% columns in 3_Weekly_KPI_Data are matched fuzzily by keyword so
+// header spelling/spacing (e.g. "Retail Txn Achiev %" vs "Remittance Achiev %")
+// resolves without exact-string matching. Order matches KPI_DEFS/KPI_KEYS.
+const KPI_ACH_KEYS = [
+  ['retail','remittance'],   // Remittance
+  ['ncr','registration'],    // Registration
+  ['inr','india'],           // India
+  ['egp','egypt'],           // Egypt
 ];
-function getKPIGoal(match, colVariants){
-  for(const v of colVariants){ if(match[v] !== undefined && match[v] !== '') return String(match[v]).trim(); }
-  return '';
-}
-function getKPIPct(kpiData, week, team, colVariants){
-  const row = kpiData.find(r => (+r['Week']===week) && (r['Team Name']||'').trim() === team.trim());
+function achPct(row, keys){
   if(!row) return null;
-  for(const v of colVariants){ if(row[v] !== undefined && row[v] !== '') return parseFloat(row[v]); }
+  for(const k of Object.keys(row)){
+    if(k === '_raw') continue;
+    const lk = k.toLowerCase();
+    if((lk.includes('achiev') || lk.includes('%')) && keys.some(w => lk.includes(w))){
+      const v = row[k];
+      if(v !== '' && v != null){ const n = parseFloat(v); if(!isNaN(n)) return n; }
+    }
+  }
   return null;
+}
+function getKPIPct(kpiData, week, team, keys){
+  const row = kpiData.find(r => (+r['Week']===week) && (r['Team Name']||'').trim() === team.trim());
+  return achPct(row, keys);
 }
 
 // ── Robust column readers (headers vary in spelling/spacing across sheets) ──
@@ -972,8 +981,8 @@ function showKPIDetail(idx){
     </div>
     ${KPI_DEFS.map((kpi,i) => {
       const res = kpiVals[i];
-      const hv  = getKPIPct(_kpiData, window._prevWk, home, KPI_ACH_COLS[i]);
-      const av  = getKPIPct(_kpiData, window._prevWk, away, KPI_ACH_COLS[i]);
+      const hv  = getKPIPct(_kpiData, window._prevWk, home, KPI_ACH_KEYS[i]);
+      const av  = getKPIPct(_kpiData, window._prevWk, away, KPI_ACH_KEYS[i]);
       const hvPct = hv !== null ? Math.round(hv*100) : null;
       const avPct = av !== null ? Math.round(av*100) : null;
       let chipCls='gc-p', chipTxt='No data';
@@ -1027,20 +1036,17 @@ function renderCurrentMatches(results, kpiData, fixtureRows){
   }
   const matchDefs = parsed.matches.map(m => ({h: m.home, a: m.away}));
   const bye = parsed.bye;
-  const achCols=[['Retail Txn  Achiev %','Retail Txn Achiev %'],['NCR Achiev %'],['INR Txn  Achiev %','INR Txn Achiev %'],['EGP Txn  Achiev %','EGP Txn Achiev %']];
-  function getKPIPct(team,colVariants){
+  function getKPIPct(team, keys){
     const row=kpiData.find(r=>(+r['Week']===currentWeek)&&(r['Team Name']||'').trim()===team.trim());
-    if(!row)return null;
-    for(const v of colVariants){if(row[v]!==undefined&&row[v]!=='')return parseFloat(row[v]);}
-    return null;
+    return achPct(row, keys);
   }
   const html = matchDefs.map(m => {
     const matchRes = wkResults.find(r=>homeTeam(r)===m.h.trim()&&awayTeam(r)===m.a.trim());
     const kpiVals = KPI_KEYS.map((_,i)=> matchRes ? kpiGoal(matchRes,i) : '');
     let hg=0, ag=0;
     kpiVals.forEach(v=>{if(v==='H')hg++;else if(v==='A')ag++;});
-    const homeKPIs=achCols.map(v=>getKPIPct(m.h,v));
-    const awayKPIs=achCols.map(v=>getKPIPct(m.a,v));
+    const homeKPIs=KPI_ACH_KEYS.map(keys=>getKPIPct(m.h,keys));
+    const awayKPIs=KPI_ACH_KEYS.map(keys=>getKPIPct(m.a,keys));
     const hasResult=kpiVals.some(v=>v!=='');
     return `<div class="cm-card">
       <div class="cm-scoreboard">
