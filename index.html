@@ -1254,10 +1254,10 @@ function renderTeams(rows){
     return;
   }
   const ROLES = [
-    {label:'Mentor',       color:'#9B7BD8', get:r => fieldWhere(r,['mentor'])},
     {label:'Coach',        color:'#F2B53A', get:r => fieldWhere(r,['coach']) || fieldWhere(r,['manager']) || fieldWhere(r,['area'],['branch'])},
     {label:'Captain',      color:'#2ECC71', get:r => fieldWhere(r,['captain'],['vice'])},
     {label:'Vice Captain', color:'#39C7E8', get:r => fieldWhere(r,['vice'])},
+    {label:'Mentor',       color:'#9B7BD8', get:r => fieldWhere(r,['mentor'])},
   ];
   el.innerHTML = `<div class="team-grid">` + valid.map(r => {
     const name = teamName(r);
