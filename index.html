@@ -225,6 +225,17 @@ tbody tr:nth-child(3){background:rgba(242,181,58,0.09);}
 #current-matches-body .sv-lbl{color:#5c6c7e;}
 #current-matches-body .stat-bar{background:#d7e0ea;}
 .bye-card{background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.12);border-radius:12px;padding:16px;text-align:center;color:var(--dim);font-family:'Oswald',sans-serif;letter-spacing:.04em;text-transform:uppercase;font-size:12px;}
+/* ── Teams tab ── */
+.team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;}
+.team-card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.25);}
+.team-card-hd{display:flex;align-items:center;gap:12px;padding:13px 14px;border-bottom:1px solid var(--line);
+  background:radial-gradient(120% 120% at 0% 0%,rgba(242,181,58,0.16),transparent 55%),linear-gradient(90deg,rgba(242,181,58,0.10),rgba(57,199,232,0.06));}
+.team-card-hd .tcrest{width:54px;height:54px;border-radius:13px;border:2px solid var(--gold);flex-shrink:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#16314d,#0a1d30);box-shadow:0 4px 12px rgba(0,0,0,0.4);}
+.team-card-hd .tname{font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;color:var(--gold2);text-transform:uppercase;letter-spacing:.02em;line-height:1.15;}
+.team-roles{padding:11px 13px;display:flex;flex-direction:column;gap:7px;}
+.trole{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 11px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:3px solid var(--line);}
+.trole .rl{font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);white-space:nowrap;}
+.trole .rn{font-weight:600;font-size:13px;color:var(--txt);text-align:right;}
 /* ── Weekly challenge poster popup ── */
 .poster-modal{position:fixed;inset:0;z-index:1000;background:rgba(3,10,20,0.85);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;padding:18px;animation:posterFade .28s ease;}
 .poster-modal.open{display:flex;}
@@ -348,6 +359,7 @@ footer::after{content:' ⚽';opacity:.5;}
   <div class="tab active" onclick="switchTab('overview')">📊 Overview<span class="badge-dot"></span></div>
   <div class="tab" onclick="switchTab('current')">⚽ Current Matches<span class="badge-dot"></span></div>
   <div class="tab" onclick="switchTab('schedule')">📅 Full Schedule</div>
+  <div class="tab" onclick="switchTab('teams')">👥 Teams</div>
   <div class="tab" onclick="switchTab('rules')">📋 Rules & Rewards</div>
 </div>
 
@@ -401,6 +413,16 @@ footer::after{content:' ⚽';opacity:.5;}
     <div class="ph">Full Match Schedule — All 14 Weeks</div>
     <div class="pb">
       <div id="schedule-body"><div class="loading"><span class="spinner"></span>Loading schedule…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB: TEAMS ══════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-teams">
+  <div class="panel">
+    <div class="ph">👥 Teams & Squads</div>
+    <div class="pb">
+      <div id="teams-body"><div class="loading"><span class="spinner"></span>Loading teams…</div></div>
     </div>
   </div>
 </div>
@@ -637,6 +659,7 @@ const SHEETS = {
   results:  '4_Match_Results',
   fixtures: '2_Fixtures',
   kpi:      '3_Weekly_KPI_Data',
+  teams:    'Teams',
 };
 
 const TEAM_COLORS = ['#2ECC71','#39C7E8','#F2B53A','#E96A6A','#9B7BD8','#5FD0A0','#E8A23F'];
@@ -851,7 +874,7 @@ updateCountdown();
 // ══ TAB SWITCHING ════════════════════════════════════════════════
 function switchTab(name){
   document.querySelectorAll('.tab').forEach((t,i) => {
-    const names = ['overview','current','schedule','rules'];
+    const names = ['overview','current','schedule','teams','rules'];
     t.classList.toggle('active', names[i] === name);
   });
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -1207,6 +1230,52 @@ function renderCurrentMatches(results, kpiData, fixtureRows){
     + (bye?`<div class="bye-card">🛌 ${bye} — Bye Week · Resting this match week</div>`:'');
 }
 
+// ══ RENDER TEAMS ═════════════════════════════════════════════════
+// Return the first non-empty value whose header contains ALL `inc` keywords
+// and NONE of the `exc` keywords (case-insensitive) — for fuzzy column matching.
+function fieldWhere(r, inc, exc){
+  for(const k of Object.keys(r)){
+    if(k === '_raw') continue;
+    const lk = k.toLowerCase();
+    if(inc.every(w => lk.includes(w)) && !(exc||[]).some(w => lk.includes(w))){
+      const v = r[k];
+      if(v !== undefined && v !== null && String(v).trim() !== '') return String(v).trim();
+    }
+  }
+  return '';
+}
+function renderTeams(rows){
+  const el = document.getElementById('teams-body');
+  if(!el) return;
+  const teamName = r => fieldWhere(r,['team','name']) || fieldWhere(r,['team'],['logo','colour','color','icon']) || fieldWhere(r,['name']) || fieldWhere(r,['branch','area'],['manager']);
+  const valid = (rows||[]).filter(r => teamName(r));
+  if(!valid.length){
+    el.innerHTML = '<div class="error-msg">No team data found in the “Teams” sheet yet.</div>';
+    return;
+  }
+  const ROLES = [
+    {label:'Mentor',       color:'#9B7BD8', get:r => fieldWhere(r,['mentor'])},
+    {label:'Coach',        color:'#F2B53A', get:r => fieldWhere(r,['coach']) || fieldWhere(r,['manager']) || fieldWhere(r,['area'],['branch'])},
+    {label:'Captain',      color:'#2ECC71', get:r => fieldWhere(r,['captain'],['vice'])},
+    {label:'Vice Captain', color:'#39C7E8', get:r => fieldWhere(r,['vice'])},
+  ];
+  el.innerHTML = `<div class="team-grid">` + valid.map(r => {
+    const name = teamName(r);
+    const roles = ROLES.map(role => {
+      const v = role.get(r);
+      if(!v) return '';
+      return `<div class="trole" style="border-left-color:${role.color}"><span class="rl">${role.label}</span><span class="rn">${v}</span></div>`;
+    }).join('');
+    return `<div class="team-card">
+      <div class="team-card-hd">
+        <div class="tcrest">${teamLogo(name,40)}</div>
+        <div class="tname">${name}</div>
+      </div>
+      <div class="team-roles">${roles || '<div style="color:var(--dim);font-size:12px;padding:4px;">No role details listed.</div>'}</div>
+    </div>`;
+  }).join('') + `</div>`;
+}
+
 // ══ RENDER FULL SCHEDULE ════════════════════════════════════════
 function renderSchedule(fixtureRows, results){
   const parsed = fixtureRows.map(parseFixtureRow).filter(isRealFixture);
@@ -1282,6 +1351,12 @@ async function loadAll(){
     renderFixturesSummary(fixtureRows);
     renderCurrentMatches(resultsRows, kpiRows, fixtureRows);
     renderSchedule(fixtureRows, resultsRows);
+    // Teams tab — fetched separately so a missing/renamed sheet can't break the dashboard
+    fetchSheet(SHEETS.teams).then(td => renderTeams(td.rows)).catch(e => {
+      console.log('Teams sheet:', e.message);
+      const el = document.getElementById('teams-body');
+      if(el) el.innerHTML = '<div class="error-msg">Could not load the “Teams” sheet. Check the tab is named exactly <b>Teams</b> and the sheet is shared (Anyone with link → Viewer).</div>';
+    });
     const now = new Date();
     const src = weekFromB3 !== null ? 'A3/B3 fixtures sheet' : 'today\'s date';
     setStatus(`Updated: ${now.toLocaleTimeString()} — <b>Week ${currentWeek} (${src})</b>`, false);
