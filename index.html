@@ -1179,6 +1179,8 @@ function renderCurrentMatches(results, kpiData, fixtureRows){
     const homeKPIs=KPI_ACH_KEYS.map(keys=>getKPIPct(m.h,keys));
     const awayKPIs=KPI_ACH_KEYS.map(keys=>getKPIPct(m.a,keys));
     const hasResult=kpiVals.some(v=>v!=='');
+    const mStatus = matchRes ? String(field(matchRes,'status') || field(matchRes,'note') || (matchRes._raw && matchRes._raw[12] && matchRes._raw[12].v != null ? matchRes._raw[12].v : '')).trim() : '';
+    const finished = /finish|complet|full.?time|done/i.test(mStatus);
     return `<div class="cm-card">
       <div class="cm-scoreboard">
         <div class="cm-side">
@@ -1187,7 +1189,7 @@ function renderCurrentMatches(results, kpiData, fixtureRows){
         </div>
         <div class="cm-mid">
           ${hasResult
-            ? `<div class="cm-scoreline"><span class="cm-sh">${hg}</span><span class="cm-sep">–</span><span class="cm-sa">${ag}</span></div><div class="cm-tag">Full Time</div>`
+            ? `<div class="cm-scoreline"><span class="cm-sh">${hg}</span><span class="cm-sep">–</span><span class="cm-sa">${ag}</span></div><div class="cm-tag ${finished?'':'live'}">${finished?'Full Time':'● Ongoing'}</div>`
             : `<div class="cm-vs">VS</div><div class="cm-tag live">● Awaiting Result</div>`}
         </div>
         <div class="cm-side">
