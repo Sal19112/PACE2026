@@ -1066,10 +1066,15 @@ function renderPrevWeekResults(results, kpiData){
     // Goals = KPI goals won: each "H" in D–H is a home goal, each "A" an away goal.
     let hg=0, ag=0;
     kpiVals.forEach(v => { if(v==='H') hg++; else if(v==='A') ag++; });
+    // Only declare a result once the match status is FINISHED — otherwise pending.
+    const mStatus = String(field(m,'status') || field(m,'note') || (m._raw && m._raw[12] && m._raw[12].v != null ? m._raw[12].v : '')).trim();
+    const finished = /finish|complet|full.?time|done/i.test(mStatus);
     const hWon = hg > ag, aWon = ag > hg, draw = hg===ag;
-    const result = hWon ? `<span style="color:var(--green);font-weight:700">${home} WIN</span>`
+    const result = !finished ? `<span style="color:var(--gold2);font-weight:700">RESULT PENDING</span>`
+                 : hWon ? `<span style="color:var(--green);font-weight:700">${home} WIN</span>`
                  : aWon ? `<span style="color:var(--green);font-weight:700">${away} WIN</span>`
                  : `<span style="color:var(--dim)">DRAW</span>`;
+    const scoreDisp = finished ? `${hg} — ${ag}` : `<span style="font-size:13px;color:var(--dim)">vs</span>`;
     return `
     <div class="prev-match-card" onclick="showKPIDetail(${idx})" data-idx="${idx}"
       style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:11px 13px;margin-bottom:9px;cursor:pointer;transition:border-color .2s,background .2s;"
@@ -1077,7 +1082,7 @@ function renderPrevWeekResults(results, kpiData){
       onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.background='rgba(255,255,255,0.03)'">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
         <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--gold2);display:flex;align-items:center;gap:6px">${teamLogo(home,28)} ${home}</span>
-        <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:20px;color:var(--txt)">${hg} — ${ag}</span>
+        <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:20px;color:var(--txt)">${scoreDisp}</span>
         <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--cyan);display:flex;align-items:center;gap:6px">${away} ${teamLogo(away,28)}</span>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;">
