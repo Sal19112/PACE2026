@@ -1350,7 +1350,14 @@ function renderAwards(rows){
     team:     field(r,'team') || raw(r,4),
     note:     field(r,'note') || raw(r,5),
     prize:    fieldWhere(r,['prize']) || fieldWhere(r,['amount']) || raw(r,6),
-  })).filter(a => a.name);
+  })).filter(a => {
+    if(!a.name) return false;
+    // Drop the header row if gviz returned it as data (e.g. name = "NAME").
+    const isHeader = a.name.toLowerCase() === 'name'
+      || a.type.toLowerCase() === 'type'
+      || a.duration.toLowerCase() === 'duration';
+    return !isHeader;
+  });
   if(!awards.length){
     el.innerHTML = '<div class="error-msg">No award winners listed yet in the “6_Awards” sheet.</div>';
     return;
