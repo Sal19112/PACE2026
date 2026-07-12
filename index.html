@@ -236,6 +236,18 @@ tbody tr:nth-child(3){background:rgba(242,181,58,0.09);}
 .trole{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 11px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:3px solid var(--line);}
 .trole .rl{font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);white-space:nowrap;}
 .trole .rn{font-weight:600;font-size:13px;color:var(--txt);text-align:right;}
+/* ── Award Winners tab ── */
+.award-list{display:flex;flex-direction:column;gap:11px;}
+.award-card{display:flex;align-items:center;gap:13px;padding:12px 14px;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:12px;
+  background:linear-gradient(90deg,rgba(242,181,58,0.09),rgba(255,255,255,0.02));box-shadow:0 3px 12px rgba(0,0,0,0.22);}
+.aw-logo{width:48px;height:48px;border-radius:12px;border:2px solid var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#16314d,#0a1d30);}
+.aw-logo img{width:34px;height:34px;object-fit:contain;}
+.aw-main{flex:1;min-width:0;}
+.aw-name{font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;color:var(--txt);text-transform:uppercase;letter-spacing:.02em;line-height:1.15;}
+.aw-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px;font-size:11px;color:var(--dim);}
+.aw-level{font-family:'Oswald',sans-serif;font-weight:700;font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:5px;}
+.aw-note{font-size:11.5px;color:var(--dim);margin-top:4px;font-style:italic;}
+.aw-prize{flex-shrink:0;text-align:center;font-family:'Oswald',sans-serif;font-weight:700;color:var(--gold2);background:rgba(242,181,58,0.15);border:1px solid rgba(242,181,58,0.42);border-radius:10px;padding:8px 12px;font-size:14.5px;line-height:1.05;min-width:62px;}
 /* ── Weekly challenge poster popup ── */
 .poster-modal{position:fixed;inset:0;z-index:1000;background:rgba(3,10,20,0.85);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;padding:18px;animation:posterFade .28s ease;}
 .poster-modal.open{display:flex;}
@@ -360,6 +372,7 @@ footer::after{content:' ⚽';opacity:.5;}
   <div class="tab" onclick="switchTab('current')">⚽ Current Matches<span class="badge-dot"></span></div>
   <div class="tab" onclick="switchTab('schedule')">📅 Full Schedule</div>
   <div class="tab" onclick="switchTab('teams')">👥 Teams</div>
+  <div class="tab" onclick="switchTab('awards')">🏅 Winners</div>
   <div class="tab" onclick="switchTab('rules')">📋 Rules & Rewards</div>
 </div>
 
@@ -423,6 +436,16 @@ footer::after{content:' ⚽';opacity:.5;}
     <div class="ph">👥 Teams & Squads</div>
     <div class="pb">
       <div id="teams-body"><div class="loading"><span class="spinner"></span>Loading teams…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB: AWARD WINNERS ══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-awards">
+  <div class="panel">
+    <div class="ph">🏅 Award Winners</div>
+    <div class="pb">
+      <div id="awards-body"><div class="loading"><span class="spinner"></span>Loading winners…</div></div>
     </div>
   </div>
 </div>
@@ -660,6 +683,7 @@ const SHEETS = {
   fixtures: '2_Fixtures',
   kpi:      '3_Weekly_KPI_Data',
   teams:    'Teams',
+  awards:   '6_Awards',
 };
 
 const TEAM_COLORS = ['#2ECC71','#39C7E8','#F2B53A','#E96A6A','#9B7BD8','#5FD0A0','#E8A23F'];
@@ -897,7 +921,7 @@ updateCountdown();
 // ══ TAB SWITCHING ════════════════════════════════════════════════
 function switchTab(name){
   document.querySelectorAll('.tab').forEach((t,i) => {
-    const names = ['overview','current','schedule','teams','rules'];
+    const names = ['overview','current','schedule','teams','awards','rules'];
     t.classList.toggle('active', names[i] === name);
   });
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -1306,6 +1330,56 @@ function renderTeams(rows){
   }).join('') + `</div>`;
 }
 
+// ══ RENDER AWARD WINNERS ═════════════════════════════════════════
+// Match a team name to the known list case-insensitively (sheet may be UPPERCASE).
+function canonTeam(name){
+  const n = String(name||'').trim().toLowerCase();
+  for(const k of Object.keys(TEAM_LOGOS)){ if(k.toLowerCase() === n) return k; }
+  return String(name||'').trim();
+}
+function renderAwards(rows){
+  const el = document.getElementById('awards-body');
+  if(!el) return;
+  const raw = (r,i) => (r._raw && r._raw[i] && r._raw[i].v != null) ? String(r._raw[i].v).trim() : '';
+  // 6_Awards columns: A Type | B Duration | C Level | D Name | E Team | F Note | G Prize
+  const awards = (rows||[]).map(r => ({
+    type:     field(r,'type') || raw(r,0),
+    duration: field(r,'duration') || field(r,'week') || raw(r,1),
+    level:    fieldWhere(r,['individual']) || fieldWhere(r,['level']) || fieldWhere(r,['category']) || raw(r,2),
+    name:     field(r,'name') || raw(r,3),
+    team:     field(r,'team') || raw(r,4),
+    note:     field(r,'note') || raw(r,5),
+    prize:    fieldWhere(r,['prize']) || fieldWhere(r,['amount']) || raw(r,6),
+  })).filter(a => a.name);
+  if(!awards.length){
+    el.innerHTML = '<div class="error-msg">No award winners listed yet in the “6_Awards” sheet.</div>';
+    return;
+  }
+  awards.reverse();  // last-entered reward shows first
+  const levelStyle = lv => {
+    const s = String(lv).toLowerCase();
+    if(s.includes('branch'))       return 'background:rgba(46,204,113,0.18);color:#3BD97E';
+    if(s.includes('individual')||s.includes('benef')) return 'background:rgba(57,199,232,0.18);color:#4FD6F0';
+    if(s.includes('manager'))      return 'background:rgba(155,123,216,0.20);color:#B79CE6';
+    if(s.includes('team'))         return 'background:rgba(242,181,58,0.20);color:var(--gold2)';
+    return 'background:rgba(255,255,255,0.08);color:var(--dim)';
+  };
+  el.innerHTML = '<div class="award-list">' + awards.map(a => {
+    const team = canonTeam(a.team);
+    const prize = a.prize ? `<div class="aw-prize">${/[a-z]/i.test(a.prize) ? a.prize : a.prize + '<div style="font-size:9px;color:var(--dim);margin-top:1px;">KWD</div>'}</div>` : '';
+    const meta = [team, a.duration].filter(Boolean).map(x => `<span>${x}</span>`).join('<span style="opacity:.5">·</span>');
+    return `<div class="award-card">
+      <div class="aw-logo">${teamLogo(team,34)}</div>
+      <div class="aw-main">
+        <div class="aw-name">${a.name}</div>
+        <div class="aw-meta">${a.level?`<span class="aw-level" style="${levelStyle(a.level)}">${a.level}</span>`:''}${meta}</div>
+        ${a.note?`<div class="aw-note">${a.note}</div>`:''}
+      </div>
+      ${prize}
+    </div>`;
+  }).join('') + '</div>';
+}
+
 // ══ RENDER FULL SCHEDULE ════════════════════════════════════════
 function renderSchedule(fixtureRows, results){
   const parsed = fixtureRows.map(parseFixtureRow).filter(isRealFixture);
@@ -1386,6 +1460,12 @@ async function loadAll(){
       console.log('Teams sheet:', e.message);
       const el = document.getElementById('teams-body');
       if(el) el.innerHTML = '<div class="error-msg">Could not load the “Teams” sheet. Check the tab is named exactly <b>Teams</b> and the sheet is shared (Anyone with link → Viewer).</div>';
+    });
+    // Award winners tab — also fetched separately (non-blocking)
+    fetchSheet(SHEETS.awards).then(ad => renderAwards(ad.rows)).catch(e => {
+      console.log('Awards sheet:', e.message);
+      const el = document.getElementById('awards-body');
+      if(el) el.innerHTML = '<div class="error-msg">Could not load the “6_Awards” sheet. Check the tab is named exactly <b>6_Awards</b> and the sheet is shared.</div>';
     });
     const now = new Date();
     const src = weekFromB3 !== null ? 'A3/B3 fixtures sheet' : 'today\'s date';
