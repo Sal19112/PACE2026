@@ -238,10 +238,11 @@ tbody tr:nth-child(3){background:rgba(242,181,58,0.09);}
 .trole .rn{font-weight:600;font-size:13px;color:var(--txt);text-align:right;}
 /* ── Previous Week card: winner seal ── */
 .pmc-crest{position:relative;display:inline-flex;align-items:center;}
-.win-seal{position:absolute;top:-7px;right:-7px;width:16px;height:16px;border-radius:50%;line-height:1;
-  background:radial-gradient(circle at 35% 30%,#FFF1C4,#F2B53A 62%,#C4831A);color:#4a3200;
-  font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;
-  box-shadow:0 0 8px rgba(242,181,58,0.75);border:1.5px solid #FFF1C4;z-index:2;}
+.win-stamp{position:absolute;top:-13px;left:50%;transform:translateX(-50%) rotate(-7deg);
+  background:linear-gradient(180deg,#FFE9A8,#F2B53A 58%,#C9881F);color:#4a3200;
+  font-family:'Oswald',sans-serif;font-weight:800;font-size:8px;letter-spacing:.09em;text-transform:uppercase;
+  padding:2px 7px;border-radius:5px;border:1px solid #FFF1C4;box-shadow:0 2px 8px rgba(242,181,58,0.65);
+  white-space:nowrap;z-index:3;line-height:1.1;}
 /* ── Award Winners tab ── */
 .award-list{display:flex;flex-direction:column;gap:11px;}
 .award-card{display:flex;align-items:center;gap:13px;padding:12px 14px;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:12px;
@@ -1124,21 +1125,21 @@ function renderPrevWeekResults(results, kpiData){
     const finished = /finish|complet|full.?time|done/i.test(mStatus);
     const hWon = hg > ag, aWon = ag > hg, draw = hg===ag;
     const scoreDisp = finished ? `${hg} — ${ag}` : `<span style="font-size:13px;color:var(--dim)">vs</span>`;
-    const seal = `<span class="win-seal">★</span>`;
-    const homeSeal = (finished && hWon) ? seal : '';
-    const awaySeal = (finished && aWon) ? seal : '';
+    const stamp = `<span class="win-stamp">Winner</span>`;
+    const homeSeal = (finished && hWon) ? stamp : '';
+    const awaySeal = (finished && aWon) ? stamp : '';
     const hint = !finished ? `<span style="color:var(--gold2);font-weight:700;font-style:normal;letter-spacing:.04em;">RESULT PENDING</span>`
                : draw ? `<span style="color:var(--dim)">DRAW · tap for KPI breakdown</span>`
                : `<span style="color:var(--dim)">Tap for KPI breakdown →</span>`;
     return `
     <div class="prev-match-card" onclick="showKPIDetail(${idx})" data-idx="${idx}"
-      style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:11px 13px;margin-bottom:9px;cursor:pointer;transition:border-color .2s,background .2s;"
+      style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:20px 13px 12px;margin-bottom:9px;cursor:pointer;transition:border-color .2s,background .2s;"
       onmouseover="this.style.borderColor='rgba(242,181,58,0.4)';this.style.background='rgba(242,181,58,0.05)'"
       onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.background='rgba(255,255,255,0.03)'">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--gold2);display:flex;align-items:center;gap:6px"><span class="pmc-crest">${teamLogo(home,28)}${homeSeal}</span> ${home}</span>
-        <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:20px;color:var(--txt)">${scoreDisp}</span>
-        <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--cyan);display:flex;align-items:center;gap:6px">${away} <span class="pmc-crest">${teamLogo(away,28)}${awaySeal}</span></span>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px;">
+        <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:14.5px;color:var(--gold2);display:flex;align-items:center;gap:9px"><span class="pmc-crest">${teamLogo(home,42)}${homeSeal}</span> ${home}</span>
+        <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:22px;color:var(--txt);flex-shrink:0">${scoreDisp}</span>
+        <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:14.5px;color:var(--cyan);display:flex;align-items:center;gap:9px;text-align:right">${away} <span class="pmc-crest">${teamLogo(away,42)}${awaySeal}</span></span>
       </div>
       <div style="display:flex;justify-content:center;gap:5px;margin-bottom:6px;">${kpiVals.map((v,i)=>`<span style="width:19px;height:19px;border-radius:4px;font-size:9.5px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;background:${v==='H'?KPI_DEFS[i].color:v==='A'?'#1a7a99':v==='D'?'#555':'rgba(255,255,255,0.08)'};color:${v?'#fff':'var(--dim)'}">${v||'?'}</span>`).join('')}</div>
       <div style="text-align:center;font-size:10px;font-style:italic;">${hint}</div>
