@@ -1522,28 +1522,25 @@ function scheduleNextRefresh(){
 loadAll();
 
 // ══ WEEKLY CHALLENGE POSTER POPUP ════════════════════════════════
-// Shows posters/current.(jpg|jpeg|png|webp) on load, if present.
-// To change the weekly poster, just replace that file — no code changes.
+// Weekly poster popup.
+// To change the poster: upload the new image under a NEW unique filename in
+// posters/ (e.g. wk03-final.jpg) and update POSTER_SRC below. Using a fresh
+// path each week defeats browser AND proxy caches that ignore query strings.
+const POSTER_SRC = 'posters/wk02-final.jpg';
 function closePoster(){ document.getElementById('poster-modal').classList.remove('open'); }
 (function(){
   // Show only once per visit (browser session) — refreshing won't re-pop.
   try{ if(sessionStorage.getItem('pace_poster_seen')) return; }catch(e){}
-  const exts = ['jpg','jpeg','png','webp'];
-  const bust = Date.now();          // cache-bust so a replaced poster isn't stale
-  let i = 0;
-  function tryNext(){
-    if(i >= exts.length) return;     // no poster found → no popup
-    const src = `posters/current.${exts[i]}`;
-    const probe = new Image();
-    probe.onload = () => {
-      document.getElementById('poster-img').src = src + '?v=' + bust;
-      document.getElementById('poster-modal').classList.add('open');
-      try{ sessionStorage.setItem('pace_poster_seen','1'); }catch(e){}
-    };
-    probe.onerror = () => { i++; tryNext(); };
-    probe.src = src + '?v=' + bust;
-  }
-  tryNext();
+  const bust = Date.now();          // extra cache-bust on top of the unique path
+  const src = POSTER_SRC + '?v=' + bust;
+  const probe = new Image();
+  probe.onload = () => {
+    document.getElementById('poster-img').src = src;
+    document.getElementById('poster-modal').classList.add('open');
+    try{ sessionStorage.setItem('pace_poster_seen','1'); }catch(e){}
+  };
+  probe.onerror = () => {};          // no poster found → no popup
+  probe.src = src;
 })();
 document.addEventListener('keydown', e => { if(e.key === 'Escape') closePoster(); });
 </script>
