@@ -1523,10 +1523,9 @@ loadAll();
 
 // ══ WEEKLY CHALLENGE POSTER POPUP ════════════════════════════════
 // Weekly poster popup.
-// To change the poster: upload the new image under a NEW unique filename in
-// posters/ (e.g. wk03-final.jpg) and update POSTER_SRC below. Using a fresh
-// path each week defeats browser AND proxy caches that ignore query strings.
-const POSTER_SRC = 'posters/wk02-final-c.jpg';
+// To change the poster: replace posters/current.jpg with the new image.
+// The ?v= timestamp below cache-busts so a replaced file isn't served stale.
+const POSTER_SRC = 'posters/current.jpg';
 function closePoster(){ document.getElementById('poster-modal').classList.remove('open'); }
 (function(){
   // Show only once per visit (browser session) — refreshing won't re-pop.
