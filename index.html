@@ -345,7 +345,7 @@ footer::after{content:' ⚽';opacity:.5;}
 </style>
 </head>
 <body>
-<div style="position:fixed;bottom:4px;right:6px;font-size:9px;font-family:monospace;color:rgba(255,255,255,.4);background:rgba(0,0,0,.35);padding:1px 5px;border-radius:4px;z-index:99999;pointer-events:none;">build v14 · Jul-14 15:00</div>
+<div style="position:fixed;bottom:4px;right:6px;font-size:9px;font-family:monospace;color:rgba(255,255,255,.4);background:rgba(0,0,0,.35);padding:1px 5px;border-radius:4px;z-index:99999;pointer-events:none;">build v15 · Jul-14 15:30</div>
 <!-- Weekly challenge poster popup -->
 <div class="poster-modal" id="poster-modal" onclick="if(event.target===this)closePoster()">
   <div class="poster-inner">
@@ -1529,7 +1529,7 @@ loadAll();
 // Weekly poster popup.
 // To change the poster: replace posters/current.jpg with the new image.
 // The ?v= timestamp below cache-busts so a replaced file isn't served stale.
-const POSTER_SRC = 'posters/current.jpg';
+const POSTER_SRC = 'posters/lastday-mw02-v2.jpg';
 function closePoster(){ document.getElementById('poster-modal').classList.remove('open'); }
 (function(){
   // Show only once per visit (browser session) — refreshing won't re-pop.
