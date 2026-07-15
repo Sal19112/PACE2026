@@ -345,7 +345,7 @@ footer::after{content:' ⚽';opacity:.5;}
 </style>
 </head>
 <body>
-<div style="position:fixed;bottom:4px;right:6px;font-size:9px;font-family:monospace;color:rgba(255,255,255,.4);background:rgba(0,0,0,.35);padding:1px 5px;border-radius:4px;z-index:99999;pointer-events:none;">build v16 · Jul-14 16:00</div>
+<div style="position:fixed;bottom:4px;right:6px;font-size:9px;font-family:monospace;color:rgba(255,255,255,.4);background:rgba(0,0,0,.35);padding:1px 5px;border-radius:4px;z-index:99999;pointer-events:none;">build v17 · Jul-15 · 2-decimal KPI</div>
 <!-- Weekly challenge poster popup -->
 <div class="poster-modal" id="poster-modal" onclick="if(event.target===this)closePoster()">
   <div class="poster-inner">
@@ -1176,8 +1176,8 @@ function showKPIDetail(idx){
       const res = kpiVals[i];
       const hv  = getKPIPct(_kpiData, window._prevWk, home, KPI_ACH_KEYS[i]);
       const av  = getKPIPct(_kpiData, window._prevWk, away, KPI_ACH_KEYS[i]);
-      const hvPct = hv !== null ? Math.round(hv*100) : null;
-      const avPct = av !== null ? Math.round(av*100) : null;
+      const hvPct = hv !== null ? hv*100 : null;
+      const avPct = av !== null ? av*100 : null;
       let chipCls='gc-p', chipTxt='No data';
       if(res==='H'){ chipCls='gc-h'; chipTxt='HOME ⚽'; }
       else if(res==='A'){ chipCls='gc-a'; chipTxt='AWAY ⚽'; }
@@ -1190,12 +1190,12 @@ function showKPIDetail(idx){
           <span class="goal-chip ${chipCls}">${chipTxt}</span>
         </div>
         <div class="bar-wrap">
-          <span class="bval r">${hvPct!==null?hvPct+'%':'—'}</span>
+          <span class="bval r">${hvPct!==null?hvPct.toFixed(2)+'%':'—'}</span>
           <div class="btrack">
             <div class="bf-h" style="width:${hw}%;background:${kpi.color}"></div>
             <div class="bf-a" style="width:${100-hw}%;background:#1a7a99"></div>
           </div>
-          <span class="bval">${avPct!==null?avPct+'%':'—'}</span>
+          <span class="bval">${avPct!==null?avPct.toFixed(2)+'%':'—'}</span>
         </div>
       </div>`;
     }).join('')}`;
@@ -1264,8 +1264,8 @@ function renderCurrentMatches(results, kpiData, fixtureRows){
           <div class="cm-stats-head"><span class="sh-h">${m.h}</span><span class="sh-t">⚽ Match Stats</span><span class="sh-a">${m.a}</span></div>
           ${KPI_DEFS.map((kpi,i)=>{
             const res=kpiVals[i];
-            const hv=homeKPIs[i]!==null?Math.round(homeKPIs[i]*100):null;
-            const av=awayKPIs[i]!==null?Math.round(awayKPIs[i]*100):null;
+            const hv=homeKPIs[i]!==null?homeKPIs[i]*100:null;
+            const av=awayKPIs[i]!==null?awayKPIs[i]*100:null;
             const total=(hv||0)+(av||0);
             const hw= total ? Math.round((hv||0)/total*100) : 50;
             const hDim = res==='A' ? 'dim' : '';
@@ -1274,9 +1274,9 @@ function renderCurrentMatches(results, kpiData, fixtureRows){
             const aMark = res==='A' ? '⚽ ' : '';
             return `<div class="stat-row">
               <div class="stat-vals">
-                <span class="sv sv-h ${hDim}">${hv!==null?hv+'%':'—'}${hMark}</span>
+                <span class="sv sv-h ${hDim}">${hv!==null?hv.toFixed(2)+'%':'—'}${hMark}</span>
                 <span class="sv-lbl">${kpi.label}</span>
-                <span class="sv sv-a ${aDim}">${aMark}${av!==null?av+'%':'—'}</span>
+                <span class="sv sv-a ${aDim}">${aMark}${av!==null?av.toFixed(2)+'%':'—'}</span>
               </div>
               <div class="stat-bar">
                 <div class="sb-h" style="width:${hw}%"></div>
