@@ -21,26 +21,26 @@
 <style>
 /* ── VARIABLES ───────────────────────────────────────────────────── */
 :root{
-  --navy:#134A66; --navy2:#1C5C7E; --card:#1B5578; --card2:#17496A;
+  --navy:#24060F; --navy2:#45101F; --card:#4A1220; --card2:#3A0D18;
   --gold:#F2B53A; --gold2:#FFDE8A; --cyan:#4FD6F0; --green:#3BD97E;
-  --purple:#9B7BD8; --red:#E96A6A; --orange:#E8A23F;
-  --line:rgba(255,255,255,0.18); --txt:#F3F8FC; --dim:#C6D8E5;
+  --purple:#B98BE0; --red:#F58080; --orange:#E8A23F;
+  --line:rgba(255,255,255,0.16); --txt:#FBF4F5; --dim:#DCC3C9;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{
   font-family:'Inter',sans-serif;color:var(--txt);min-height:100vh;padding:16px;
   position:relative;overflow-x:hidden;
   background:
-    /* green grass glow at bottom */
-    radial-gradient(ellipse at 50% 112%, rgba(46,160,60,0.34), transparent 58%),
-    /* left grass glow */
-    radial-gradient(ellipse at -5% 65%, rgba(46,150,90,0.24), transparent 45%),
-    /* right grass glow */
-    radial-gradient(ellipse at 105% 65%, rgba(46,150,90,0.22), transparent 45%),
-    /* top cyan glow */
-    radial-gradient(ellipse at 15% 0%,rgba(60,217,126,0.20),transparent 48%),
-    radial-gradient(ellipse at 100% 100%,rgba(79,214,240,0.16),transparent 52%),
-    linear-gradient(160deg,var(--navy) 0%,#155A3A 42%,#1A6086 100%);
+    /* warm amber footlight glow at bottom */
+    radial-gradient(ellipse at 50% 112%, rgba(232,162,63,0.22), transparent 58%),
+    /* left crimson glow */
+    radial-gradient(ellipse at -5% 65%, rgba(158,26,54,0.30), transparent 45%),
+    /* right crimson glow */
+    radial-gradient(ellipse at 105% 65%, rgba(158,26,54,0.26), transparent 45%),
+    /* top gold glow */
+    radial-gradient(ellipse at 15% 0%,rgba(242,181,58,0.15),transparent 48%),
+    radial-gradient(ellipse at 100% 100%,rgba(205,62,86,0.20),transparent 52%),
+    linear-gradient(160deg,var(--navy) 0%,var(--navy2) 45%,#5A1526 100%);
 }
 
 /* ── FOOTBALL PITCH BACKGROUND ──────────────────────────────────── */
@@ -50,8 +50,8 @@ body::before{
     /* grass stripe alternating bands */
     repeating-linear-gradient(
       180deg,
-      rgba(0,90,25,0.11) 0px, rgba(0,90,25,0.11) 60px,
-      rgba(0,70,15,0.06) 60px, rgba(0,70,15,0.06) 120px
+      rgba(96,10,30,0.15) 0px, rgba(96,10,30,0.15) 60px,
+      rgba(60,4,16,0.08) 60px, rgba(60,4,16,0.08) 120px
     ),
     /* centre circle */
     radial-gradient(circle at 50% 50%,transparent 138px,rgba(255,255,255,0.035) 139px,rgba(255,255,255,0.035) 142px,transparent 143px),
@@ -103,7 +103,7 @@ body::after{
   background:linear-gradient(92deg,#FFE7A6 0%,var(--gold2) 40%,var(--gold) 70%,#E0982A 100%);
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;
   filter:drop-shadow(0 2px 10px rgba(242,181,58,0.28));}
-.title-block .sub{font-family:'Oswald',sans-serif;font-weight:600;font-size:clamp(9px,1.15vw,12.5px);letter-spacing:.18em;text-transform:uppercase;color:var(--cyan);}
+.title-block .sub{font-family:'Oswald',sans-serif;font-weight:600;font-size:clamp(9px,1.15vw,12.5px);letter-spacing:.18em;text-transform:uppercase;color:#E9A9B8;}
 .badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
 .bdg{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:6px 12px;text-align:center;min-width:64px;}
 .bdg .ic{font-size:15px;}
@@ -125,7 +125,7 @@ body::after{
 /* ── PANEL ──────────────────────────────────────────────────────── */
 .panel{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:12px;overflow:hidden;}
 .ph{background:linear-gradient(90deg,var(--gold),#C9881F);color:#1a1100;font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;}
-.ph.alt{background:linear-gradient(90deg,#0E2F4D,#1a4a73);color:var(--cyan);}
+.ph.alt{background:linear-gradient(90deg,#38101E,#6B1A2E);color:var(--gold2);}
 .ph.grn{background:linear-gradient(90deg,#0d3a1c,#1a5c2c);color:var(--green);}
 .pb{padding:12px 14px 14px;}
 
@@ -222,20 +222,20 @@ tbody tr:nth-child(3){background:rgba(242,181,58,0.09);}
 .sb-h{background:linear-gradient(90deg,#E0982A,#F2B53A);border-radius:5px 0 0 5px;transition:width .5s ease;}
 .sb-a{background:linear-gradient(90deg,#39C7E8,#1f8fb0);border-radius:0 5px 5px 0;transition:width .5s ease;}
 /* ── Light theme, scoped to the Current Matches cards ── */
-#current-matches-body .cm-card{background:linear-gradient(180deg,#f6f9fc,#e7eef6);border:1px solid #d3ddea;box-shadow:0 6px 18px rgba(20,50,80,0.20);margin-bottom:14px;}
+#current-matches-body .cm-card{background:linear-gradient(180deg,#fdf7f9,#f4e7ec);border:1px solid #e8d2da;box-shadow:0 6px 18px rgba(70,12,30,0.20);margin-bottom:14px;}
 #current-matches-body .cm-card:last-child{margin-bottom:0;}
-#current-matches-body .cm-scoreboard{background:radial-gradient(120% 80% at 50% -20%,rgba(46,160,60,0.12),transparent 60%),linear-gradient(90deg,rgba(242,181,58,0.18),rgba(57,199,232,0.13));border-bottom:1px solid #d3ddea;}
-#current-matches-body .cm-name{color:#1e2f42;}
-#current-matches-body .cm-tag{color:#5c6c7e;}
-#current-matches-body .cm-vs{color:#8494a4;}
-#current-matches-body .cm-scoreline{background:#122b40;border-color:#0c1f30;}
-#current-matches-body .cm-stats-head{color:#5c6c7e;border-bottom-color:#d3ddea;}
+#current-matches-body .cm-scoreboard{background:radial-gradient(120% 80% at 50% -20%,rgba(158,26,54,0.12),transparent 60%),linear-gradient(90deg,rgba(242,181,58,0.20),rgba(205,62,86,0.13));border-bottom:1px solid #e8d2da;}
+#current-matches-body .cm-name{color:#38141f;}
+#current-matches-body .cm-tag{color:#7d5f68;}
+#current-matches-body .cm-vs{color:#a3848d;}
+#current-matches-body .cm-scoreline{background:#3A0D18;border-color:#24060F;}
+#current-matches-body .cm-stats-head{color:#7d5f68;border-bottom-color:#e8d2da;}
 #current-matches-body .cm-stats-head .sh-h{color:#a9741a;}
-#current-matches-body .cm-stats-head .sh-a{color:#0f6e96;}
+#current-matches-body .cm-stats-head .sh-a{color:#106b8c;}
 #current-matches-body .sv-h{color:#a9741a;}
-#current-matches-body .sv-a{color:#0f6e96;}
-#current-matches-body .sv-lbl{color:#5c6c7e;}
-#current-matches-body .stat-bar{background:#d7e0ea;}
+#current-matches-body .sv-a{color:#106b8c;}
+#current-matches-body .sv-lbl{color:#7d5f68;}
+#current-matches-body .stat-bar{background:#ecd9e0;}
 .bye-card{background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.12);border-radius:12px;padding:16px;text-align:center;color:var(--dim);font-family:'Oswald',sans-serif;letter-spacing:.04em;text-transform:uppercase;font-size:12px;}
 /* ── Teams tab ── */
 .team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;}
@@ -357,7 +357,7 @@ footer::after{content:' ⚽';opacity:.5;}
 </style>
 </head>
 <body>
-<div style="position:fixed;bottom:4px;right:6px;font-size:9px;font-family:monospace;color:rgba(255,255,255,.4);background:rgba(0,0,0,.35);padding:1px 5px;border-radius:4px;z-index:99999;pointer-events:none;">build v20 · Jul-16 · app download</div>
+<div style="position:fixed;bottom:4px;right:6px;font-size:9px;font-family:monospace;color:rgba(255,255,255,.4);background:rgba(0,0,0,.35);padding:1px 5px;border-radius:4px;z-index:99999;pointer-events:none;">build v21 · Royal Wine</div>
 <!-- Weekly challenge poster popup -->
 <div class="poster-modal" id="poster-modal" onclick="if(event.target===this)closePoster()">
   <div class="poster-inner">
@@ -1302,7 +1302,7 @@ function renderCurrentMatches(results, kpiData, fixtureRows){
         <div class="cm-stats">
           <div class="cm-stats-head"><span class="sh-h">${m.h}</span><span class="sh-t">⚽ Match Stats</span><span class="sh-a">${m.a}</span></div>
           ${kpiPend
-            ? `<div style="text-align:center;padding:20px 12px;font-family:'Oswald',sans-serif;"><div style="font-size:14px;font-weight:700;letter-spacing:.06em;color:#a9741a;">⏳ RESULT PENDING</div><div style="font-size:10.5px;margin-top:5px;color:#5c6c7e;">KPI percentages will show once results are finalized.</div></div>`
+            ? `<div style="text-align:center;padding:20px 12px;font-family:'Oswald',sans-serif;"><div style="font-size:14px;font-weight:700;letter-spacing:.06em;color:#a9741a;">⏳ RESULT PENDING</div><div style="font-size:10.5px;margin-top:5px;color:#7d5f68;">KPI percentages will show once results are finalized.</div></div>`
             : KPI_DEFS.map((kpi,i)=>{
             const res=kpiVals[i];
             const hv=homeKPIs[i]!==null?homeKPIs[i]*100:null;
