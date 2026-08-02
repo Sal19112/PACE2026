@@ -21,26 +21,26 @@
 <style>
 /* ── VARIABLES ───────────────────────────────────────────────────── */
 :root{
-  --navy:#24060F; --navy2:#45101F; --card:#4A1220; --card2:#3A0D18;
-  --gold:#F2B53A; --gold2:#FFDE8A; --cyan:#4FD6F0; --green:#3BD97E;
-  --purple:#B98BE0; --red:#F58080; --orange:#E8A23F;
-  --line:rgba(255,255,255,0.16); --txt:#FBF4F5; --dim:#DCC3C9;
+  --navy:#05070D; --navy2:#0A0F1A; --card:#0E1423; --card2:#0A0F1B;
+  --gold:#FFB627; --gold2:#FFD97A; --cyan:#38BDF8; --green:#22C55E;
+  --purple:#A78BFA; --red:#EF4444; --orange:#FB923C;
+  --line:rgba(255,255,255,0.13); --line2:#27324A; --txt:#F5F8FC; --dim:#9BADC6;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{
   font-family:'Inter',sans-serif;color:var(--txt);min-height:100vh;padding:16px;
   position:relative;overflow-x:hidden;
   background:
-    /* warm amber footlight glow at bottom */
-    radial-gradient(ellipse at 50% 112%, rgba(232,162,63,0.22), transparent 58%),
-    /* left crimson glow */
-    radial-gradient(ellipse at -5% 65%, rgba(158,26,54,0.30), transparent 45%),
-    /* right crimson glow */
-    radial-gradient(ellipse at 105% 65%, rgba(158,26,54,0.26), transparent 45%),
-    /* top gold glow */
-    radial-gradient(ellipse at 15% 0%,rgba(242,181,58,0.15),transparent 48%),
-    radial-gradient(ellipse at 100% 100%,rgba(205,62,86,0.20),transparent 52%),
-    linear-gradient(160deg,var(--navy) 0%,var(--navy2) 45%,#5A1526 100%);
+    /* technical command-center grid */
+    linear-gradient(rgba(255,255,255,0.021) 1px, transparent 1px) 0 0 / 100% 46px,
+    linear-gradient(90deg, rgba(255,255,255,0.021) 1px, transparent 1px) 0 0 / 46px 100%,
+    /* gold command glow, top */
+    radial-gradient(ellipse at 22% -8%, rgba(255,182,39,0.13), transparent 55%),
+    /* red pressure glow, bottom right */
+    radial-gradient(ellipse at 105% 108%, rgba(239,68,68,0.13), transparent 52%),
+    /* cool depth, bottom left */
+    radial-gradient(ellipse at -8% 92%, rgba(56,189,248,0.08), transparent 48%),
+    linear-gradient(168deg,#05070D 0%,#0A1120 48%,#05070D 100%);
 }
 
 /* ── FOOTBALL PITCH BACKGROUND ──────────────────────────────────── */
@@ -50,8 +50,8 @@ body::before{
     /* grass stripe alternating bands */
     repeating-linear-gradient(
       180deg,
-      rgba(96,10,30,0.15) 0px, rgba(96,10,30,0.15) 60px,
-      rgba(60,4,16,0.08) 60px, rgba(60,4,16,0.08) 120px
+      rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 60px,
+      rgba(0,0,0,0.05) 60px, rgba(0,0,0,0.05) 120px
     ),
     /* centre circle */
     radial-gradient(circle at 50% 50%,transparent 138px,rgba(255,255,255,0.035) 139px,rgba(255,255,255,0.035) 142px,transparent 143px),
@@ -76,8 +76,8 @@ body::after{
 
 /* ── STATUS BAR ─────────────────────────────────────────────────── */
 .status-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;
-  background:rgba(0,0,0,0.25);border:1px solid var(--line);
-  border-radius:10px;padding:8px 16px;margin-bottom:14px;font-size:11.5px;}
+  background:rgba(0,0,0,0.42);border:1px solid var(--line2);
+  border-radius:3px;padding:8px 16px;margin-bottom:14px;font-size:11.5px;}
 .pulse{width:8px;height:8px;border-radius:50%;background:var(--green);
   box-shadow:0 0 8px var(--green);animation:pulse 2s infinite;flex-shrink:0;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
@@ -87,12 +87,12 @@ body::after{
 .refresh-info{color:var(--dim);font-size:10.5px;white-space:nowrap;}
 .refresh-btn{background:rgba(242,181,58,0.15);border:1px solid rgba(242,181,58,0.3);
   color:var(--gold);font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:.06em;
-  text-transform:uppercase;padding:4px 12px;border-radius:6px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+  text-transform:uppercase;padding:4px 12px;border-radius:2px;cursor:pointer;transition:all .2s;white-space:nowrap;}
 .refresh-btn:hover{background:rgba(242,181,58,0.25);}
 
 /* ── HEADER ─────────────────────────────────────────────────────── */
 .header{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;margin-bottom:16px;}
-.crest{width:76px;height:86px;flex-shrink:0;background:linear-gradient(160deg,#1c3f5e,#0a1f33);
+.crest{width:76px;height:86px;flex-shrink:0;background:linear-gradient(160deg,#16203a,#080D18);
   clip-path:polygon(50% 0%,100% 18%,100% 60%,50% 100%,0% 60%,0% 18%);
   border:2px solid var(--gold);display:flex;flex-direction:column;
   align-items:center;justify-content:center;box-shadow:0 0 22px rgba(242,181,58,0.3);}
@@ -103,9 +103,9 @@ body::after{
   background:linear-gradient(92deg,#FFE7A6 0%,var(--gold2) 40%,var(--gold) 70%,#E0982A 100%);
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;
   filter:drop-shadow(0 2px 10px rgba(242,181,58,0.28));}
-.title-block .sub{font-family:'Oswald',sans-serif;font-weight:600;font-size:clamp(9px,1.15vw,12.5px);letter-spacing:.18em;text-transform:uppercase;color:#E9A9B8;}
+.title-block .sub{font-family:'Oswald',sans-serif;font-weight:600;font-size:clamp(9px,1.15vw,12.5px);letter-spacing:.18em;text-transform:uppercase;color:#5EC8FF;}
 .badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
-.bdg{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:6px 12px;text-align:center;min-width:64px;}
+.bdg{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:6px 12px;text-align:center;min-width:64px;}
 .bdg .ic{font-size:15px;}
 .bdg .lb{font-family:'Oswald',sans-serif;font-size:9px;letter-spacing:.05em;color:var(--dim);text-transform:uppercase;margin-top:1px;}
 .bdg.hi .lb{color:var(--green);font-weight:700;}
@@ -116,17 +116,17 @@ body::after{
   overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .tabs::-webkit-scrollbar{display:none;}
 .tab{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:.06em;text-transform:uppercase;
-  padding:9px 16px;border-radius:8px 8px 0 0;cursor:pointer;white-space:nowrap;
+  padding:9px 16px;border-radius:3px 3px 0 0;cursor:pointer;white-space:nowrap;
   border:1px solid transparent;border-bottom:none;color:var(--dim);transition:all .2s;background:transparent;}
 .tab:hover{color:var(--txt);background:rgba(255,255,255,0.04);}
 .tab.active{color:var(--gold2);background:var(--card);border-color:var(--line);border-bottom:1px solid var(--card);margin-bottom:-1px;}
 .tab .badge-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-left:5px;box-shadow:0 0 6px var(--green);}
 
 /* ── PANEL ──────────────────────────────────────────────────────── */
-.panel{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+.panel{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line2);border-radius:4px;overflow:hidden;}
 .ph{background:linear-gradient(90deg,var(--gold),#C9881F);color:#1a1100;font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;}
-.ph.alt{background:linear-gradient(90deg,#38101E,#6B1A2E);color:var(--gold2);}
-.ph.grn{background:linear-gradient(90deg,#0d3a1c,#1a5c2c);color:var(--green);}
+.ph.alt{background:#111A2C;color:var(--gold2);box-shadow:inset 4px 0 0 var(--gold);}
+.ph.grn{background:#0B2418;color:var(--green);box-shadow:inset 4px 0 0 var(--green);}
 .pb{padding:12px 14px 14px;}
 
 /* ── LEAGUE TABLE ───────────────────────────────────────────────── */
@@ -144,16 +144,16 @@ tbody tr:nth-child(3){background:rgba(242,181,58,0.09);}
 .gd-pos{color:var(--green);}.gd-neg{color:var(--red);}
 
 /* ── MATCH / GOAL / SCHEDULE / COUNTDOWN / GRIDS (unchanged) ─────── */
-.match-card{background:linear-gradient(180deg,rgba(255,255,255,0.04),transparent),var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+.match-card{background:linear-gradient(180deg,rgba(255,255,255,0.04),transparent),var(--card);border:1px solid var(--line2);border-radius:4px;overflow:hidden;}
 .match-header{background:linear-gradient(90deg,rgba(242,181,58,0.15),rgba(57,199,232,0.10));padding:8px 14px;display:flex;align-items:center;justify-content:space-between;}
 .match-wk{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold2);}
-.match-status{font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:2px 10px;border-radius:8px;}
+.match-status{font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:2px 10px;border-radius:3px;}
 .match-status.live{background:rgba(46,204,113,0.2);color:var(--green);border:1px solid rgba(46,204,113,0.3);}
 .match-status.done{background:rgba(255,255,255,0.06);color:var(--dim);}
 .match-body{padding:14px;}
 .vs-grid{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin-bottom:12px;}
 .vs-team{text-align:center;}
-.shield{width:46px;height:46px;margin:0 auto 5px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:20px;border:2px solid var(--gold);background:linear-gradient(160deg,#16314d,#0a1d30);}
+.shield{width:46px;height:46px;margin:0 auto 5px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:20px;border:2px solid var(--gold);background:linear-gradient(160deg,#16314d,#0a1d30);}
 .shield.away{border-color:var(--cyan);}
 .vs-team .nm{font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;text-transform:uppercase;}
 .vs-mid{font-family:'Oswald',sans-serif;font-weight:700;color:var(--gold2);font-size:12px;text-align:center;}
@@ -163,8 +163,8 @@ tbody tr:nth-child(3){background:rgba(242,181,58,0.09);}
 .goal-item{margin-bottom:10px;}.goal-item:last-child{margin-bottom:0;}
 .goal-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;}
 .goal-lbl{font-size:10.5px;font-weight:600;}
-.goal-chip{font-family:'Oswald',sans-serif;font-size:9px;font-weight:700;letter-spacing:.04em;padding:2px 7px;border-radius:8px;text-transform:uppercase;flex-shrink:0;}
-.gc-h{background:var(--gold);color:#1a1100;}.gc-a{background:var(--cyan);color:#0a1f33;}
+.goal-chip{font-family:'Oswald',sans-serif;font-size:9px;font-weight:700;letter-spacing:.04em;padding:2px 7px;border-radius:3px;text-transform:uppercase;flex-shrink:0;}
+.gc-h{background:var(--gold);color:#1a1100;}.gc-a{background:var(--cyan);color:#05070D;}
 .gc-d{background:#555;color:#fff;}.gc-p{background:rgba(255,255,255,0.1);color:var(--dim);}
 .bar-wrap{display:flex;align-items:center;gap:5px;}
 .bval{font-family:'Oswald',sans-serif;font-size:10px;color:var(--dim);width:30px;}.bval.r{text-align:right;}
@@ -173,19 +173,19 @@ tbody tr:nth-child(3){background:rgba(242,181,58,0.09);}
 .bf-a{height:100%;border-radius:0 4px 4px 0;transition:width .5s ease;}
 .current-matches-grid{display:flex;flex-direction:column;gap:14px;}
 #current-matches-body{max-width:860px;margin:0 auto;}
-.cm-card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.25);}
+.cm-card{background:var(--card);border:1px solid var(--line2);border-radius:4px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.25);}
 /* ── Football-style scoreboard header ── */
 .cm-scoreboard{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:18px 16px 16px;
   background:radial-gradient(120% 80% at 50% -20%,rgba(46,204,113,0.12),transparent 60%),linear-gradient(90deg,rgba(242,181,58,0.10),rgba(57,199,232,0.08));
   border-bottom:1px solid var(--line);position:relative;}
 .cm-side{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;}
-.cm-crest{width:64px;height:64px;display:flex;align-items:center;justify-content:center;border-radius:16px;
+.cm-crest{width:64px;height:64px;display:flex;align-items:center;justify-content:center;border-radius:4px;
   border:2px solid var(--gold);background:linear-gradient(160deg,#16314d,#0a1d30);box-shadow:0 4px 12px rgba(0,0,0,0.4);}
 .cm-crest.away{border-color:var(--cyan);}
 .cm-crest img{width:46px;height:46px;object-fit:contain;}
 .cm-name{font-family:'Oswald',sans-serif;font-weight:600;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--txt);line-height:1.15;max-width:120px;}
 .cm-mid{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:96px;}
-.cm-scoreline{display:inline-flex;align-items:center;gap:11px;background:rgba(0,0,0,0.4);border:1px solid var(--line);border-radius:11px;padding:7px 16px;font-family:'Oswald',sans-serif;font-weight:700;}
+.cm-scoreline{display:inline-flex;align-items:center;gap:11px;background:rgba(0,0,0,0.4);border:1px solid var(--line);border-radius:3px;padding:7px 16px;font-family:'Oswald',sans-serif;font-weight:700;}
 .cm-sh{font-size:32px;color:var(--gold2);line-height:1;}
 .cm-sa{font-size:32px;color:var(--cyan);line-height:1;}
 .cm-sep{font-size:18px;color:var(--dim);}
@@ -197,14 +197,14 @@ tbody tr:nth-child(3){background:rgba(242,181,58,0.09);}
 .fx-grid{display:grid;grid-template-columns:1fr;gap:11px;}
 .fx-card{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;padding:17px 15px;position:relative;overflow:hidden;
   background-image:radial-gradient(130% 100% at 50% -30%,rgba(59,217,126,0.18),transparent 60%),linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02));
-  border:1px solid rgba(242,181,58,0.24);border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,0.28),inset 0 1px 0 rgba(255,255,255,0.06);}
-.fx-card .cm-crest{width:60px;height:60px;border-radius:15px;box-shadow:0 4px 12px rgba(0,0,0,0.4);}
+  border:1px solid rgba(242,181,58,0.24);border-radius:4px;box-shadow:0 4px 16px rgba(0,0,0,0.28),inset 0 1px 0 rgba(255,255,255,0.06);}
+.fx-card .cm-crest{width:60px;height:60px;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.4);}
 .fx-card .cm-crest img{width:44px;height:44px;}
 .fx-card .cm-name{font-size:13.5px;font-weight:700;letter-spacing:.03em;max-width:130px;}
 .fx-vs{font-family:'Anton',sans-serif;font-weight:400;font-size:16px;color:var(--gold2);letter-spacing:.05em;
-  background:linear-gradient(180deg,rgba(242,181,58,0.22),rgba(242,181,58,0.10));border:1px solid rgba(242,181,58,0.45);border-radius:9px;padding:6px 12px;align-self:center;box-shadow:0 0 14px rgba(242,181,58,0.25);}
+  background:linear-gradient(180deg,rgba(242,181,58,0.22),rgba(242,181,58,0.10));border:1px solid rgba(242,181,58,0.45);border-radius:3px;padding:6px 12px;align-self:center;box-shadow:0 0 14px rgba(242,181,58,0.25);}
 .fx-bye{margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px;
-  background:rgba(233,106,106,0.10);border:1px dashed rgba(233,106,106,0.35);border-radius:12px;padding:11px 14px;
+  background:rgba(233,106,106,0.10);border:1px dashed rgba(233,106,106,0.35);border-radius:4px;padding:11px 14px;
   font-family:'Oswald',sans-serif;font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--red);}
 /* ── Football "Match Stats" style KPI comparison ── */
 .cm-stats{display:flex;flex-direction:column;gap:12px;}
@@ -218,34 +218,34 @@ tbody tr:nth-child(3){background:rgba(242,181,58,0.09);}
 .sv-a{color:var(--cyan);text-align:right;}
 .sv.dim{opacity:.4;font-weight:600;}
 .sv-lbl{flex:1;text-align:center;font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);}
-.stat-bar{display:flex;height:7px;border-radius:5px;overflow:hidden;background:rgba(255,255,255,0.07);}
-.sb-h{background:linear-gradient(90deg,#E0982A,#F2B53A);border-radius:5px 0 0 5px;transition:width .5s ease;}
-.sb-a{background:linear-gradient(90deg,#39C7E8,#1f8fb0);border-radius:0 5px 5px 0;transition:width .5s ease;}
+.stat-bar{display:flex;height:7px;border-radius:2px;overflow:hidden;background:rgba(255,255,255,0.07);}
+.sb-h{background:linear-gradient(90deg,#C77F0E,#FFB627);border-radius:2px 0 0 2px;transition:width .5s ease;}
+.sb-a{background:linear-gradient(90deg,#38BDF8,#0B76A8);border-radius:0 2px 2px 0;transition:width .5s ease;}
 /* ── Light theme, scoped to the Current Matches cards ── */
-#current-matches-body .cm-card{background:linear-gradient(180deg,#fdf7f9,#f4e7ec);border:1px solid #e8d2da;box-shadow:0 6px 18px rgba(70,12,30,0.20);margin-bottom:14px;}
+#current-matches-body .cm-card{background:linear-gradient(180deg,#FFFFFF,#EEF2F8);border:2px solid #05070D;box-shadow:0 5px 0 rgba(0,0,0,0.45);margin-bottom:16px;}
 #current-matches-body .cm-card:last-child{margin-bottom:0;}
-#current-matches-body .cm-scoreboard{background:radial-gradient(120% 80% at 50% -20%,rgba(158,26,54,0.12),transparent 60%),linear-gradient(90deg,rgba(242,181,58,0.20),rgba(205,62,86,0.13));border-bottom:1px solid #e8d2da;}
-#current-matches-body .cm-name{color:#38141f;}
-#current-matches-body .cm-tag{color:#7d5f68;}
-#current-matches-body .cm-vs{color:#a3848d;}
-#current-matches-body .cm-scoreline{background:#3A0D18;border-color:#24060F;}
-#current-matches-body .cm-stats-head{color:#7d5f68;border-bottom-color:#e8d2da;}
-#current-matches-body .cm-stats-head .sh-h{color:#a9741a;}
-#current-matches-body .cm-stats-head .sh-a{color:#106b8c;}
-#current-matches-body .sv-h{color:#a9741a;}
-#current-matches-body .sv-a{color:#106b8c;}
-#current-matches-body .sv-lbl{color:#7d5f68;}
-#current-matches-body .stat-bar{background:#ecd9e0;}
-.bye-card{background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.12);border-radius:12px;padding:16px;text-align:center;color:var(--dim);font-family:'Oswald',sans-serif;letter-spacing:.04em;text-transform:uppercase;font-size:12px;}
+#current-matches-body .cm-scoreboard{background:linear-gradient(90deg,rgba(255,182,39,0.26),rgba(56,189,248,0.16));border-bottom:2px solid #05070D;}
+#current-matches-body .cm-name{color:#05070D;}
+#current-matches-body .cm-tag{color:#5A6B82;}
+#current-matches-body .cm-vs{color:#8496AC;}
+#current-matches-body .cm-scoreline{background:#05070D;border-color:#05070D;}
+#current-matches-body .cm-stats-head{color:#5A6B82;border-bottom-color:#D2DAE6;}
+#current-matches-body .cm-stats-head .sh-h{color:#95610A;}
+#current-matches-body .cm-stats-head .sh-a{color:#0B5E86;}
+#current-matches-body .sv-h{color:#95610A;}
+#current-matches-body .sv-a{color:#0B5E86;}
+#current-matches-body .sv-lbl{color:#5A6B82;}
+#current-matches-body .stat-bar{background:#D6DEE9;}
+.bye-card{background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.12);border-radius:4px;padding:16px;text-align:center;color:var(--dim);font-family:'Oswald',sans-serif;letter-spacing:.04em;text-transform:uppercase;font-size:12px;}
 /* ── Teams tab ── */
 .team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;}
-.team-card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.25);}
+.team-card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line2);border-radius:4px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.25);}
 .team-card-hd{display:flex;align-items:center;gap:12px;padding:13px 14px;border-bottom:1px solid var(--line);
   background:radial-gradient(120% 120% at 0% 0%,rgba(242,181,58,0.16),transparent 55%),linear-gradient(90deg,rgba(242,181,58,0.10),rgba(57,199,232,0.06));}
-.team-card-hd .tcrest{width:54px;height:54px;border-radius:13px;border:2px solid var(--gold);flex-shrink:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#16314d,#0a1d30);box-shadow:0 4px 12px rgba(0,0,0,0.4);}
+.team-card-hd .tcrest{width:54px;height:54px;border-radius:4px;border:2px solid var(--gold);flex-shrink:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#16314d,#0a1d30);box-shadow:0 4px 12px rgba(0,0,0,0.4);}
 .team-card-hd .tname{font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;color:var(--gold2);text-transform:uppercase;letter-spacing:.02em;line-height:1.15;}
 .team-roles{padding:11px 13px;display:flex;flex-direction:column;gap:7px;}
-.trole{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 11px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:3px solid var(--line);}
+.trole{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 11px;background:rgba(255,255,255,0.03);border-radius:3px;border-left:3px solid var(--line);}
 .trole .rl{font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);white-space:nowrap;}
 .trole .rn{font-weight:600;font-size:13px;color:var(--txt);text-align:right;}
 /* ── Previous Week card: winner seal ── */
@@ -253,31 +253,31 @@ tbody tr:nth-child(3){background:rgba(242,181,58,0.09);}
 .win-stamp{position:absolute;top:-13px;left:50%;transform:translateX(-50%) rotate(-7deg);
   background:linear-gradient(180deg,#FFE9A8,#F2B53A 58%,#C9881F);color:#4a3200;
   font-family:'Oswald',sans-serif;font-weight:800;font-size:8px;letter-spacing:.09em;text-transform:uppercase;
-  padding:2px 7px;border-radius:5px;border:1px solid #FFF1C4;box-shadow:0 2px 8px rgba(242,181,58,0.65);
+  padding:2px 7px;border-radius:2px;border:1px solid #FFF1C4;box-shadow:0 2px 8px rgba(242,181,58,0.65);
   white-space:nowrap;z-index:3;line-height:1.1;}
 /* ── Award Winners tab ── */
 .award-list{display:flex;flex-direction:column;gap:11px;}
-.award-card{display:flex;align-items:center;gap:13px;padding:12px 14px;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:12px;
+.award-card{display:flex;align-items:center;gap:13px;padding:12px 14px;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:4px;
   background:linear-gradient(90deg,rgba(242,181,58,0.09),rgba(255,255,255,0.02));box-shadow:0 3px 12px rgba(0,0,0,0.22);}
-.aw-logo{width:48px;height:48px;border-radius:12px;border:2px solid var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#16314d,#0a1d30);}
+.aw-logo{width:48px;height:48px;border-radius:4px;border:2px solid var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#16314d,#0a1d30);}
 .aw-logo img{width:34px;height:34px;object-fit:contain;}
 .aw-main{flex:1;min-width:0;}
 .aw-name{font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;color:var(--txt);text-transform:uppercase;letter-spacing:.02em;line-height:1.15;}
 .aw-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px;font-size:11px;color:var(--dim);}
-.aw-level{font-family:'Oswald',sans-serif;font-weight:700;font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:5px;}
+.aw-level{font-family:'Oswald',sans-serif;font-weight:700;font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:2px;}
 .aw-note{font-size:11.5px;color:var(--dim);margin-top:4px;font-style:italic;}
-.aw-prize{flex-shrink:0;text-align:center;font-family:'Oswald',sans-serif;font-weight:700;color:var(--gold2);background:rgba(242,181,58,0.15);border:1px solid rgba(242,181,58,0.42);border-radius:10px;padding:8px 12px;font-size:14.5px;line-height:1.05;min-width:62px;}
+.aw-prize{flex-shrink:0;text-align:center;font-family:'Oswald',sans-serif;font-weight:700;color:var(--gold2);background:rgba(242,181,58,0.15);border:1px solid rgba(242,181,58,0.42);border-radius:3px;padding:8px 12px;font-size:14.5px;line-height:1.05;min-width:62px;}
 /* ── Weekly challenge poster popup ── */
 .poster-modal{position:fixed;inset:0;z-index:1000;background:rgba(3,10,20,0.85);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;padding:18px;animation:posterFade .28s ease;}
 .poster-modal.open{display:flex;}
 .poster-inner{position:relative;max-width:min(94vw,470px);max-height:94vh;animation:posterPop .3s cubic-bezier(.2,.8,.3,1.1);}
-.poster-inner img{display:block;width:100%;height:auto;max-height:94vh;object-fit:contain;border-radius:14px;box-shadow:0 16px 60px rgba(0,0,0,0.65);border:1px solid rgba(242,181,58,0.4);}
+.poster-inner img{display:block;width:100%;height:auto;max-height:94vh;object-fit:contain;border-radius:4px;box-shadow:0 16px 60px rgba(0,0,0,0.65);border:1px solid rgba(242,181,58,0.4);}
 .poster-close{position:absolute;top:10px;right:10px;width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,0.35);background:rgba(10,25,40,0.75);color:#fff;font-size:17px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,0.5);transition:background .2s,transform .2s;}
 .poster-close:hover{background:rgba(233,106,106,0.9);transform:scale(1.08);}
 @keyframes posterFade{from{opacity:0}to{opacity:1}}
 @keyframes posterPop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
 /* ── App download card ── */
-.dl-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(92deg,#FFE7A6,#F2B53A 45%,#E0982A);color:#3a2a00;font-family:'Oswald',sans-serif;font-weight:700;font-size:14px;letter-spacing:.03em;text-decoration:none;padding:11px 22px;border-radius:10px;box-shadow:0 6px 18px rgba(242,181,58,0.35);transition:transform .15s,box-shadow .15s;}
+.dl-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(92deg,#FFE7A6,#F2B53A 45%,#E0982A);color:#3a2a00;font-family:'Oswald',sans-serif;font-weight:700;font-size:14px;letter-spacing:.03em;text-decoration:none;padding:11px 22px;border-radius:3px;box-shadow:0 6px 18px rgba(242,181,58,0.35);transition:transform .15s,box-shadow .15s;}
 .dl-btn:hover{transform:translateY(-2px);box-shadow:0 9px 24px rgba(242,181,58,0.5);}
 .schedule-table{width:100%;border-collapse:collapse;font-size:14px;}
 .schedule-table thead th{font-family:'Oswald',sans-serif;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--gold2);padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;}
@@ -287,14 +287,14 @@ tbody tr:nth-child(3){background:rgba(242,181,58,0.09);}
 .wk-num{font-family:'Oswald',sans-serif;font-weight:700;font-size:16px;color:var(--gold2);}
 .fixture-pair{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
 .fp-home{font-weight:700;font-size:14px;color:var(--txt);}.fp-vs{color:var(--dim);font-size:11px;font-family:'Oswald',sans-serif;}.fp-away{color:var(--cyan);font-weight:700;font-size:14px;}
-.fp-score{font-family:'Oswald',sans-serif;font-weight:700;font-size:14px;color:var(--gold2);background:rgba(0,0,0,0.32);border:1px solid rgba(242,181,58,0.35);border-radius:6px;padding:1px 8px;}
-.status-pill{font-family:'Oswald',sans-serif;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:4px 11px;border-radius:8px;}
+.fp-score{font-family:'Oswald',sans-serif;font-weight:700;font-size:14px;color:var(--gold2);background:rgba(0,0,0,0.32);border:1px solid rgba(242,181,58,0.35);border-radius:2px;padding:1px 8px;}
+.status-pill{font-family:'Oswald',sans-serif;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:4px 11px;border-radius:3px;}
 .sp-done{background:rgba(46,204,113,0.15);color:var(--green);border:1px solid rgba(46,204,113,0.3);}
 .sp-active{background:rgba(242,181,58,0.15);color:var(--gold);border:1px solid rgba(242,181,58,0.3);}
 .sp-upcoming{background:rgba(255,255,255,0.06);color:var(--dim);border:1px solid rgba(255,255,255,0.1);}
 .bye-tag{font-size:13px;font-weight:700;color:#F58C8C;font-family:'Oswald',sans-serif;letter-spacing:.02em;}
 .countdown-bar{background:rgba(57,199,232,0.07);border:1px solid rgba(57,199,232,0.2);
-  border-radius:9px;padding:8px 14px;margin-bottom:12px;
+  border-radius:3px;padding:8px 14px;margin-bottom:12px;
   display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
 .cd-label{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);}
 .cd-val{font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;color:var(--cyan);}
@@ -305,16 +305,16 @@ tbody tr:nth-child(3){background:rgba(242,181,58,0.09);}
 .loading{text-align:center;padding:40px;color:var(--dim);font-family:'Oswald',sans-serif;letter-spacing:.06em;text-transform:uppercase;}
 .spinner{display:inline-block;width:20px;height:20px;border:2px solid rgba(57,199,232,0.3);border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite;margin-right:10px;vertical-align:-4px;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.error-msg{background:rgba(233,106,106,0.1);border:1px solid rgba(233,106,106,0.3);border-radius:9px;padding:12px 16px;color:var(--red);font-size:12.5px;margin:10px 0;}
+.error-msg{background:rgba(233,106,106,0.1);border:1px solid rgba(233,106,106,0.3);border-radius:3px;padding:12px 16px;color:var(--red);font-size:12.5px;margin:10px 0;}
 footer{text-align:center;color:var(--dim);font-size:10px;margin-top:18px;font-family:'Oswald',sans-serif;letter-spacing:.05em;text-transform:uppercase;}
 footer::before{content:'⚽ ';opacity:.5;}
 footer::after{content:' ⚽';opacity:.5;}
 
-/* ── GRASS GLOW on panels ───────────────────────────────────────── */
-.panel{box-shadow:0 2px 18px rgba(0,80,20,0.18),0 1px 4px rgba(0,0,0,0.3);}
+/* ── PANEL DEPTH (hard, not glowy) ──────────────────────────────── */
+.panel{box-shadow:0 2px 0 rgba(0,0,0,0.5),0 6px 22px rgba(0,0,0,0.45);}
 .ph{position:relative;overflow:hidden;}
-.ph::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,0.07),transparent 60%);pointer-events:none;}
-.ph.grn{background:linear-gradient(90deg,#0a4a1c,#1a6e2c);box-shadow:0 0 14px rgba(26,110,44,0.3);}
+.ph::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,0.10),transparent 55%);pointer-events:none;}
+.ph.grn{background:#0B2418;color:var(--green);box-shadow:inset 4px 0 0 var(--green);}
 
 /* ════════════════════════════════════════════════════════════════
    MOBILE RESPONSIVE
@@ -337,7 +337,7 @@ footer::after{content:' ⚽';opacity:.5;}
   .fmt-list > div > span:first-child{min-width:0!important;font-size:11px;letter-spacing:.03em;text-transform:uppercase;}
   .cm-kpi-grid{grid-template-columns:repeat(3,1fr);}
   .cm-scoreboard{gap:8px;padding:14px 10px 12px;}
-  .cm-crest{width:52px;height:52px;border-radius:13px;}
+  .cm-crest{width:52px;height:52px;border-radius:4px;}
   .cm-crest img{width:38px;height:38px;}
   .cm-sh,.cm-sa{font-size:26px;}
   .cm-name{font-size:10px;}
@@ -357,7 +357,7 @@ footer::after{content:' ⚽';opacity:.5;}
 </style>
 </head>
 <body>
-<div style="position:fixed;bottom:4px;right:6px;font-size:9px;font-family:monospace;color:rgba(255,255,255,.4);background:rgba(0,0,0,.35);padding:1px 5px;border-radius:4px;z-index:99999;pointer-events:none;">build v21 · Royal Wine</div>
+<div style="position:fixed;bottom:4px;right:6px;font-size:9px;font-family:monospace;color:rgba(255,255,255,.4);background:rgba(0,0,0,.35);padding:1px 5px;border-radius:4px;z-index:99999;pointer-events:none;">build v22 · Command Center</div>
 <!-- Weekly challenge poster popup -->
 <div class="poster-modal" id="poster-modal" onclick="if(event.target===this)closePoster()">
   <div class="poster-inner">
@@ -378,7 +378,7 @@ footer::after{content:' ⚽';opacity:.5;}
 
 <!-- HEADER -->
 <div class="header">
-  <img src="logos/pace_2026_logo.png" alt="PACE 2026" style="width:82px;height:82px;object-fit:contain;flex-shrink:0;border-radius:12px;filter:drop-shadow(0 0 12px rgba(242,181,58,0.4))">
+  <img src="logos/pace_2026_logo.png" alt="PACE 2026" style="width:82px;height:82px;object-fit:contain;flex-shrink:0;border-radius:4px;filter:drop-shadow(0 0 12px rgba(242,181,58,0.4))">
   <div class="title-block">
     <h1><span class="brand">PACE 2026</span><span class="sub">Performance And Customer Excellence</span></h1>
   </div>
@@ -491,22 +491,22 @@ footer::after{content:' ⚽';opacity:.5;}
     <div class="ph">⚽ The 4 KPIs — Goal Categories</div>
     <div class="pb">
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
-        <div style="background:rgba(242,181,58,0.07);border:1px solid rgba(242,181,58,0.25);border-top:3px solid #F2B53A;border-radius:10px;padding:14px;">
+        <div style="background:rgba(242,181,58,0.07);border:1px solid rgba(242,181,58,0.25);border-top:3px solid #F2B53A;border-radius:3px;padding:14px;">
           <div style="font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#F2B53A;margin-bottom:6px;">KPI 1</div>
           <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;margin-bottom:6px;">Remittance Target</div>
           <div style="font-size:12px;color:var(--dim);line-height:1.5;">Growth in overall remittance transaction volume against target. The team with the higher percentage growth wins this KPI.</div>
         </div>
-        <div style="background:rgba(46,204,113,0.07);border:1px solid rgba(46,204,113,0.25);border-top:3px solid #2ECC71;border-radius:10px;padding:14px;">
+        <div style="background:rgba(46,204,113,0.07);border:1px solid rgba(46,204,113,0.25);border-top:3px solid #2ECC71;border-radius:3px;padding:14px;">
           <div style="font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#2ECC71;margin-bottom:6px;">KPI 2</div>
           <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;margin-bottom:6px;">Customer Registration</div>
           <div style="font-size:12px;color:var(--dim);line-height:1.5;">Growth in new verified customer registrations against target. Higher percentage growth wins the KPI.</div>
         </div>
-        <div style="background:rgba(57,199,232,0.07);border:1px solid rgba(57,199,232,0.25);border-top:3px solid #39C7E8;border-radius:10px;padding:14px;">
+        <div style="background:rgba(57,199,232,0.07);border:1px solid rgba(57,199,232,0.25);border-top:3px solid #39C7E8;border-radius:3px;padding:14px;">
           <div style="font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#39C7E8;margin-bottom:6px;">KPI 3</div>
           <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;margin-bottom:6px;">India Corridor</div>
           <div style="font-size:12px;color:var(--dim);line-height:1.5;">Growth in India-bound remittance transactions. Higher percentage growth wins this KPI.</div>
         </div>
-        <div style="background:rgba(155,123,216,0.07);border:1px solid rgba(155,123,216,0.25);border-top:3px solid #9B7BD8;border-radius:10px;padding:14px;">
+        <div style="background:rgba(155,123,216,0.07);border:1px solid rgba(155,123,216,0.25);border-top:3px solid #9B7BD8;border-radius:3px;padding:14px;">
           <div style="font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#9B7BD8;margin-bottom:6px;">KPI 4</div>
           <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;margin-bottom:6px;">Egypt Corridor</div>
           <div style="font-size:12px;color:var(--dim);line-height:1.5;">Growth in Egypt-bound remittance transactions. Higher percentage growth wins this KPI.</div>
@@ -522,23 +522,23 @@ footer::after{content:' ⚽';opacity:.5;}
       <div class="ph">🏆 Match Scoring Rules</div>
       <div class="pb">
         <div style="display:flex;flex-direction:column;gap:10px;">
-          <div style="background:rgba(46,204,113,0.08);border:1px solid rgba(46,204,113,0.2);border-radius:9px;padding:12px 14px;display:flex;align-items:center;gap:14px;">
+          <div style="background:rgba(46,204,113,0.08);border:1px solid rgba(46,204,113,0.2);border-radius:3px;padding:12px 14px;display:flex;align-items:center;gap:14px;">
             <div style="font-family:'Oswald',sans-serif;font-size:28px;font-weight:700;color:#2ECC71;min-width:36px;">3</div>
             <div><div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:14px;">WIN</div><div style="font-size:11.5px;color:var(--dim);margin-top:2px;">Team wins more KPI goals than opponent in the match week</div></div>
           </div>
-          <div style="background:rgba(242,181,58,0.08);border:1px solid rgba(242,181,58,0.2);border-radius:9px;padding:12px 14px;display:flex;align-items:center;gap:14px;">
+          <div style="background:rgba(242,181,58,0.08);border:1px solid rgba(242,181,58,0.2);border-radius:3px;padding:12px 14px;display:flex;align-items:center;gap:14px;">
             <div style="font-family:'Oswald',sans-serif;font-size:28px;font-weight:700;color:#F2B53A;min-width:36px;">1</div>
             <div><div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:14px;">DRAW</div><div style="font-size:11.5px;color:var(--dim);margin-top:2px;">Both teams win an equal number of KPI goals</div></div>
           </div>
-          <div style="background:rgba(233,106,106,0.08);border:1px solid rgba(233,106,106,0.2);border-radius:9px;padding:12px 14px;display:flex;align-items:center;gap:14px;">
+          <div style="background:rgba(233,106,106,0.08);border:1px solid rgba(233,106,106,0.2);border-radius:3px;padding:12px 14px;display:flex;align-items:center;gap:14px;">
             <div style="font-family:'Oswald',sans-serif;font-size:28px;font-weight:700;color:#E96A6A;min-width:36px;">0</div>
             <div><div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:14px;">LOSS</div><div style="font-size:11.5px;color:var(--dim);margin-top:2px;">Team wins fewer KPI goals than opponent</div></div>
           </div>
-          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--line);border-radius:9px;padding:12px 14px;">
+          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--line);border-radius:3px;padding:12px 14px;">
             <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;">Winning Criteria</div>
             <div style="font-size:11.5px;color:var(--dim);line-height:1.6;">Each of the 4 KPIs is a separate "goal." The team with the higher percentage growth in a KPI wins that goal. The team winning more KPIs wins the overall match (max 4 goals per match).</div>
           </div>
-          <div style="background:rgba(155,123,216,0.08);border:1px solid rgba(155,123,216,0.22);border-radius:9px;padding:12px 14px;">
+          <div style="background:rgba(155,123,216,0.08);border:1px solid rgba(155,123,216,0.22);border-radius:3px;padding:12px 14px;">
             <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;color:#B79CE6;">Tie Handling — Null</div>
             <div style="font-size:11.5px;color:var(--dim);line-height:1.6;">If both teams post the same percentage on a KPI, that KPI is marked <b style="color:#B79CE6">null</b> and does not count toward the match result.</div>
           </div>
@@ -588,7 +588,7 @@ footer::after{content:' ⚽';opacity:.5;}
     <div class="ph grn">🏆 Rewards & Prizes</div>
     <div class="pb">
       <!-- Season champion banner -->
-      <div style="background:linear-gradient(100deg,rgba(242,181,58,0.20),rgba(255,214,138,0.06));border:1px solid rgba(242,181,58,0.42);border-radius:12px;padding:15px 18px;margin-bottom:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div style="background:linear-gradient(100deg,rgba(242,181,58,0.20),rgba(255,214,138,0.06));border:1px solid rgba(242,181,58,0.42);border-radius:4px;padding:15px 18px;margin-bottom:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
         <div style="font-size:34px;line-height:1;">🏆</div>
         <div style="flex:1;min-width:200px;">
           <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:15.5px;color:var(--gold2);">PACE League Champions — Season Trophy</div>
@@ -604,51 +604,51 @@ footer::after{content:' ⚽';opacity:.5;}
 
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;">
         <!-- KPI 1 -->
-        <div style="background:rgba(255,255,255,0.03);border:1px solid var(--line);border-top:3px solid #F2B53A;border-radius:10px;padding:12px 13px;">
+        <div style="background:rgba(255,255,255,0.03);border:1px solid var(--line);border-top:3px solid #F2B53A;border-radius:3px;padding:12px 13px;">
           <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:#F2B53A;margin-bottom:8px;">KPI 1 — Retail Remittance</div>
           <div style="display:flex;flex-direction:column;gap:6px;">
-            <div style="background:rgba(242,181,58,0.06);border-radius:7px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--gold2);">Branch</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇125 · 🥈100 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Highest growth % after 90 days</div></div>
-            <div style="background:rgba(57,199,232,0.06);border-radius:7px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--cyan);">Individual</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇75 · 🥈50 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Highest contribution % to branch retail remittance</div></div>
+            <div style="background:rgba(242,181,58,0.06);border-radius:2px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--gold2);">Branch</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇125 · 🥈100 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Highest growth % after 90 days</div></div>
+            <div style="background:rgba(57,199,232,0.06);border-radius:2px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--cyan);">Individual</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇75 · 🥈50 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Highest contribution % to branch retail remittance</div></div>
           </div>
         </div>
         <!-- KPI 2 -->
-        <div style="background:rgba(255,255,255,0.03);border:1px solid var(--line);border-top:3px solid #2ECC71;border-radius:10px;padding:12px 13px;">
+        <div style="background:rgba(255,255,255,0.03);border:1px solid var(--line);border-top:3px solid #2ECC71;border-radius:3px;padding:12px 13px;">
           <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:#2ECC71;margin-bottom:8px;">KPI 2 — New Customer Registration</div>
           <div style="display:flex;flex-direction:column;gap:6px;">
-            <div style="background:rgba(242,181,58,0.06);border-radius:7px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--gold2);">Branch</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇125 · 🥈100 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Highest growth % after 90 days</div></div>
-            <div style="background:rgba(57,199,232,0.06);border-radius:7px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--cyan);">Individual · Customer Catalyst</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇75 · 🥈50 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Most new customer registrations</div></div>
+            <div style="background:rgba(242,181,58,0.06);border-radius:2px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--gold2);">Branch</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇125 · 🥈100 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Highest growth % after 90 days</div></div>
+            <div style="background:rgba(57,199,232,0.06);border-radius:2px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--cyan);">Individual · Customer Catalyst</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇75 · 🥈50 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Most new customer registrations</div></div>
           </div>
         </div>
         <!-- India / INR -->
-        <div style="background:rgba(255,255,255,0.03);border:1px solid var(--line);border-top:3px solid #39C7E8;border-radius:10px;padding:12px 13px;">
+        <div style="background:rgba(255,255,255,0.03);border:1px solid var(--line);border-top:3px solid #39C7E8;border-radius:3px;padding:12px 13px;">
           <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:#39C7E8;margin-bottom:8px;">INR Corridor Growth (India)</div>
           <div style="display:flex;flex-direction:column;gap:6px;">
-            <div style="background:rgba(242,181,58,0.06);border-radius:7px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--gold2);">Branch</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇125 · 🥈100 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Highest growth % in INR transactions</div></div>
-            <div style="background:rgba(57,199,232,0.06);border-radius:7px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--cyan);">Individual</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇75 · 🥈50 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Most INR transactions</div></div>
+            <div style="background:rgba(242,181,58,0.06);border-radius:2px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--gold2);">Branch</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇125 · 🥈100 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Highest growth % in INR transactions</div></div>
+            <div style="background:rgba(57,199,232,0.06);border-radius:2px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--cyan);">Individual</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇75 · 🥈50 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Most INR transactions</div></div>
           </div>
         </div>
         <!-- Egypt -->
-        <div style="background:rgba(255,255,255,0.03);border:1px solid var(--line);border-top:3px solid #9B7BD8;border-radius:10px;padding:12px 13px;">
+        <div style="background:rgba(255,255,255,0.03);border:1px solid var(--line);border-top:3px solid #9B7BD8;border-radius:3px;padding:12px 13px;">
           <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:#B79CE6;margin-bottom:8px;">Egypt Corridor Growth</div>
           <div style="display:flex;flex-direction:column;gap:6px;">
-            <div style="background:rgba(242,181,58,0.06);border-radius:7px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--gold2);">Branch</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇125 · 🥈100 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Highest growth % in Egypt transactions</div></div>
-            <div style="background:rgba(57,199,232,0.06);border-radius:7px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--cyan);">Individual</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇75 · 🥈50 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Most Egypt transactions</div></div>
+            <div style="background:rgba(242,181,58,0.06);border-radius:2px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--gold2);">Branch</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇125 · 🥈100 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Highest growth % in Egypt transactions</div></div>
+            <div style="background:rgba(57,199,232,0.06);border-radius:2px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--cyan);">Individual</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇75 · 🥈50 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Most Egypt transactions</div></div>
           </div>
         </div>
         <!-- Bonus KPI Revival -->
-        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(232,162,63,0.35);border-top:3px solid #E8A23F;border-radius:10px;padding:12px 13px;grid-column:1/-1;">
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(232,162,63,0.35);border-top:3px solid #E8A23F;border-radius:3px;padding:12px 13px;grid-column:1/-1;">
           <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:13px;color:#E8A23F;margin-bottom:8px;">🎁 Bonus KPI — Inactive Customer Revival</div>
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:6px;">
-            <div style="background:rgba(242,181,58,0.06);border-radius:7px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--gold2);">Branch</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇125 · 🥈100 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Highest revival % (+ certificate)</div></div>
-            <div style="background:rgba(57,199,232,0.06);border-radius:7px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--cyan);">Individual</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇75 · 🥈50 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Highest revival % (+ certificate)</div></div>
+            <div style="background:rgba(242,181,58,0.06);border-radius:2px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--gold2);">Branch</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇125 · 🥈100 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Highest revival % (+ certificate)</div></div>
+            <div style="background:rgba(57,199,232,0.06);border-radius:2px;padding:7px 9px;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-family:'Oswald',sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--cyan);">Individual</span><span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12px;color:var(--txt);">🥇75 · 🥈50 KD</span></div><div style="font-size:10.5px;color:var(--dim);margin-top:3px;">Highest revival % (+ certificate)</div></div>
           </div>
           <div style="font-size:10.5px;color:var(--gold2);font-family:'Oswald',sans-serif;letter-spacing:.04em;text-transform:uppercase;margin:10px 0 6px;">Bonus League Points</div>
           <div style="display:flex;flex-wrap:wrap;gap:6px;">
-            <span style="font-size:10.5px;background:rgba(255,255,255,0.05);border:1px solid var(--line);border-radius:6px;padding:3px 8px;">0–4.99% = 0 pts</span>
-            <span style="font-size:10.5px;background:rgba(46,204,113,0.10);border:1px solid rgba(46,204,113,0.25);border-radius:6px;padding:3px 8px;">5–9.99% = 1 pt</span>
-            <span style="font-size:10.5px;background:rgba(46,204,113,0.14);border:1px solid rgba(46,204,113,0.3);border-radius:6px;padding:3px 8px;">10–14.99% = 2 pts</span>
-            <span style="font-size:10.5px;background:rgba(242,181,58,0.14);border:1px solid rgba(242,181,58,0.3);border-radius:6px;padding:3px 8px;">15–19.99% = 3 pts</span>
-            <span style="font-size:10.5px;background:rgba(242,181,58,0.22);border:1px solid rgba(242,181,58,0.45);border-radius:6px;padding:3px 8px;color:var(--gold2);font-weight:700;">20%+ = 5 pts</span>
+            <span style="font-size:10.5px;background:rgba(255,255,255,0.05);border:1px solid var(--line);border-radius:2px;padding:3px 8px;">0–4.99% = 0 pts</span>
+            <span style="font-size:10.5px;background:rgba(46,204,113,0.10);border:1px solid rgba(46,204,113,0.25);border-radius:2px;padding:3px 8px;">5–9.99% = 1 pt</span>
+            <span style="font-size:10.5px;background:rgba(46,204,113,0.14);border:1px solid rgba(46,204,113,0.3);border-radius:2px;padding:3px 8px;">10–14.99% = 2 pts</span>
+            <span style="font-size:10.5px;background:rgba(242,181,58,0.14);border:1px solid rgba(242,181,58,0.3);border-radius:2px;padding:3px 8px;">15–19.99% = 3 pts</span>
+            <span style="font-size:10.5px;background:rgba(242,181,58,0.22);border:1px solid rgba(242,181,58,0.45);border-radius:2px;padding:3px 8px;color:var(--gold2);font-weight:700;">20%+ = 5 pts</span>
           </div>
         </div>
       </div>
@@ -663,15 +663,15 @@ footer::after{content:' ⚽';opacity:.5;}
     <div class="pb">
       <div style="font-size:11.5px;color:var(--dim);line-height:1.5;margin-bottom:10px;">7 area teams, each covering multiple branches. Every team is led by:</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;">
-        <div style="padding:9px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:3px solid var(--gold);">
+        <div style="padding:9px 12px;background:rgba(255,255,255,0.03);border-radius:3px;border-left:3px solid var(--gold);">
           <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--gold2);">Manager</div>
           <div style="font-size:11.5px;color:var(--dim);margin-top:3px;">Team ownership, target follow-up and performance direction.</div>
         </div>
-        <div style="padding:9px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:3px solid var(--green);">
+        <div style="padding:9px 12px;background:rgba(255,255,255,0.03);border-radius:3px;border-left:3px solid var(--green);">
           <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--green);">Captain</div>
           <div style="font-size:11.5px;color:var(--dim);margin-top:3px;">Daily coordination, motivation and branch follow-up.</div>
         </div>
-        <div style="padding:9px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:3px solid var(--purple);">
+        <div style="padding:9px 12px;background:rgba(255,255,255,0.03);border-radius:3px;border-left:3px solid var(--purple);">
           <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:12.5px;color:var(--purple);">Vice Captain</div>
           <div style="font-size:11.5px;color:var(--dim);margin-top:3px;">Backup coordination and execution support.</div>
         </div>
@@ -681,7 +681,7 @@ footer::after{content:' ⚽';opacity:.5;}
 
   <!-- BONUS TRACK -->
   <div class="panel">
-    <div class="ph" style="background:linear-gradient(90deg,#7A4FB0,#9B7BD8);color:#fff;">🎁 Bonus Track — Inactive Customer Revival (Win-Back)</div>
+    <div class="ph" style="background:#1B1533;color:var(--purple);box-shadow:inset 4px 0 0 var(--purple);">🎁 Bonus Track — Inactive Customer Revival (Win-Back)</div>
     <div class="pb">
       <div style="font-size:12.5px;color:var(--txt);line-height:1.6;">Inactive Customer Revival is <b style="color:#B79CE6">tracked separately</b> and awarded as <b style="color:#B79CE6">bonus league points at month-end</b>, based on each team's revival % (see the points ladder under Rewards). It is <b>not</b> part of the core 4 match KPIs and does not affect individual match results — but it can move the league standings.</div>
     </div>
@@ -692,7 +692,7 @@ footer::after{content:' ⚽';opacity:.5;}
 <!-- APP DOWNLOAD -->
 <div id="app-dl" class="panel" style="display:none;margin-top:14px;">
   <div class="pb" style="display:flex;flex-direction:column;align-items:center;gap:9px;padding:20px 14px;text-align:center;">
-    <img src="icons/icon-192.png" alt="PACE 2026 App" style="width:58px;height:58px;border-radius:14px;box-shadow:0 4px 14px rgba(0,0,0,0.4);">
+    <img src="icons/icon-192.png" alt="PACE 2026 App" style="width:58px;height:58px;border-radius:4px;box-shadow:0 4px 14px rgba(0,0,0,0.4);">
     <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:15.5px;color:var(--gold2);letter-spacing:.03em;">Get the PACE 2026 App</div>
     <div style="font-size:11.5px;color:var(--dim);max-width:320px;line-height:1.5;">Install the dashboard as an Android app for one-tap access to live results.</div>
     <a id="app-dl-link" href="app/pace2026.apk" download class="dl-btn">⬇ Download App (APK)</a>
@@ -1169,7 +1169,7 @@ function renderPrevWeekResults(results, kpiData){
                : `<span style="color:var(--dim)">Tap for KPI breakdown →</span>`;
     return `
     <div class="prev-match-card" onclick="showKPIDetail(${idx})" data-idx="${idx}"
-      style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:20px 13px 12px;margin-bottom:9px;cursor:pointer;transition:border-color .2s,background .2s;"
+      style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:3px;padding:20px 13px 12px;margin-bottom:9px;cursor:pointer;transition:border-color .2s,background .2s;"
       onmouseover="this.style.borderColor='rgba(242,181,58,0.4)';this.style.background='rgba(242,181,58,0.05)'"
       onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.background='rgba(255,255,255,0.03)'">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px;">
@@ -1177,7 +1177,7 @@ function renderPrevWeekResults(results, kpiData){
         <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:22px;color:var(--txt);flex-shrink:0">${scoreDisp}</span>
         <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:14.5px;color:var(--cyan);display:flex;align-items:center;gap:9px;text-align:right">${away} <span class="pmc-crest">${teamLogo(away,42)}${awaySeal}</span></span>
       </div>
-      <div style="display:flex;justify-content:center;gap:5px;margin-bottom:6px;">${kpiVals.map((v,i)=>`<span style="width:19px;height:19px;border-radius:4px;font-size:9.5px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;background:${v==='H'?KPI_DEFS[i].color:v==='A'?'#1a7a99':v==='D'?'#555':'rgba(255,255,255,0.08)'};color:${v?'#fff':'var(--dim)'}">${v||'?'}</span>`).join('')}</div>
+      <div style="display:flex;justify-content:center;gap:5px;margin-bottom:6px;">${kpiVals.map((v,i)=>`<span style="width:19px;height:19px;border-radius:4px;font-size:9.5px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;background:${v==='H'?KPI_DEFS[i].color:v==='A'?'#0B76A8':v==='D'?'#555':'rgba(255,255,255,0.08)'};color:${v?'#fff':'var(--dim)'}">${v||'?'}</span>`).join('')}</div>
       <div style="text-align:center;font-size:10px;font-style:italic;">${hint}</div>
     </div>`;
   }).join('');
@@ -1231,7 +1231,7 @@ function showKPIDetail(idx){
           <span class="bval r">${hvPct!==null?hvPct.toFixed(2)+'%':'—'}</span>
           <div class="btrack">
             <div class="bf-h" style="width:${hw}%;background:${kpi.color}"></div>
-            <div class="bf-a" style="width:${100-hw}%;background:#1a7a99"></div>
+            <div class="bf-a" style="width:${100-hw}%;background:#0B76A8"></div>
           </div>
           <span class="bval">${avPct!==null?avPct.toFixed(2)+'%':'—'}</span>
         </div>
@@ -1302,7 +1302,7 @@ function renderCurrentMatches(results, kpiData, fixtureRows){
         <div class="cm-stats">
           <div class="cm-stats-head"><span class="sh-h">${m.h}</span><span class="sh-t">⚽ Match Stats</span><span class="sh-a">${m.a}</span></div>
           ${kpiPend
-            ? `<div style="text-align:center;padding:20px 12px;font-family:'Oswald',sans-serif;"><div style="font-size:14px;font-weight:700;letter-spacing:.06em;color:#a9741a;">⏳ RESULT PENDING</div><div style="font-size:10.5px;margin-top:5px;color:#7d5f68;">KPI percentages will show once results are finalized.</div></div>`
+            ? `<div style="text-align:center;padding:20px 12px;font-family:'Oswald',sans-serif;"><div style="font-size:14px;font-weight:700;letter-spacing:.06em;color:#95610A;">⏳ RESULT PENDING</div><div style="font-size:10.5px;margin-top:5px;color:#5A6B82;">KPI percentages will show once results are finalized.</div></div>`
             : KPI_DEFS.map((kpi,i)=>{
             const res=kpiVals[i];
             const hv=homeKPIs[i]!==null?homeKPIs[i]*100:null;
