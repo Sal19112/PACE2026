@@ -357,7 +357,7 @@ footer::after{content:' ⚽';opacity:.5;}
 </style>
 </head>
 <body>
-<div style="position:fixed;bottom:4px;right:6px;font-size:9px;font-family:monospace;color:rgba(255,255,255,.4);background:rgba(0,0,0,.35);padding:1px 5px;border-radius:4px;z-index:99999;pointer-events:none;">build v22 · Command Center</div>
+<div style="position:fixed;bottom:4px;right:6px;font-size:9px;font-family:monospace;color:rgba(255,255,255,.4);background:rgba(0,0,0,.35);padding:1px 5px;border-radius:4px;z-index:99999;pointer-events:none;">build v23 · countdown fix</div>
 <!-- Weekly challenge poster popup -->
 <div class="poster-modal" id="poster-modal" onclick="if(event.target===this)closePoster()">
   <div class="poster-inner">
@@ -754,7 +754,13 @@ function getCurrentWeek(){
   if(now > CAMPAIGN_END)   return 14;
   return Math.min(14, Math.floor((now - CAMPAIGN_START) / (7*24*60*60*1000)) + 1);
 }
+// Week end dates read from the fixtures sheet (col C), populated on load.
+// The sheet is the source of truth; the arithmetic below is only a fallback
+// for before data arrives — the two can legitimately differ (e.g. week 14).
+const WEEK_END_DATES = {};
 function getWeekEndDate(weekNum){
+  const fromSheet = WEEK_END_DATES[weekNum];
+  if(fromSheet) return new Date(fromSheet.getTime());
   return new Date(CAMPAIGN_START.getTime() + (weekNum * 7 - 1) * 86400000);
 }
 
@@ -1507,6 +1513,11 @@ async function loadAll(){
     const leagueRows  = leagueData.rows.filter(r => r['Team'] || r['Pos']);
     const resultsRows = resultsData.rows.filter(r => homeTeam(r) || !isNaN(rowWeek(r)));
     const fixtureRows = fixtureData.rows;
+    fixtureRows.map(parseFixtureRow).forEach(f => {
+      if(!isRealFixture(f)) return;
+      const d = parseAnyDate(f.endDate);
+      if(d) WEEK_END_DATES[f.week] = d;
+    });
     const kpiRows     = kpiData.rows.filter(r => r['Week'] && r['Team Name']);
     renderLeague(leagueRows, resultsRows);
     renderPrevWeekResults(resultsRows, kpiRows);
