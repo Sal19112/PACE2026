@@ -298,6 +298,22 @@ tbody tr:nth-child(3){background:rgba(242,181,58,0.09);}
   display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
 .cd-label{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);}
 .cd-val{font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;color:var(--cyan);}
+/* ── Campaign complete banner ── */
+.final-banner{position:relative;margin-bottom:14px;padding:18px 20px 18px 24px;text-align:center;
+  background:linear-gradient(135deg,rgba(255,182,39,0.16),rgba(239,68,68,0.10) 60%,rgba(0,0,0,0) 100%),var(--card);
+  border:1px solid var(--line2);border-radius:4px;box-shadow:inset 5px 0 0 var(--gold),0 2px 0 rgba(0,0,0,0.5);}
+.final-banner .fb-kicker{font-family:'Oswald',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.final-banner .fb-title{font-family:'Archivo Black','Oswald',sans-serif;font-size:clamp(19px,3.2vw,30px);
+  letter-spacing:.01em;text-transform:uppercase;line-height:1.05;
+  background:linear-gradient(92deg,#FFE7A6 0%,var(--gold2) 42%,var(--gold) 72%,#E0982A 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;}
+.final-banner .fb-msg{font-size:13px;color:var(--txt);line-height:1.6;margin-top:9px;max-width:620px;margin-left:auto;margin-right:auto;}
+.final-banner .fb-note{display:inline-flex;align-items:center;gap:7px;margin-top:12px;
+  font-family:'Oswald',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--gold2);background:rgba(255,182,39,0.12);border:1px solid rgba(255,182,39,0.32);border-radius:3px;padding:6px 13px;}
+.final-banner .fb-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite;flex-shrink:0;}
+@media(max-width:768px){.final-banner{padding:15px 14px 15px 17px;} .final-banner .fb-msg{font-size:12px;}}
 .cd-week{font-family:'Oswald',sans-serif;font-size:11px;color:var(--gold2);}
 .g2{display:grid;grid-template-columns:1.1fr 1fr;gap:14px;margin-bottom:14px;}
 .g3{display:grid;grid-template-columns:1.15fr 0.95fr 1fr;gap:14px;margin-bottom:14px;}
@@ -357,7 +373,7 @@ footer::after{content:' ⚽';opacity:.5;}
 </style>
 </head>
 <body>
-<div style="position:fixed;bottom:4px;right:6px;font-size:9px;font-family:monospace;color:rgba(255,255,255,.4);background:rgba(0,0,0,.35);padding:1px 5px;border-radius:4px;z-index:99999;pointer-events:none;">build v23 · countdown fix</div>
+<div style="position:fixed;bottom:4px;right:6px;font-size:9px;font-family:monospace;color:rgba(255,255,255,.4);background:rgba(0,0,0,.35);padding:1px 5px;border-radius:4px;z-index:99999;pointer-events:none;">build v24 · season complete</div>
 <!-- Weekly challenge poster popup -->
 <div class="poster-modal" id="poster-modal" onclick="if(event.target===this)closePoster()">
   <div class="poster-inner">
@@ -402,10 +418,18 @@ footer::after{content:' ⚽';opacity:.5;}
 <!-- ══ TAB: OVERVIEW ══════════════════════════════════════════════ -->
 <div class="tab-content active" id="tab-overview">
 
+  <!-- campaign complete — shown once the campaign end date has passed -->
+  <div class="final-banner" id="final-banner" style="display:none;">
+    <div class="fb-kicker">PACE 2026 · Season Complete</div>
+    <div class="fb-title">🏆 Thank You, Everyone</div>
+    <div class="fb-msg">That's the final whistle on PACE 2026. Thank you to all <b>7 teams</b> and every branch for three months of outstanding effort, teamwork and competitive spirit — you set the pace.</div>
+    <div class="fb-note"><span class="fb-dot"></span>Final results will be published soon</div>
+  </div>
+
   <!-- countdown -->
   <div class="countdown-bar">
     <span class="cd-week" id="cd-week">MATCH WEEK —</span>
-    <span class="cd-label">WEEK ENDS IN:</span>
+    <span class="cd-label" id="cd-label">WEEK ENDS IN:</span>
     <span class="cd-val" id="cd-val">calculating…</span>
   </div>
 
@@ -938,7 +962,23 @@ function isRealFixture(f){
 
 // ══ COUNTDOWN TIMER ════════════════════════════════════════════════
 let currentWeek = getCurrentWeek();
+// True once the campaign end date has passed — the league is over, so the
+// countdown must not keep ticking toward a week-14 end date.
+function campaignFinished(){
+  const end = new Date(CAMPAIGN_END.getTime());
+  end.setHours(23,59,59,999);
+  return new Date() > end;
+}
 function updateCountdown(){
+  if(campaignFinished()){
+    const banner = document.getElementById('final-banner');
+    if(banner) banner.style.display = '';
+    document.getElementById('cd-week').textContent = 'PACE 2026 — SEASON COMPLETE';
+    document.getElementById('cd-label').textContent = 'FINAL RESULTS:';
+    document.getElementById('cd-val').textContent = 'PUBLISHING SOON';
+    document.getElementById('badge-week').textContent = '✓';
+    return;
+  }
   const end = getWeekEndDate(currentWeek);
   end.setHours(23,59,59);
   const now = new Date();
