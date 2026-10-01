@@ -17,7 +17,7 @@
 <meta name="apple-mobile-web-app-title" content="PACE 2026">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=Archivo+Black&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=Archivo+Black&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ── VARIABLES ───────────────────────────────────────────────────── */
 :root{
@@ -316,6 +316,36 @@ tbody tr:nth-child(3){background:rgba(242,181,58,0.09);}
 .final-banner .fb-bonus{font-family:'Oswald',sans-serif;font-weight:700;
   font-size:clamp(17px,2.9vw,27px);line-height:1.25;letter-spacing:.02em;text-transform:uppercase;
   color:var(--gold2);margin-top:14px;}
+/* ── Results pending announcement ── */
+.results-pending{position:relative;overflow:hidden;margin-bottom:14px;border-radius:4px;
+  background:linear-gradient(135deg,#120B04 0%,#1A1206 42%,#0B0F1C 100%);
+  border:1px solid #3A2A10;box-shadow:inset 0 1px 0 rgba(255,214,122,0.14),0 3px 0 rgba(0,0,0,0.55),0 14px 34px rgba(0,0,0,0.5);}
+.results-pending .rp-glow{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 150% at 10% -30%,rgba(255,182,39,0.26),transparent 58%),
+             radial-gradient(90% 130% at 100% 130%,rgba(56,189,248,0.16),transparent 60%);}
+.results-pending .rp-inner{position:relative;padding:26px 26px 24px;text-align:center;}
+.results-pending .rp-status{display:inline-flex;align-items:center;gap:8px;
+  font-family:'Space Grotesk','Oswald',sans-serif;font-weight:600;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:#FFD97A;background:rgba(255,182,39,0.12);border:1px solid rgba(255,182,39,0.38);
+  border-radius:99px;padding:6px 15px;margin-bottom:15px;}
+.results-pending .rp-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);
+  box-shadow:0 0 9px var(--gold);animation:pulse 1.8s infinite;flex-shrink:0;}
+.results-pending .rp-title{font-family:'Space Grotesk','Archivo Black',sans-serif;font-weight:700;
+  font-size:clamp(27px,5.4vw,52px);line-height:1.0;letter-spacing:-0.018em;text-transform:uppercase;margin:0;
+  color:#FFF6E2;text-shadow:0 2px 24px rgba(255,182,39,0.26);}
+.results-pending .rp-title span{
+  background:linear-gradient(95deg,#FFE7A6 0%,#FFD97A 34%,#FFB627 64%,#FB923C 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;}
+.results-pending .rp-rule{width:72px;height:3px;margin:17px auto 15px;border-radius:2px;
+  background:linear-gradient(90deg,#FFB627,#FB923C);}
+.results-pending .rp-lead{font-family:'Space Grotesk','Inter',sans-serif;font-weight:500;
+  font-size:clamp(13.5px,1.65vw,16.5px);line-height:1.6;color:#F2E8DA;max-width:640px;margin:0 auto;}
+.results-pending .rp-lead b{color:#FFD97A;font-weight:700;}
+.results-pending .rp-sub{font-family:'Space Grotesk','Inter',sans-serif;font-weight:500;
+  font-size:clamp(11.5px,1.3vw,13.5px);line-height:1.55;color:#9FB0C6;max-width:600px;margin:9px auto 0;}
+@media(max-width:768px){.results-pending .rp-inner{padding:20px 15px 19px;}
+  .results-pending .rp-status{font-size:10px;letter-spacing:.14em;padding:5px 12px;}}
+
 @media(max-width:768px){.final-banner{padding:15px 14px 15px 17px;} .final-banner .fb-msg{font-size:12px;}}
 .cd-week{font-family:'Oswald',sans-serif;font-size:11px;color:var(--gold2);}
 .g2{display:grid;grid-template-columns:1.1fr 1fr;gap:14px;margin-bottom:14px;}
@@ -376,7 +406,7 @@ footer::after{content:' ⚽';opacity:.5;}
 </style>
 </head>
 <body>
-<div style="position:fixed;bottom:4px;right:6px;font-size:9px;font-family:monospace;color:rgba(255,255,255,.4);background:rgba(0,0,0,.35);padding:1px 5px;border-radius:4px;z-index:99999;pointer-events:none;">build v27 · bonus note</div>
+<div style="position:fixed;bottom:4px;right:6px;font-size:9px;font-family:monospace;color:rgba(255,255,255,.4);background:rgba(0,0,0,.35);padding:1px 5px;border-radius:4px;z-index:99999;pointer-events:none;">build v28 · results pending</div>
 <!-- Weekly challenge poster popup -->
 <div class="poster-modal" id="poster-modal" onclick="if(event.target===this)closePoster()">
   <div class="poster-inner">
@@ -422,9 +452,15 @@ footer::after{content:' ⚽';opacity:.5;}
 <div class="tab-content active" id="tab-overview">
 
   <!-- campaign complete — shown once the campaign end date has passed -->
-  <div class="final-banner" id="final-banner" style="display:none;">
-    <div class="fb-title">🏆 Thank You, Everyone</div>
-    <div class="fb-bonus">Bonus Points (Customer Win Back) to be added</div>
+  <div class="results-pending" id="final-banner" style="display:none;">
+    <div class="rp-glow"></div>
+    <div class="rp-inner">
+      <div class="rp-status"><span class="rp-dot"></span>Awaiting Final Tally</div>
+      <h2 class="rp-title">Champions<br><span>Yet To Be Crowned</span></h2>
+      <div class="rp-rule"></div>
+      <p class="rp-lead">The season is complete, but the table isn't final. <b>Bonus Points (Customer Win Back)</b> are still to be added.</p>
+      <p class="rp-sub">Once applied, the final standings and season champions will be announced.</p>
+    </div>
   </div>
 
   <!-- countdown -->
