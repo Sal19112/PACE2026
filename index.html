@@ -313,6 +313,9 @@ tbody tr:nth-child(3){background:rgba(242,181,58,0.09);}
   font-family:'Oswald',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
   color:var(--gold2);background:rgba(255,182,39,0.12);border:1px solid rgba(255,182,39,0.32);border-radius:3px;padding:6px 13px;}
 .final-banner .fb-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite;flex-shrink:0;}
+.final-banner .fb-bonus{font-family:'Oswald',sans-serif;font-weight:700;
+  font-size:clamp(17px,2.9vw,27px);line-height:1.25;letter-spacing:.02em;text-transform:uppercase;
+  color:var(--gold2);margin-top:14px;}
 @media(max-width:768px){.final-banner{padding:15px 14px 15px 17px;} .final-banner .fb-msg{font-size:12px;}}
 .cd-week{font-family:'Oswald',sans-serif;font-size:11px;color:var(--gold2);}
 .g2{display:grid;grid-template-columns:1.1fr 1fr;gap:14px;margin-bottom:14px;}
@@ -373,7 +376,7 @@ footer::after{content:' ⚽';opacity:.5;}
 </style>
 </head>
 <body>
-<div style="position:fixed;bottom:4px;right:6px;font-size:9px;font-family:monospace;color:rgba(255,255,255,.4);background:rgba(0,0,0,.35);padding:1px 5px;border-radius:4px;z-index:99999;pointer-events:none;">build v25 · final week</div>
+<div style="position:fixed;bottom:4px;right:6px;font-size:9px;font-family:monospace;color:rgba(255,255,255,.4);background:rgba(0,0,0,.35);padding:1px 5px;border-radius:4px;z-index:99999;pointer-events:none;">build v26 · bonus note</div>
 <!-- Weekly challenge poster popup -->
 <div class="poster-modal" id="poster-modal" onclick="if(event.target===this)closePoster()">
   <div class="poster-inner">
@@ -420,10 +423,8 @@ footer::after{content:' ⚽';opacity:.5;}
 
   <!-- campaign complete — shown once the campaign end date has passed -->
   <div class="final-banner" id="final-banner" style="display:none;">
-    <div class="fb-kicker">PACE 2026 · Season Complete</div>
     <div class="fb-title">🏆 Thank You, Everyone</div>
-    <div class="fb-msg">That's the final whistle on PACE 2026. Thank you to all <b>7 teams</b> and every branch for three months of outstanding effort, teamwork and competitive spirit — you set the pace.</div>
-    <div class="fb-note"><span class="fb-dot"></span>Final results will be published soon</div>
+    <div class="fb-bonus">Bonus Points (Customer Win Back) close to be added</div>
   </div>
 
   <!-- countdown -->
