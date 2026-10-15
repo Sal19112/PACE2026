@@ -343,8 +343,28 @@ tbody tr:nth-child(3){background:rgba(242,181,58,0.09);}
 .results-pending .rp-lead b{color:#FFD97A;font-weight:700;}
 .results-pending .rp-sub{font-family:'Space Grotesk','Inter',sans-serif;font-weight:500;
   font-size:clamp(11.5px,1.3vw,13.5px);line-height:1.55;color:#9FB0C6;max-width:600px;margin:9px auto 0;}
+.results-pending .champ-crest{margin:4px auto 10px;width:92px;height:92px;display:flex;align-items:center;justify-content:center;
+  border-radius:50%;background:radial-gradient(circle at 50% 35%,rgba(255,182,39,0.22),rgba(0,0,0,0) 70%);
+  filter:drop-shadow(0 6px 20px rgba(255,182,39,0.35));}
+.results-pending .champ-stats{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:17px auto 0;max-width:560px;}
+.results-pending .champ-stats div{min-width:92px;padding:9px 14px;border-radius:4px;
+  background:rgba(255,182,39,0.08);border:1px solid rgba(255,182,39,0.26);}
+.results-pending .champ-stats b{display:block;font-family:'Space Grotesk','Oswald',sans-serif;font-weight:700;
+  font-size:21px;line-height:1.1;color:#FFD97A;}
+#confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:99998;}
+.results-pending .rp-await{display:inline-flex;align-items:center;gap:8px;margin-top:15px;
+  font-family:'Space Grotesk','Oswald',sans-serif;font-weight:600;font-size:11px;letter-spacing:.13em;
+  text-transform:uppercase;color:#8FD3F4;background:rgba(56,189,248,0.10);
+  border:1px solid rgba(56,189,248,0.32);border-radius:99px;padding:7px 15px;}
+.results-pending .rp-await-dot{width:6px;height:6px;border-radius:50%;background:#38BDF8;
+  box-shadow:0 0 8px #38BDF8;animation:pulse 1.8s infinite;flex-shrink:0;}
+.results-pending .champ-stats span{display:block;margin-top:3px;font-family:'Space Grotesk','Inter',sans-serif;
+  font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#9FB0C6;}
 @media(max-width:768px){.results-pending .rp-inner{padding:20px 15px 19px;}
-  .results-pending .rp-status{font-size:10px;letter-spacing:.14em;padding:5px 12px;}}
+  .results-pending .rp-status{font-size:10px;letter-spacing:.14em;padding:5px 12px;}
+  .results-pending .champ-crest{width:72px;height:72px;}
+  .results-pending .champ-stats div{min-width:78px;padding:7px 11px;}
+  .results-pending .champ-stats b{font-size:17px;}}
 
 @media(max-width:768px){.final-banner{padding:15px 14px 15px 17px;} .final-banner .fb-msg{font-size:12px;}}
 .cd-week{font-family:'Oswald',sans-serif;font-size:11px;color:var(--gold2);}
@@ -406,7 +426,8 @@ footer::after{content:' ⚽';opacity:.5;}
 </style>
 </head>
 <body>
-<div style="position:fixed;bottom:4px;right:6px;font-size:9px;font-family:monospace;color:rgba(255,255,255,.4);background:rgba(0,0,0,.35);padding:1px 5px;border-radius:4px;z-index:99999;pointer-events:none;">build v28 · results pending</div>
+<canvas id="confetti"></canvas>
+<div style="position:fixed;bottom:4px;right:6px;font-size:9px;font-family:monospace;color:rgba(255,255,255,.4);background:rgba(0,0,0,.35);padding:1px 5px;border-radius:4px;z-index:99999;pointer-events:none;">build v30 · champions</div>
 <!-- Weekly challenge poster popup -->
 <div class="poster-modal" id="poster-modal" onclick="if(event.target===this)closePoster()">
   <div class="poster-inner">
@@ -454,12 +475,11 @@ footer::after{content:' ⚽';opacity:.5;}
   <!-- campaign complete — shown once the campaign end date has passed -->
   <div class="results-pending" id="final-banner" style="display:none;">
     <div class="rp-glow"></div>
-    <div class="rp-inner">
-      <div class="rp-status"><span class="rp-dot"></span>Awaiting Final Tally</div>
-      <h2 class="rp-title">Champions<br><span>Yet To Be Crowned</span></h2>
+    <div class="rp-inner" id="final-banner-inner">
+      <div class="rp-status"><span class="rp-dot"></span>Season Complete</div>
+      <h2 class="rp-title"><span>Final Standings</span></h2>
       <div class="rp-rule"></div>
-      <p class="rp-lead">The season is complete, but the table isn't final. <b>Bonus Points (Customer Win Back)</b> are still to be added.</p>
-      <p class="rp-sub">Once applied, the final standings and season champions will be announced.</p>
+      <p class="rp-lead">Loading the final league table…</p>
     </div>
   </div>
 
@@ -999,6 +1019,7 @@ function isRealFixture(f){
 
 // ══ COUNTDOWN TIMER ════════════════════════════════════════════════
 let currentWeek = getCurrentWeek();
+let _champion = null;   // table topper, set once the final league table loads
 // True once the campaign end date has passed — the league is over, so the
 // countdown must not keep ticking toward a week-14 end date.
 function campaignFinished(){
@@ -1011,8 +1032,8 @@ function updateCountdown(){
     const banner = document.getElementById('final-banner');
     if(banner) banner.style.display = '';
     document.getElementById('cd-week').textContent = 'PACE 2026 — SEASON COMPLETE';
-    document.getElementById('cd-label').textContent = 'FINAL RESULTS:';
-    document.getElementById('cd-val').textContent = 'PUBLISHING SOON';
+    document.getElementById('cd-label').textContent = _champion ? '🏆 LEAGUE CHAMPIONS:' : 'FINAL RESULTS:';
+    document.getElementById('cd-val').textContent = _champion || 'PUBLISHING SOON';
     document.getElementById('badge-week').textContent = '✓';
     return;
   }
@@ -1046,6 +1067,33 @@ function switchTab(name){
 }
 
 // ══ RENDER LEAGUE TABLE WITH FORM ════════════════════════════════
+// Crowns whoever tops the final league table (points, then goal difference).
+// Driven by the sheet so it stays correct if bonus points move the standings.
+function renderChampionBanner(top, bonusOf){
+  const el = document.getElementById('final-banner-inner');
+  if(!el || !top) return;
+  const name = (top['Team'] || top['Area'] || '').trim();
+  if(!name) return;
+  _champion = name;
+  updateCountdown();
+  const n = k => { const v = +top[k]; return isNaN(v) ? 0 : v; };
+  const gd = n('GF') - n('GA');
+  const bonus = bonusOf ? bonusOf(top) : 0;
+  el.innerHTML = `
+    <div class="rp-status"><span class="rp-dot"></span>PACE 2026 · League Champions</div>
+    <div class="champ-crest">${teamLogo(name, 86)}</div>
+    <h2 class="rp-title"><span>${name}</span></h2>
+    <div class="rp-rule"></div>
+    <p class="rp-lead">Champions of <b>PACE 2026</b> — finishing top of the table after a full double round-robin season.</p>
+    <div class="champ-stats">
+      <div><b>${n('Pts')}</b><span>Points</span></div>
+      <div><b>${n('W')}–${n('D')}–${n('L')}</b><span>W / D / L</span></div>
+      <div><b>${gd > 0 ? '+' : ''}${gd}</b><span>Goal Diff</span></div>
+      ${bonus ? `<div><b>+${bonus}</b><span>Win-Back Bonus</span></div>` : ''}
+    </div>
+    <p class="rp-sub">Congratulations to every branch and colleague who made this season.</p>
+    <div class="rp-await"><span class="rp-await-dot"></span>Individual &amp; branch awards will be announced soon</div>`;
+}
 function renderLeague(rows, results){
   const valid = rows.filter(r => r['Team'] || r['Pos']);
   if(!valid.length){ document.getElementById('lt-body').innerHTML = '<div class="error-msg">No league data in sheet yet.</div>'; return; }
@@ -1059,6 +1107,7 @@ function renderLeague(rows, results){
     return m ? parseInt(m[0],10) : 0;
   };
   const sorted = [...valid].sort((a,b) => (+b['Pts']||0) - (+a['Pts']||0) || ((+b['GF']||0)-(+b['GA']||0)) - ((+a['GF']||0)-(+a['GA']||0)));
+  if(campaignFinished()) renderChampionBanner(sorted[0], bonusOf);
   document.getElementById('lt-head').textContent = `League Table — Week ${currentWeek}`;
   // Build each team's recent form (W/L/D) from the Match Results sheet, ordered
   // by week. Per-match points live in columns L (home) and M (away) — the team
@@ -1688,6 +1737,57 @@ function closePoster(){ document.getElementById('poster-modal').classList.remove
   probe.src = src;
 })();
 document.addEventListener('keydown', e => { if(e.key === 'Escape') closePoster(); });
+
+// ══ CHAMPIONSHIP CONFETTI ═════════════════════════════════════════
+// Fires once per visit when the season is complete. Respects
+// prefers-reduced-motion and stops itself once every piece has fallen.
+function fireConfetti(){
+  try{ if(matchMedia('(prefers-reduced-motion: reduce)').matches) return; }catch(e){}
+  const cv = document.getElementById('confetti');
+  if(!cv) return;
+  const ctx = cv.getContext('2d');
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const size = () => { cv.width = innerWidth*dpr; cv.height = innerHeight*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); };
+  size(); addEventListener('resize', size);
+  const COLORS = ['#FFB627','#FFD97A','#FB923C','#38BDF8','#22C55E','#EF4444','#FFFFFF'];
+  const bits = [];
+  // Two bursts from the lower corners, like a party popper.
+  [[0.06, 1], [0.94, -1]].forEach(([originX, dir]) => {
+    for(let i=0;i<70;i++){
+      const a = (Math.PI/180) * (55 + Math.random()*30);
+      const sp = 11 + Math.random()*13;
+      bits.push({
+        x: innerWidth*originX, y: innerHeight*0.98,
+        vx: Math.cos(a)*sp*dir, vy: -Math.sin(a)*sp,
+        w: 6+Math.random()*6, h: 9+Math.random()*8,
+        rot: Math.random()*Math.PI, vr: (Math.random()-0.5)*0.3,
+        c: COLORS[(Math.random()*COLORS.length)|0], life: 0,
+      });
+    }
+  });
+  let raf;
+  (function tick(){
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    let alive = 0;
+    bits.forEach(b => {
+      b.life++; b.vy += 0.26; b.vx *= 0.995; b.x += b.vx; b.y += b.vy; b.rot += b.vr;
+      if(b.y > innerHeight + 40) return;
+      alive++;
+      ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.rot);
+      ctx.globalAlpha = Math.max(0, 1 - b.life/230);
+      ctx.fillStyle = b.c; ctx.fillRect(-b.w/2, -b.h/2, b.w, b.h);
+      ctx.restore();
+    });
+    if(alive) raf = requestAnimationFrame(tick);
+    else { cancelAnimationFrame(raf); ctx.clearRect(0,0,innerWidth,innerHeight); }
+  })();
+}
+(function(){
+  if(!campaignFinished()) return;
+  try{ if(sessionStorage.getItem('pace_confetti_seen')) return; }catch(e){}
+  try{ sessionStorage.setItem('pace_confetti_seen','1'); }catch(e){}
+  window.addEventListener('load', () => setTimeout(fireConfetti, 450));
+})();
 // Register the (network-only) service worker so the app is installable / packageable as an APK.
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
